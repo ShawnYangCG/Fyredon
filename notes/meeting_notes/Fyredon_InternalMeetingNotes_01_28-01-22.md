@@ -22,7 +22,7 @@ ____
 
 **Zechen :** ? Core Engie ..
 
-###### Jingyuan Zhang : MIA ?
+**Jingyuan Zhang :** ? 
 
 ###### Parmvir Grewal : MIA ? 
 
