@@ -33,3 +33,5 @@ Break development into multiple iterations : Eg first revision is the core engin
 
 Scoping document initial plan :  This is not graded, but a vital part of the assignment and will need to be updated later. Describes the core features and subsystems, the roles and research on each. Need to decide how we are gonna do this together. 
 
+____
+
