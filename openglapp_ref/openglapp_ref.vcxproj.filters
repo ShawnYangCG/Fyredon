@@ -14,52 +14,52 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\main.cpp">
+    <ClCompile Include="src\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\mesh.cpp">
+    <ClCompile Include="src\ext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\primitive.cpp">
+    <ClCompile Include="src\ground.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\shader.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\texture.cpp">
+    <ClCompile Include="src\mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\viewer.cpp">
+    <ClCompile Include="src\primitive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\camera.cpp">
+    <ClCompile Include="src\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\ext.cpp">
+    <ClCompile Include="src\texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\ground.cpp">
+    <ClCompile Include="src\viewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\ext\dearimgui\imgui.cpp">
+    <ClCompile Include="src\ext\dearimgui\imgui.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\ext\dearimgui\imgui_demo.cpp">
+    <ClCompile Include="src\ext\dearimgui\imgui_demo.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\ext\dearimgui\imgui_draw.cpp">
+    <ClCompile Include="src\ext\dearimgui\imgui_draw.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\ext\dearimgui\imgui_impl_glfw.cpp">
+    <ClCompile Include="src\ext\dearimgui\imgui_impl_glfw.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\ext\dearimgui\imgui_impl_opengl3.cpp">
+    <ClCompile Include="src\ext\dearimgui\imgui_impl_opengl3.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\ext\dearimgui\imgui_tables.cpp">
+    <ClCompile Include="src\ext\dearimgui\imgui_tables.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_module\Projects\Fyrdon_Sandbox\ViewerApp\src\ext\dearimgui\imgui_widgets.cpp">
+    <ClCompile Include="src\ext\dearimgui\imgui_widgets.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
   </ItemGroup>

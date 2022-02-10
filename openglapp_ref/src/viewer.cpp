@@ -30,7 +30,6 @@ struct
 	double mousepos_prev_x = 0.f, mousepos_prev_y = 0.f;
 	double scroll_y = 0.f;
 	bool is_init = false; 
-	
 
 }GLFWState;
 
@@ -44,30 +43,20 @@ Viewer::Viewer(std::size_t W, std::size_t H, const char *Title)
 	last_yawoffs = 0.f;
 	last_pitchoffs = 0.f;
 	last_zoom = 0.f;
+	draw_prims = true; 
 	draw_grid = true;
 	draw_axis = true;
-	light_strength = 0.75f; 
-	light_pos = glm::vec3(0.f, 5.f, 0.f);
+	light_strength = 2.0f; 
+	light_pos = glm::vec3(0.f, 5.f, 3.f);
 	ren_normals = false; 
 	ren_wire = false; 
 
 	// ============= OpenGL Setup ============= 
-	// Setup OpenGL Context and Window
+	// Setup OpenGL Context and Window (GLFW)
 	window_context(); 
-	// Load OpenGL Extensions
-	extensions_load();
 
-	// ============= Cloth Setup =============
-	// Cloth State 
-	cloth = new Cloth_State("../../assets/mesh/clothgrid_a.obj");
-	// Cloth Solver 
-	cloth_solver = new Cloth_Solver(*cloth, (1.f / 90.f));
-	// Collider Primtives
-	collision_plane = new Cloth_Collider_Plane(glm::vec3(0.f, 1.f, 0.f));
-	collision_sphere = new Cloth_Collider_Sphere(glm::vec3(0.f, 0.f, 0.f), 1.f);
-	// Pass Colliders to Solver
-	cloth_solver->colliders.push_back(collision_plane);
-	cloth_solver->colliders.push_back(collision_sphere);
+	// Load OpenGL Extensions (GLEW)
+	extensions_load();
 
 	// ============= Camera =============
 	#if USE_FREE_CAMERA == 0
@@ -91,7 +80,7 @@ void Viewer::exec()
 
 	// ============= Test Operations =============
 	// Create Test Mesh
-	//test_mesh();
+	test_mesh();
 
 	// ============= Application Loop =============
 	bool esc = false; 
@@ -118,9 +107,10 @@ void Viewer::tick()
 	update_camera();
 
 	// ============= Input Query =============
+	// [..]
 
 	// ============= Simulation =============
-	cloth_solver->tick(dt);
+	// [..]
 
 	// ============= Render =============
 	render();
@@ -227,7 +217,7 @@ void Viewer::render_prep()
 	axis->set_data_mesh(data, 6);
 	axis->scale(glm::vec3(1.f));
 	axis->translate(glm::vec3(0.f, 0.01f, 0.f));
-	axis->set_shader("../../shaders/basic.vert", "../../shaders/colour.frag");
+	axis->set_shader("../../shaders/guides.vert", "../../shaders/guides.frag");
 	axis->mode = Render_Mode::RENDER_LINES;
 }
 
@@ -257,34 +247,19 @@ void Viewer::render()
 
 	// Draw Primtivies
 	get_GLError();
-	if (prims.size())
+	if (prims.size() && draw_prims)
 	{
 		for (Primitive *p : prims)
 		{
+			// Update Uniforms
+			p->shader.setVec("camPos_world",   camera.Cam_Pos);
+			p->shader.setVec("lightPos_world", light_pos);
+			p->shader.setFloat("lightStr",     light_strength);
+
 			p->set_cameraTransform(camera.get_ViewMatrix(), camera.get_PerspMatrix());
 			p->render();
 		}
 	}
-
-	//  ==================== Render Cloth Colldiers ====================
-	if (collision_sphere)
-	{
-		// Set Uniforms 
-		collision_sphere->render_mesh->set_cameraTransform(camera.get_ViewMatrix(), camera.get_PerspMatrix());
-		collision_sphere->render_mesh->shader.setVec("camPos_world", camera.Cam_Pos);
-		collision_sphere->render_mesh->shader.setVec("lightPos_world", light_pos);
-		collision_sphere->render_mesh->shader.setFloat("lightStr", light_strength);
-		// Render
-		collision_sphere->render_mesh->render();
-	}
-	// ==================== Render Cloth ====================
-	// Set Uniforms 
-	cloth->mesh->shader.setVec("camPos_world", camera.Cam_Pos);
-	cloth->mesh->shader.setVec("lightPos_world", light_pos);
-	cloth->mesh->shader.setFloat("lightStr", light_strength);
-	cloth->mesh->shader.setBool("ren_normals", ren_normals);
-	// Render
-	cloth->render(camera.get_ViewMatrix(), camera.get_PerspMatrix());
 
 	// ==================== Render GUI ====================
 	gui_render();
@@ -341,7 +316,6 @@ bool Viewer::esc_pressed()
 	return false; 
 }
 
-
 // =========================================== DEBUG CODE ===========================================
 
 // Info : Test Mesh to verify viewer and OpenGL is setup correctly. 
@@ -350,10 +324,10 @@ void Viewer::test_mesh()
 	// Pig
 	Mesh *pig = new Mesh("test_pig", "../../assets/mesh/pighead.obj");
 	pig->load_obj(false);
-	pig->set_shader("../../shaders/normal.vert", "../../shaders/colour.frag");
+	pig->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
 	pig->set_colour(glm::vec3(1.f, 0.f, 0.f));
-	pig->translate(glm::vec3(0.f, 0.f, 0.5f));
-	pig->scale(glm::vec3(1.f));
+	pig->translate(glm::vec3(0.f, 0.2f, 2.f));
+	pig->scale(glm::vec3(2.f));
 	pig->mode = Render_Mode::RENDER_MESH;
 	prims.push_back(pig);
 }
@@ -385,194 +359,11 @@ void Viewer::gui_render()
 	// ============= GUI Static Locals / State =============
 	// Viewer State
 	static float lpos[3]{ light_pos.x, light_pos.y, light_pos.z };
-	// Solver State Text
-	std::string state; 
-	if (cloth_solver->simulate) state = "Solve Running"; else state = "Solve Stopped";
-	// Cloth Mesh Path
-	static char obj_mesh_input[256]{ "../../assets/mesh/clothgrid_a.obj" };
-	static char obj_mesh_output[256]{ "export.obj" };
-	// Wind Force
-	static float wind[3] = { 0.f, 0.f, 0.f };
-	cloth_solver->wind.x = wind[0], cloth_solver->wind.y = wind[1], cloth_solver->wind.z = wind[2];
-	// Collider State
-	static bool p_use = true;
-	static bool s_use = true;
-	static char plane_onoff [32] {"Disable Plane Collider"};
-	static char sphere_onoff[32] {"Disable Sphere Collider"};
-	static float s_rad = 1.f; 
-	static float s_cent [3] = { 0.f, 0.f, 0.f };
-	// Get Dt 1/n. 
-	float n = 1.f / cloth_solver->dt;
-	static int tmp_count = 90;
-	// Cloth State Locals
-	float restOffs[3] = { 0.f, 2.f, 0.f };
-	bool static fix_corners = true;
-	static char corners_onoff[32]{ "Cut Cloth Corners" };
-	static Cloth_Collider *tmp_plane = collision_plane;
-	static Cloth_Collider *tmp_sphere = collision_sphere;
-	static float col_eps = 1e-02f; 
-	static float col_fric = 0.25f;
-
 
 	// ============= Imgui layout =============
 	{
 		// Begin ImGui
-		ImGui::Begin("Simulation Controls");
-
-		// ========== Solver State ==========
-		// Labels
-		if (cloth_solver->simulate) ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255)); else ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-		ImGui::Text(state.c_str());
-		ImGui::Text("Simulation Frame = %d, Substep = %d", cloth_solver->frame, cloth_solver->timestep);
-		ImGui::Text("Dt = 1/%d", std::size_t(n));
-		ImGui::PopStyleColor();
-
-		// Anim Loop Play Pause
-		if (ImGui::Button("Start/Stop"))
-		{
-			cloth_solver->simulate = !cloth_solver->simulate;
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-		// Reset
-		if (ImGui::Button("Reset"))
-		{
-			cloth_solver->reset();
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-
-		// ========== Cloth State Controls ==========
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Cloth State Controls");
-		ImGui::PopStyleColor();
-		// Mesh Import
-		ImGui::InputText("Mesh Import", obj_mesh_input, 256);
-		if (ImGui::Button("Load Cloth Mesh"))
-		{
-			// Delete and Recreate Cloth State and Solver based on new mesh
-			delete cloth; delete cloth_solver;
-			cloth = new Cloth_State(obj_mesh_input);
-			cloth_solver = new Cloth_Solver(*cloth, 1.f / 90.f);
-			cloth_solver->colliders.push_back(collision_plane);
-			cloth_solver->colliders.push_back(collision_sphere);
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-		if (ImGui::SliderFloat3("Rest Offset", restOffs, -5.f, 10.f))
-		{
-			cloth->set_rest_offset(glm::vec3(restOffs[0], restOffs[1], restOffs[2]));
-			cloth_solver->simulate = false; 
-			cloth_solver->reset();
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		}
-		// Mesh Export
-		ImGui::InputText("Mesh Export", obj_mesh_output, 256);
-		if (ImGui::Button("Export Cloth Mesh"))
-		{
-			cloth_solver->simulate = false; 
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-			cloth->export_mesh(obj_mesh_output);
-		}
-
-		// Cloth Corners
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Constrain Cloth Corners");
-		ImGui::PopStyleColor();
-		if (ImGui::Button(corners_onoff))
-		{
-			fix_corners = !fix_corners;
-			if (!fix_corners)
-			{
-				cloth->set_fixed_corners(false);
-				strcpy_s(corners_onoff, 32, "Pin Cloth Corners");
-			}
-			else
-			{
-				cloth->set_fixed_corners(true);
-				strcpy_s(corners_onoff, 32, "Cut Cloth Corners");
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-
-
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Cloth Colliders");
-		ImGui::PopStyleColor();
-		if (ImGui::SliderFloat("Collision Friction", &col_fric, 0.f, 1.f))
-		{
-			cloth_solver->set_collision_fric(col_fric);
-		}
-		if (ImGui::SliderFloat("Collision Epsilon", &col_eps, 1e-06f, 1e-01f))
-		{
-			cloth_solver->set_collision_eps(col_eps);
-		}
-		ImGui::SliderFloat("K_visc", &cloth_solver->K_v, 0.f, 2.f);
-		// Slightly Hacky using ptr swapping via hardcoded collider indices. 
-		// Plane Collider
-		if (ImGui::Button(plane_onoff))
-		{
-			p_use = !p_use;
-			if (!p_use)
-			{
-				collision_plane = nullptr;
-				cloth_solver->colliders[0] = nullptr;
-				strcpy_s(plane_onoff, 32, "Enable Plane Collider");
-			}
-			else
-			{
-				collision_plane = tmp_plane;
-				cloth_solver->colliders[0] = tmp_plane;
-				strcpy_s(plane_onoff, 32, "Disable Plane Collider");
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-		// Sphere Collider
-		if (ImGui::Button(sphere_onoff))
-		{
-			s_use = !s_use; 
-			if (!s_use)
-			{
-				collision_sphere           = nullptr; 
-				cloth_solver->colliders[1] = nullptr; 
-				strcpy_s(sphere_onoff, 32, "Enable Sphere Collider");
-			}
-			else
-			{
-				collision_sphere           = tmp_sphere;
-				cloth_solver->colliders[1] = tmp_sphere;
-				strcpy_s(sphere_onoff, 32, "Disable Sphere Collider");
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-		if (ImGui::SliderFloat("Sphere Radius", &s_rad, 0.25f, 2.5f))
-		{
-			static_cast<Cloth_Collider_Sphere*>(collision_sphere)->set_radius(s_rad);
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		}
-		if (ImGui::SliderFloat3("Sphere Centre", s_cent, -5.f, 5.f))
-		{
-			static_cast<Cloth_Collider_Sphere*>(collision_sphere)->set_centre(glm::vec3(s_cent[0], s_cent[1], s_cent[2]));
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		}
-
-
-		// ========== Solver Controls ==========
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Solver Controls");
-		ImGui::PopStyleColor();
-		// Physics Timestep
-		if (ImGui::InputInt("Timestep 1/x", &tmp_count))
-		{
-			cloth_solver->set_timestep(tmp_count);
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-		ImGui::SliderFloat("K_stiff", &cloth_solver->K_s, 0.f, 1000.f);
-		ImGui::SliderFloat("K_damp",  &cloth_solver->K_c, 0.f, 10.f);
-		ImGui::SliderFloat("K_visc",  &cloth_solver->K_v, 0.f, 2.f);
-		ImGui::SliderFloat("Gravity", &cloth_solver->gravity, -10.f, 10.f);
-		ImGui::SliderFloat3("Wind", wind, 0.f, 5.f);
+		ImGui::Begin("Viewer App");
 
 		// ========== Viewer State ==========
 		ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -581,7 +372,7 @@ void Viewer::gui_render()
 		ImGui::PopStyleColor();
 		ImGui::Text("Light");
 		ImGui::SliderFloat("Light Strength", &light_strength, 0.f, 10.f);
-		if (ImGui::SliderFloat3("Light Position", lpos, -50.f, 50.f))
+		if (ImGui::SliderFloat3("Light Position", lpos, -100.f, 100.f))
 		{
 			light_pos.x = lpos[0], light_pos.y = lpos[1], light_pos.z = lpos[2];
 		}
@@ -590,18 +381,9 @@ void Viewer::gui_render()
 		ImGui::Text("Viewport Controls");
 		ImGui::PopStyleColor();
 		// Render Cloth Normals
-		if (ImGui::Button("Render Cloth Normals"))
+		if (ImGui::Button("Draw Mesh"))
 		{
-			ren_normals = !ren_normals;
-		}
-		if (ImGui::Button("Render Cloth Edges"))
-		{
-			cloth->mesh->ren_edges = !cloth->mesh->ren_edges;
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-		if (ImGui::Button("Render Cloth Points"))
-		{
-			cloth->mesh->ren_points = !cloth->mesh->ren_points;
+			draw_prims = !draw_prims;
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 		// Draw Axis
