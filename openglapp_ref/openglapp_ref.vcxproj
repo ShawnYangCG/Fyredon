@@ -45,8 +45,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)\build\bin\</OutDir>
-    <IntDir>$(ProjectDir)\build\intermediate\</IntDir>
+    <OutDir>$(ProjectDir)build\bin\</OutDir>
+    <IntDir>$(ProjectDir)build\intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -63,19 +63,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\incl;$(ProjectDir)\incl\ext\dearimgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)incl;$(ProjectDir)incl\ext\dearimgui</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;$(ProjectDir)\lib\GLEW\glew32.lib;$(ProjectDir)\lib\GLFW\glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;$(ProjectDir)lib\GLEW\glew32.lib;$(ProjectDir)lib\GLFW\glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(ProjectDir)\lib\GLEW\glew32.dll $(ProjectDir)\build\bin
-xcopy $(ProjectDir)\lib\GLFW\glfw3.dll $(ProjectDir)\build\bin
-xcopy $(ProjectDir)\imgui.ini $(ProjectDir)\build\bin</Command>
+      <Command>xcopy $(ProjectDir)lib\GLEW\glew32.dll $(ProjectDir)build\bin /y
+xcopy $(ProjectDir)lib\GLFW\glfw3.dll $(ProjectDir)build\bin /y
+xcopy $(ProjectDir)imgui.ini $(ProjectDir)build\bin /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
