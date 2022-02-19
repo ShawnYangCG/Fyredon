@@ -14,8 +14,13 @@ project "Fyredon"
 	}
 
 	includedirs{
-		"%{wks.location}/Fyredon/Include/",
+		"%{wks.location}/Fyredon/Include/", "%{wks.location}/Fyredon/Include/Fyredon/Extern/dearimgui/" -- need dearimgui dir, for its own includes #include "imgui.h" etc. 
 	}
+	
+	-- Linking to static libaries of GLEW and GLFW for now. Sharjeel, you can look into submodules or something better :) 
+	libdirs { "%{wks.location}/Extern/GLEW", "%{wks.location}/Extern/GLFW" }
+	
+	links{"glew32s.lib", "glfw3.lib", "opengl32.lib"}
 
 	-- Windows system settings
 	filter "system:windows"
