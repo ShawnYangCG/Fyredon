@@ -1,5 +1,10 @@
-#ifndef THREADS_H
-#define THREADS_H
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Threads.h: Thread manager general
+=============================================================================*/
+
+#pragma once
 
 #include <iostream>
 #include <thread>
@@ -8,13 +13,12 @@
 #include <vector>
 #include <algorithm>  
 
-using namespace std;
 
 struct job {
 	unsigned int id;
-	void  (*function)(void*);   
-	void* data;                 
-	int    executed;            
+	void  (*function)(void*);
+	void* data;
+	int    executed;
 };
 
 
@@ -39,13 +43,13 @@ public:
 	void kill_render_thread();
 	void kill_physics_thread();
 
-	vector<job> debug_job_list;
-	vector<job> game_job_list;
-	vector<job> render_job_list;
-	vector<job> physics_job_list;
+	std::vector<job> debug_job_list;
+	std::vector<job> game_job_list;
+	std::vector<job> render_job_list;
+	std::vector<job> physics_job_list;
 
-	void add_job(job j, vector<job>& list);
-	void remove_job(job j, vector<job>& list);
+	void add_job(job j, std::vector<job>& list);
+	void remove_job(job j, std::vector<job>& list);
 
 	unsigned int getJobID(job j);
 
@@ -57,13 +61,11 @@ public:
 
 
 private:
-	thread* debug_thread = NULL;
-	thread* game_thread = NULL;
-	thread* render_thread = NULL;
-	thread* physics_thread = NULL;
+	std::thread* debug_thread = NULL;
+	std::thread* game_thread = NULL;
+	std::thread* render_thread = NULL;
+	std::thread* physics_thread = NULL;
 
 	//TODO mutex causing slient deletion of function. cannot copy class
 	//mutex mutual_exclusion;
 };
-
-#endif
