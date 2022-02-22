@@ -11,7 +11,7 @@
 Fyredon::EditorApplication::EditorApplication(std::size_t Width, std::size_t Height, const char* FilePath)
 	: window_title("Fyredon Game Engine : Editor Application"), width(Width), height(Height), project_filepath(FilePath)
 {
-	// 
+	// Random comment ! 
 }
 
 // Info : Called before application loop is ran, to do inital application setup. 
