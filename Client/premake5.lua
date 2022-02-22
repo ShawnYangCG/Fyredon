@@ -1,4 +1,4 @@
-project "Client"
+	project "Client"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -27,7 +27,8 @@ project "Client"
 
 		-- Post build step: copy DLLs generated into other project binaries
 		postbuildcommands{
-			("{COPY} ../bin/" .. outdir .. "/Fyredon/*.dll ../bin/" .. outdir .. "/%{prj.name}")
+			("{COPY} ../bin/" .. outdir .. "/Fyredon/*.dll ../bin/" .. outdir .. "/%{prj.name}"),
+			("{COPY}  %{wks.location}" ..externdir.. "/FBX/*.dll ../bin/" .. outdir .. "/%{prj.name}") -- FBX
 		}
 
 
