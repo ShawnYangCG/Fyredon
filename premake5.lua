@@ -8,6 +8,7 @@ workspace "Fyredon"
 
 		
 outdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+externdir = "Extern"
 
 include "Fyredon"
 include "Client"

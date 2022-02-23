@@ -23,6 +23,11 @@ void Fyredon::EditorApplication::init()
 	// ---- GLEW, GL Function Loading 
 	setup_ogl_loading();
 
+	// Do Debug setup ...
+	FD_DEBUG_INFO("s", "This is an info log");
+	FD_DEBUG_ERROR("sd", "This is an error log", 123);
+	FD_DEBUG_WARN("sf", "This is a warning log", 123.456);
+
 	// Do FileSystem setup ...
 
 	// Do Threading setup ...

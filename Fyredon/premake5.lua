@@ -9,18 +9,29 @@ project "Fyredon"
 	objdir("%{wks.location}/bin-obj/" .. outdir .. "/%{prj.name}")
 	
 	files{
-		"Source/Core/**.cpp",
+		"Source/**/**.cpp",
 		"Include/Fyredon/**/**.h"
 	}
 
 	includedirs{
-		"%{wks.location}/Fyredon/Include/", "%{wks.location}/Fyredon/Include/Fyredon/Extern/dearimgui/" -- need dearimgui dir, for its own includes #include "imgui.h" etc. 
+		"%{wks.location}/Fyredon/Include/",
+		"%{wks.location}/Fyredon/Include/Fyredon/Extern/dearimgui/", -- need dearimgui dir, for its own includes #include "imgui.h" etc.
+		"%{wks.location}/Fyredon/Include/Fyredon/Extern/FBX"
 	}
 	
 	-- Linking to static libaries of GLEW and GLFW for now. Sharjeel, you can look into submodules or something better :) 
-	libdirs { "%{wks.location}/Extern/GLEW", "%{wks.location}/Extern/GLFW" }
+	libdirs { 
+		"%{wks.location}/Extern/GLEW",
+		"%{wks.location}/Extern/GLFW",
+		"%{wks.location}/Extern/FBX"
+	}
 	
-	links{"glew32s.lib", "glfw3.lib", "opengl32.lib"}
+	links{
+		"glew32s.lib",
+		"glfw3.lib",
+		"opengl32.lib",
+		"libfbxsdk.lib"
+		}
 
 	-- Windows system settings
 	filter "system:windows"

@@ -2,6 +2,7 @@
 
 // Project Includes
 #include <Fyredon/Other/dllport.h>
+#include <Fyredon/Debug/Logger.h>
 
 // Extern Includes
 #define GLEW_STATIC
