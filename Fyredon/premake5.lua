@@ -10,6 +10,7 @@ project "Fyredon"
 	
 	files{
 		"Source/**/**.cpp",
+		"Source/**/**/**.cpp", -- extern/dearimgui/
 		"Include/Fyredon/**/**.h"
 	}
 
