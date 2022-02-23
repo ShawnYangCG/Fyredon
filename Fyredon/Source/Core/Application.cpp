@@ -11,7 +11,6 @@
 Fyredon::EditorApplication::EditorApplication(std::size_t Width, std::size_t Height, const char* FilePath)
 	: window_title("Fyredon Game Engine : Editor Application"), width(Width), height(Height), project_filepath(FilePath)
 {
-	// Random comment ! 
 }
 
 // Info : Called before application loop is ran, to do inital application setup. 
@@ -138,6 +137,9 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 		<< "DEVICE VERSION    = " << render_device.version    << "\n"
 	    << "DEVICE SL VERSION = " << render_device.sl_version << "\n";
 	std::cout << "======== DEBUG::OPENGL::DEVICE_INFO::END ========\n\n";
+
+	FD_DEBUG_INFO("s", "======== DEBUG::OPENGL::DEVICE_INFO::BEGIN ========\n");
+	// Need to insert each device param into debug string...
 }
 
 // ============= GLFW Callbacks Implementation =============

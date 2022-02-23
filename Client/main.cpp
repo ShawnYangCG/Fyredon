@@ -5,8 +5,6 @@
 #include "Fyredon/Core/Example.h"
 #include "Fyredon/Core/Application.h"
 
-// Std Include 
-#include<iostream>
 
 int main() 
 {
@@ -19,6 +17,5 @@ int main()
 	// Execture Editor Application loop 
 	app.exec();
 
-	//std::cin.get();
 	return 0;
 }

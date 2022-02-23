@@ -1,3 +1,8 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Application.h: Base Engine Editor Application
+=============================================================================*/
 #pragma once
 
 // Project Includes
@@ -11,7 +16,6 @@
 
 // Std Headers
 #include <cstddef>
-
 
 namespace Fyredon 
 {
