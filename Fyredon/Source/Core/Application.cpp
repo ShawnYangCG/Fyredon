@@ -131,14 +131,13 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	render_device.version     = glGetString(GL_VERSION);
 	render_device.sl_version  = glGetString(GL_SHADING_LANGUAGE_VERSION);
 	// Cleanup Debug Output
-	std::cout << "======== DEBUG::OPENGL::DEVICE_INFO::BEGIN ========\n"
-		<< "DEVICE VENDOR     = " << render_device.vendor     << "\n"
-		<< "DEVICE RENDERER   = " << render_device.name       << "\n"
-		<< "DEVICE VERSION    = " << render_device.version    << "\n"
-	    << "DEVICE SL VERSION = " << render_device.sl_version << "\n";
-	std::cout << "======== DEBUG::OPENGL::DEVICE_INFO::END ========\n\n";
+	FD_DEBUG_BLOCK_BEGIN("DEBUG::OPENGL::DEVICE_INFO");
+	FD_DEBUG_BLOCK_MSG("DEVICE VENDOR", "s", render_device.vendor);
+	FD_DEBUG_BLOCK_MSG("DEVICE RENDERER", "s", render_device.name);
+	FD_DEBUG_BLOCK_MSG("DEVICE VERSION", "s", render_device.version);
+	FD_DEBUG_BLOCK_MSG("DEVICE SL VERSION", "s", render_device.sl_version);
+	FD_DEBUG_BLOCK_END();
 
-	FD_DEBUG_INFO("s", "======== DEBUG::OPENGL::DEVICE_INFO::BEGIN ========\n");
 	// Need to insert each device param into debug string...
 }
 

@@ -13,7 +13,6 @@
 	- Utilize debug thread to make logging async
 	- Maybe export to client independantly
 	- Add more format specifiers
-	- Add blocks/chunks format
 	- Automated runtime/memory error reporting?
 */
 
@@ -49,12 +48,10 @@ Fyredon::Logger::Logger() {
 	// Draw border
 	std::printf(ESC "(0");							// Enter Line drawing mode
 	std::printf(CSI "106;102m");					// Border/Line color
-	std::printf("l");								// Left corner 
 
-	for (int i = 1; i < size.X - 1; i++)			// Draw the line
+	for (int i = 1; i < size.X; i++)				// Draw the line
 		std::printf("q");
 
-	std::printf("k");								// Right corner
 	std::printf(CSI "0m");							// Reset format
 	std::printf(ESC "(B");							// Exit line drawing mode
 
@@ -66,7 +63,6 @@ Fyredon::Logger::Logger() {
 	std::printf("%s", msg);							// Print the message
 	std::printf(CSI "0m");							// Reset format
 	std::printf("\n\n");
-
 
 
 }
@@ -102,8 +98,6 @@ void Fyredon::Logger::message(const char* fmt, va_list args)
 		}
 		++fmt;
 	}
-	std::printf("\n");
-
 
 }
 
@@ -111,6 +105,8 @@ void Fyredon::Logger::message(const char* fmt, va_list args)
 // Log error message
 void Fyredon::Logger::error(const char* fmt, ...)
 {
+	if (chunk)
+		return;
 	// Set error format
 	std::printf(CSI "1m");		// Bolden
 	std::printf(CSI "91m");		// Bright red
@@ -125,6 +121,7 @@ void Fyredon::Logger::error(const char* fmt, ...)
 	va_start(args, fmt);
 	message(fmt, args);
 	va_end(args);
+	std::printf("\n");
 
 	// Restore console format
 	std::printf(CSI "22m");		// Unbolden
@@ -135,6 +132,8 @@ void Fyredon::Logger::error(const char* fmt, ...)
 // Log info message
 void Fyredon::Logger::info(const char* fmt, ...)
 {
+	if (chunk)
+		return;
 	// Set info format
 	std::printf(CSI "1m");		// Bolden
 	std::printf(CSI "92m");		// Bright green
@@ -149,6 +148,8 @@ void Fyredon::Logger::info(const char* fmt, ...)
 	va_start(args, fmt);
 	message(fmt, args);
 	va_end(args);
+	std::printf("\n");
+
 
 	// Restore console format
 	std::printf(CSI "22m");		// Unbolden
@@ -159,6 +160,8 @@ void Fyredon::Logger::info(const char* fmt, ...)
 // Log warning message
 void Fyredon::Logger::warn(const char* fmt, ...)
 {
+	if (chunk)
+		return;
 	// Set warning format
 	std::printf(CSI "1m");		// Bolden
 	std::printf(CSI "93m");		// Bright yellow
@@ -173,8 +176,125 @@ void Fyredon::Logger::warn(const char* fmt, ...)
 	va_start(args, fmt);
 	message(fmt, args);
 	va_end(args);
+	std::printf("\n");
 
 	// Restore console format
 	std::printf(CSI "22m");		// Unbolden
 	std::printf(CSI "39m");		// Default color
 }
+
+
+// Enable chunk message
+void Fyredon::Logger::chunk_start(const char* header)
+{
+	chunk = true;
+	chunk_header = header;
+
+	// Print top box shape with header title
+	print_horizontal_border(true);
+	print_vertical_border();
+	print_title(chunk_header);
+	print_vertical_border_end();
+	print_vertical_border();
+	print_vertical_border_end();
+
+
+}
+
+// Disable chunk message
+void Fyredon::Logger::chunk_end()
+{
+	print_vertical_border();
+	print_vertical_border_end();
+	print_horizontal_border(false);
+	chunk = false;
+	chunk_header = "";
+	std::printf("\n");
+
+}
+
+// Log a chunk message
+void Fyredon::Logger::chunk_msg(const char* RHS, const char* fmt, ...)
+{
+	if (!chunk)
+		return;
+
+	print_vertical_border();
+
+	// RHS format
+	std::printf(CSI "0;91m");
+	std::printf("%+5s", "");
+	std::printf("%-30s", RHS);
+
+	// Message format
+	std::printf(CSI "0;96m");
+
+	va_list args;
+	va_start(args, fmt);
+	message(fmt, args);
+	va_end(args);
+
+	print_vertical_border_end();
+
+	// Restore console format
+	std::printf(CSI "22m");		// Unbolden
+	std::printf(CSI "39m");		// Default color
+
+}
+
+
+
+/* ===== TEXT FORMATTING HELPERS ===== */
+void Fyredon::Logger::print_horizontal_border(bool top)
+{
+	std::printf(ESC "(0");						// Line drawing mode
+	std::printf(CSI "104;93m");					// Make the border bright yellow on bright blue
+	std::printf(top ? "l" : "m");				// print left corner 
+
+	for (int i = 1; i < size.X - 1; i++)
+		std::printf("q");						// in line drawing mode, \x71 -> \u2500 "HORIZONTAL SCAN LINE-5"
+
+	std::printf(top ? "k" : "j");				// print right corner
+	std::printf(CSI "0m");
+	std::printf(ESC "(B");						// Line drawing mode end
+	std::printf("\n");
+
+}
+
+
+void Fyredon::Logger::print_vertical_border()
+{
+
+	std::printf(ESC "(0");						// Enter Line drawing mode
+	std::printf(CSI "104;93m");					// bright yellow on bright blue
+	std::printf("x");							// in line drawing mode, \x78 -> \u2502 "Vertical Bar"
+	std::printf(CSI "0m");						// restore color
+	std::printf(ESC "(B");						// exit line drawing mode
+
+}
+
+void Fyredon::Logger::print_vertical_border_end()
+{
+	// Move to end of specified column and print a border there
+	std::printf(CSI "%dG", size.X);
+	print_vertical_border();
+	std::printf("\n");
+
+}
+
+void Fyredon::Logger::print_vertical_border_at(int pos)
+{
+	std:: printf(CSI "%dG", pos);
+	print_vertical_border();
+
+}
+
+void Fyredon::Logger::print_title(const char* title)
+{
+	int pos = size.X / 2 - (strlen(title) / 2);
+	std::printf(CSI "%dG", pos);				// Position title in the middle
+	std::printf(CSI "102;35m");
+	std::printf(title);
+}
+
+
