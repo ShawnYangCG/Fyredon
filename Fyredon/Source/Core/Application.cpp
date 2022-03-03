@@ -1,5 +1,6 @@
 // Implemnets
 #include "Fyredon/Core/Application.h"
+#include "Fyredon/Core/threads.h"
 
 // Std Includes
 #include <iostream>
@@ -30,6 +31,11 @@ void Fyredon::EditorApplication::init()
 	// Do FileSystem setup ...
 
 	// Do Threading setup ...
+
+	std::cout << "init\n";
+	ThreadManager tm = ThreadManager();
+
+
 
 	// Do GUI Setup ....
 }
@@ -140,6 +146,9 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 
 	FD_DEBUG_INFO("s", "======== DEBUG::OPENGL::DEVICE_INFO::BEGIN ========\n");
 	// Need to insert each device param into debug string...
+
+	std::cout << "blah blah\n";
+
 }
 
 // ============= GLFW Callbacks Implementation =============

@@ -22,6 +22,14 @@ double RandomGenerator::getDouble(double min, double max) {
     return (rand() / (double)(INT_MAX)) * (max - min) + min;
 }
 
+void RandomGenerator::printDouble() const {
+    int min = 0;
+    int max = 1;
+
+    //std::cout << ((rand() / (double)(INT_MAX)) * (max - min) + min) << std::endl;
+    std::cout << 122345678 << std::endl;
+}
+
 int RandomGenerator::rand() {
     int value;
 

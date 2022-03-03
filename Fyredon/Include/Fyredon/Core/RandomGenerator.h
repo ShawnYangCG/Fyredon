@@ -3,6 +3,9 @@
 #define RANDOM_GENERATOR
 
 #include<climits>
+#include <iostream>
+
+
 
 class RandomGenerator {
 public:
@@ -11,6 +14,7 @@ public:
     int getInt(int min, int max);
 
     double getDouble(double min = 0, double max = 1);
+    void printDouble() const;
 
 private:
 	int prngState;
