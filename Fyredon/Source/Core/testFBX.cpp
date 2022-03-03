@@ -1,3 +1,5 @@
+#include "Fyredon/Other/pch.h"
+
 #include <Fyredon/Core/testFBX.h>
 #include <iostream>
 testFBX::testFBX() {

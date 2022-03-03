@@ -1,3 +1,5 @@
+#include "Fyredon/Other/pch.h"
+
 #include <Fyredon/Core/Threads.h>
 
 ThreadManager::ThreadManager() {

@@ -1,11 +1,9 @@
 // Implements
+#include "Fyredon/Other/pch.h"
+
 #include <Fyredon/Debug/Logger.h>
 
-// Std Includes
-#include<iostream>
-#include <wchar.h>
-#include <stdio.h>
-#include <time.h>
+
 
 /*
 	TODO
