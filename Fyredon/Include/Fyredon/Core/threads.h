@@ -1,3 +1,10 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Threads.h: Thread manager general
+=============================================================================*/
+
+
 #ifndef THREADS_H
 #define THREADS_H
 

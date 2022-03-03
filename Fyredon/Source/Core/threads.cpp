@@ -97,18 +97,15 @@ void ThreadManager::test_job() {
 }
 
 void ThreadManager::dummy_debug_loop() {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 5; i++) {
 		cout << "debug " << endl;
+	}
 	this_thread::sleep_for(chrono::seconds(1));
 }
 
 void ThreadManager::dummy_game_loop() {
-	for (int i = 0; i < 5; i++)
-		cout << "game " << endl;
-
-	for (int i = 0; i < game_job_list.size(); i++) {
-		cout << i << " i\n";
-		cout << "id " << game_job_list[i].id << endl;
+	for (int i = 0; i < 5; i++) {
+		//cout << "game " << endl;
 	}
 
 	//while (true) {
@@ -127,14 +124,16 @@ void ThreadManager::dummy_game_loop() {
 }
 
 void ThreadManager::dummy_render_loop() {
-	for (int i = 0; i < 5; i++)
-		cout << "render " << endl;
+	for (int i = 0; i < 5; i++) {
+		//cout << "render " << endl;
+	}
 	this_thread::sleep_for(chrono::seconds(1));
 }
 
 void ThreadManager::dummy_physics_loop() {
-	for (int i = 0; i < 5; i++)
-		cout << "physics " << endl;
+	for (int i = 0; i < 5; i++) {
+		//cout << "physics " << endl;
+	}
 	this_thread::sleep_for(chrono::seconds(1));
 }
 

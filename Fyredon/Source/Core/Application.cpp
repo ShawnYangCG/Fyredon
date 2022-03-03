@@ -32,11 +32,7 @@ void Fyredon::EditorApplication::init()
 	// Do FileSystem setup ...
 
 	// Do Threading setup ...
-
-	std::cout << "init\n";
 	ThreadManager tm = ThreadManager();
-
-
 
 	// Do GUI Setup ....
 }
@@ -146,8 +142,6 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	FD_DEBUG_BLOCK_END();
 
 	// Need to insert each device param into debug string...
-
-	std::cout << "blah blah\n";
 
 }
 
