@@ -19,6 +19,10 @@ project "Fyredon"
 		"%{wks.location}/Fyredon/Include/Fyredon/Extern/dearimgui/", -- need dearimgui dir, for its own includes #include "imgui.h" etc.
 		"%{wks.location}/Fyredon/Include/Fyredon/Extern/FBX"
 	}
+
+	-- precompiled headers
+	pchheader "Fyredon/Other/pch.h"
+	pchsource "Source/Other/pch.cpp"
 	
 	-- Linking to static libaries of GLEW and GLFW for now. Sharjeel, you can look into submodules or something better :) 
 	libdirs { 

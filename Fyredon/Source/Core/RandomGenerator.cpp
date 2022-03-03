@@ -1,3 +1,5 @@
+#include "Fyredon/Other/pch.h"
+
 #include <Fyredon/Core/RandomGenerator.h>
 
 RandomGenerator::RandomGenerator(int seed) {
