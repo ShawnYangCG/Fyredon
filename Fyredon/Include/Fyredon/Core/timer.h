@@ -53,3 +53,4 @@ public:
 	std::string getTimerType(timer t);
 };
 
+#endif

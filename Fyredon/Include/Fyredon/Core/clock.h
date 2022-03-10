@@ -5,6 +5,8 @@
 #include <iostream>
 #include <iomanip>
 #include <windows.h>
+#include "Fyredon/Other/pch.h"
+
 class Clock
 {
 public:
@@ -20,3 +22,5 @@ private:
 	void show();
 	void tick();
 };
+
+#endif

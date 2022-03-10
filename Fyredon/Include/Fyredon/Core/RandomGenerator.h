@@ -1,6 +1,6 @@
 ﻿#pragma once
-#ifndef RANDOM_GENERATOR
-#define RANDOM_GENERATOR
+#ifndef RANDOM_GENERATOR_H
+#define RANDOM_GENERATOR_H
 
 #include<climits>
 #include <iostream>
