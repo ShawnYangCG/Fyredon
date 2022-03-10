@@ -1,7 +1,8 @@
 // Implemnets
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/Core/Application.h"
-//#include "Fyredon/Core/threads.h"
+#include "Fyredon/Core/threads.h"
+#include "Fyredon/Core/TerrainGeneration.h"
 
 // Std Includes
 #include <iostream>
@@ -33,6 +34,7 @@ void Fyredon::EditorApplication::init()
 
 	// Do Threading setup ...
 	//ThreadManager tm = ThreadManager();
+	//TerrainGenerator tg = TerrainGenerator();
 
 	// Do GUI Setup ....
 }

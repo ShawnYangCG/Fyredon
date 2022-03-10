@@ -8,8 +8,10 @@
 #ifndef	TERRAIN_GENERATION_H
 #define TERRAIN_GENERATION_H
 
+#include <filesystem>
 #include <iostream>
 #include <vector>
+//#include "Fyredon/Extern/stb/stb_image.h"
 
 
 using namespace std;
