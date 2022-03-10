@@ -17,7 +17,7 @@ int RandomGenerator::getInt(int min, int max) {
 
 double RandomGenerator::getDouble(double min, double max) {
     if (max < min) {
-        int t = min;
+        double t = min;
         min = max;
         max = t;
     }
