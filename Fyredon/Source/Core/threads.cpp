@@ -1,11 +1,11 @@
-#include <Fyredon/Core/threads.h>
-#include <Fyredon/Core/RandomGenerator.h>
-
+#include "Fyredon/Other/pch.h"
+#include "Fyredon/Core/threads.h"
+#include "Fyredon/Core/RandomGenerator.h"
 
 void nonmembertest() {
 	for (size_t i = 0; i < 10; i++)
 	{
-		cout << "non member test " << i << endl;
+		std::cout << "non member test " << i << std::endl;
 	}
 }
 
@@ -18,7 +18,7 @@ ThreadManager::ThreadManager() {
 
 	// Use member function from a different class
 	//TODO Need to use templates? to generalise function input/outputs
-	RandomGenerator prng(1);
+	RandomGenerator prng = RandomGenerator(1);
 	j1.task = [prng]() {prng.printDouble(); };// bind(&test_job);
 	add_job(j1, game_job_list);
 	
@@ -39,24 +39,24 @@ void ThreadManager::start_all_threads() {
 }
 
 void ThreadManager::start_debug_thread() {
-	debug_thread = thread(&ThreadManager::dummy_debug_loop, this);
+	debug_thread = std::thread(&ThreadManager::dummy_debug_loop, this);
 	debug_thread.join();
 }
 
 void ThreadManager::start_game_thread() {
-	game_thread = thread(&ThreadManager::dummy_game_loop, this);
+	game_thread = std::thread(&ThreadManager::dummy_game_loop, this);
 	game_thread.join();
 
 
 }
 
 void ThreadManager::start_render_thread() {
-	render_thread = thread(&ThreadManager::dummy_render_loop, this);
+	render_thread = std::thread(&ThreadManager::dummy_render_loop, this);
 	render_thread.join();
 }
 
 void ThreadManager::start_physics_thread() {
-	physics_thread = thread(&ThreadManager::dummy_physics_loop, this);
+	physics_thread = std::thread(&ThreadManager::dummy_physics_loop, this);
 	physics_thread.join();
 }
 
@@ -92,49 +92,50 @@ void ThreadManager::kill_physics_thread() {
 void ThreadManager::test_job() {
 	for (size_t i = 0; i < 10; i++)
 	{
-		cout << "test" << endl;
+		std::cout << "test" << std::endl;
 	}
 }
 
 void ThreadManager::dummy_debug_loop() {
-	for (int i = 0; i < 5; i++) {
-		cout << "debug " << endl;
-	}
-	this_thread::sleep_for(chrono::seconds(1));
+	for (int i = 0; i < 5; i++)
+		std::cout << "debug " << std::endl;
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 void ThreadManager::dummy_game_loop() {
-	for (int i = 0; i < 5; i++) {
-		//cout << "game " << endl;
+	for (int i = 0; i < 5; i++)
+		std::cout << "game " << std::endl;
+
+	for (int i = 0; i < game_job_list.size(); i++) {
+		std::cout << i << " i\n";
+		std::cout << "id " << game_job_list[i].id << std::endl;
 	}
 
 	//while (true) {
-		cout << "this loop " << endl;
+	std::cout << "this loop " << std::endl;
 		if (game_job_list.size() > 0)
 		{
-			cout << game_job_list.size() << " size " << endl;
+			std::cout << game_job_list.size() << " size " << std::endl;
 			job current_job = game_job_list.front();
 			invoke(current_job.task);
 			game_job_list.front().executed = 1;
 			remove_first_job(game_job_list);
 			//game_job_list.erase(game_job_list.begin());
 		}
-		this_thread::sleep_for(chrono::seconds(1));
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	//}
 }
 
 void ThreadManager::dummy_render_loop() {
-	for (int i = 0; i < 5; i++) {
-		//cout << "render " << endl;
-	}
-	this_thread::sleep_for(chrono::seconds(1));
+	for (int i = 0; i < 5; i++)
+		std::cout << "render " << std::endl;
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 void ThreadManager::dummy_physics_loop() {
-	for (int i = 0; i < 5; i++) {
-		//cout << "physics " << endl;
-	}
-	this_thread::sleep_for(chrono::seconds(1));
+	for (int i = 0; i < 5; i++)
+		std::cout << "physics " << std::endl;
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 unsigned int ThreadManager::getJobID(job j) {
@@ -142,9 +143,9 @@ unsigned int ThreadManager::getJobID(job j) {
 
 }
 
-void ThreadManager::add_job(job j, vector<job>& list) {
+void ThreadManager::add_job(job j, std::vector<job>& list) {
 	// Get a sorted list of all ids
-	vector<unsigned int> all_ids;
+	std::vector<unsigned int> all_ids;
 	for (size_t i = 0; i < list.size(); i++) {
 		all_ids.push_back(list.at(i).id);
 	}
@@ -171,9 +172,9 @@ void ThreadManager::add_job(job j, vector<job>& list) {
 	j.id = current_job_id;
 
 	list.push_back(j);
-	cout << "List size is now " << list.size() << endl;
+	std::cout << "List size is now " << list.size() << std::endl;
 }
 
-void ThreadManager::remove_first_job(vector<job>& list) {
+void ThreadManager::remove_first_job(std::vector<job>& list) {
 	list.erase(list.begin());
 }

@@ -1,4 +1,6 @@
+#include "Fyredon/Other/pch.h"
 #include <Fyredon/Core/clock.h>
+
 Clock::Clock()
 {
 	time_t t = time(NULL);

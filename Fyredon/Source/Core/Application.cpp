@@ -1,7 +1,7 @@
 // Implemnets
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/Core/Application.h"
-#include "Fyredon/Core/threads.h"
+//#include "Fyredon/Core/threads.h"
 
 // Std Includes
 #include <iostream>
@@ -32,7 +32,7 @@ void Fyredon::EditorApplication::init()
 	// Do FileSystem setup ...
 
 	// Do Threading setup ...
-	ThreadManager tm = ThreadManager();
+	//ThreadManager tm = ThreadManager();
 
 	// Do GUI Setup ....
 }

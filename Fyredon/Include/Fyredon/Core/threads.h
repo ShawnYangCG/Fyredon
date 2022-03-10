@@ -4,7 +4,7 @@
 	Threads.h: Thread manager general
 =============================================================================*/
 
-
+#pragma once
 #ifndef THREADS_H
 #define THREADS_H
 
@@ -17,9 +17,8 @@
 #include <functional> 
 #include <list>
 
-
-using namespace std;
-using namespace std::placeholders;
+//using namespace std;
+//using namespace std::placeholders;
 
 //template<typename T>
 struct job {
@@ -29,16 +28,12 @@ struct job {
 	int    executed;
 
 	std::function<void()> task;
-
-	
-
 	//std::function<T(void())> task;
-
 	//[&] { some_obj.some_method(some_arg); };
 };
 
 
-void test_job(void* data);
+//void test_job(void* data);
 
 class ThreadManager
 {
@@ -59,13 +54,13 @@ public:
 	void kill_render_thread();
 	void kill_physics_thread();
 
-	vector<job> debug_job_list;
-	vector<job> game_job_list;
-	vector<job> render_job_list;
-	vector<job> physics_job_list;
+	std::vector<job> debug_job_list;
+	std::vector<job> game_job_list;
+	std::vector<job> render_job_list;
+	std::vector<job> physics_job_list;
 
-	void add_job(job j, vector<job>& list);
-	void remove_first_job(vector<job>& list);
+	void add_job(job j, std::vector<job>& list);
+	void remove_first_job(std::vector<job>& list);
 
 	unsigned int getJobID(job j);
 
@@ -79,10 +74,10 @@ public:
 
 
 private:
-	thread debug_thread;
-	thread game_thread;
-	thread render_thread;
-	thread physics_thread;
+	std::thread debug_thread;
+	std::thread game_thread;
+	std::thread render_thread;
+	std::thread physics_thread;
 
 	//TODO mutex causing slient deletion of function. cannot copy class
 	//mutex mutual_exclusion;
