@@ -10,12 +10,12 @@
 #include <Fyredon/Debug/Logger.h>
 
 // Extern Includes
-#define GLEW_STATIC
+#define GLEW_STATIC // Fyredon DLL --> GLEW (static linking)
 #include "Fyredon/Extern/GLEW/glew.h"
 #include "Fyredon/Extern/GLFW/glfw3.h"
 
 // Std Headers
-#include <cstddef>
+#include <cstddef> // std::size_t
 
 namespace Fyredon 
 {
@@ -72,14 +72,13 @@ private:
 
 /*
 *   ============ GLFW Input Callbacks  ============
-*   Declare callbacks to be used by GLFW in response to inputs events / changes
+*   Declare callbacks to be used by GLFW in response to input and window events. 
 */
-// 
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-
 
 }

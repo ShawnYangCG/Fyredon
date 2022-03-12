@@ -1,4 +1,4 @@
-// Implemnets
+// Implements 
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/Core/Application.h"
 #include "Fyredon/Core/threads.h"
@@ -9,7 +9,26 @@
 #include <stdexcept>
 
 #define GL_VERSION_MAJOR 4
-#define GL_VERSION_MINOR 3
+#define GL_VERSION_MINOR 5
+
+#define EDITOR_WINDOW_RESIZE
+// #define EDITOR_FULLSCREEN 
+
+
+namespace
+{
+	// Global GLFW State
+	struct
+	{
+		int    width, height;
+		double mouse_offset_x = 0.f, mouse_offset_y = 0.f;
+		double mousepos_x = 0.f, mousepos_y = 0.f;
+		double mousepos_prev_x = 0.f, mousepos_prev_y = 0.f;
+		double scroll_y = 0.f;
+		bool is_init = false;
+
+	}GLFWState;
+}
 
 Fyredon::EditorApplication::EditorApplication(std::size_t Width, std::size_t Height, const char* FilePath)
 	: window_title("Fyredon Game Engine : Editor Application"), width(Width), height(Height), project_filepath(FilePath)
@@ -93,15 +112,17 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_VERSION_MAJOR);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // Fixed Window Size. 
-	glfwWindowHint(GLFW_SAMPLES, 4); // 4 Samples MSAA for application.
+#ifndef EDITOR_WINDOW_RESIZE
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // Fixed Window Size. 
+#endif
+	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
 	// Create Window
 	const GLFWvidmode *monitor = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	//width = monitor->width, height = monitor->height;
 	window = glfwCreateWindow(width, height, window_title, NULL, NULL);
 	if (window == NULL)
 	{
-		std::cerr << "Error::Viewer:: GLFW failed to initalize.\n";
+		FD_DEBUG_ERROR("GLFW failed to initalize, fatal.");
 		glfwTerminate();
 		std::terminate();
 	}
@@ -142,25 +163,46 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	FD_DEBUG_BLOCK_MSG("DEVICE VERSION", "s", render_device.version);
 	FD_DEBUG_BLOCK_MSG("DEVICE SL VERSION", "s", render_device.sl_version);
 	FD_DEBUG_BLOCK_END();
-
-	// Need to insert each device param into debug string...
-
 }
 
 // ============= GLFW Callbacks Implementation =============
 // 
 // GLFW Callbacks 
+
+// Info : Called when window (thus window framebuffer) is resized, width, height are in pixels. 
 void Fyredon::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	//
+	//std::cout << "FB Size = [" << width << "," << height << "]" << std::endl;
+	GLFWState.width = width, GLFWState.height = height;
+	glViewport(0, 0, GLFWState.width, GLFWState.height);
 }
 
+// Info : Called on mouse input event.
 void Fyredon::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	// 
+	// Set init mouse
+	if (!GLFWState.is_init)
+	{
+		GLFWState.mousepos_prev_x = xpos;
+		GLFWState.mousepos_prev_y = ypos;
+		GLFWState.is_init = true;
+	}
+	// Mouse Offset
+	GLFWState.mouse_offset_x = (xpos - GLFWState.mousepos_prev_x);
+	GLFWState.mouse_offset_y = (ypos - GLFWState.mousepos_prev_y);
+
+	// Pos
+	GLFWState.mousepos_x = xpos;
+	GLFWState.mousepos_y = ypos;
+
+	// Prev Pos
+	GLFWState.mousepos_prev_x = xpos;
+	GLFWState.mousepos_prev_y = ypos;
 }
 
+// Info : Called on mouse scroll event. 
 void Fyredon::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	// 
+	GLFWState.scroll_y = yoffset;
 }
+
