@@ -38,17 +38,24 @@ public:
 	void exec(); 
 
 protected:
-	// OpenGL Setup
-	void setup_ogl_window_contex();
-
-	void setup_ogl_loading();
 
 	// Application Tick
 	void tick();
 
+	// OpenGL Setup
+	void setup_ogl_window_contex();
+	void setup_ogl_loading();
+
+	// DearImGui Setup
+	void setup_gui();
+	void shutdown_gui();
+
+	// Application Paint Steps
 	void paint_begin();
-	void paint_app(); // GUI Render...
+	void paint_app(); 
 	void paint_end();
+
+	// Nested Game Tick...
 
 private:
 	const char *window_title; 

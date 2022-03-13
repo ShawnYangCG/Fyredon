@@ -4,6 +4,12 @@
 #include "Fyredon/Core/threads.h"
 #include "Fyredon/Core/TerrainGeneration.h"
 
+// Project Includes
+#include "Fyredon/Extern/dearimgui/imgui.h"
+#include "Fyredon/Extern/dearimgui/imgui_impl_glfw.h"
+#include "Fyredon/Extern/dearimgui/imgui_impl_opengl3.h"
+
+
 // Std Includes
 #include <iostream>
 #include <stdexcept>
@@ -61,12 +67,17 @@ void Fyredon::EditorApplication::init()
 void Fyredon::EditorApplication::exec()
 {
 	// Pre Exec Setup
+
+	// Edtior Loop (Game loop nested in here)
 	while (!glfwWindowShouldClose(window))
 	{
 		// Do awesome stuff
 		tick(); 
 
 	}
+
+	// Gui Shutdown
+	shutdown_gui();
 }
 
 // Info : All operations done within the editor application for a single tick
@@ -75,18 +86,65 @@ void Fyredon::EditorApplication::tick()
 	paint_begin();
 
 	// Cool stuff going on here ...
+
+	// Update GUI
+	paint_app();
 	
 	paint_end();
 }
 
 
 // Application Painting 
+void Fyredon::EditorApplication::paint_app()
+{
+	// Test state
+	static float slider;
+	static bool button; 
+
+
+	// ============= Imgui layout =============
+	{
+		// Begin ImGui
+		ImGui::Begin("Fyredon Editor");
+
+		// ========== Viewer State ==========
+		ImGui::Dummy(ImVec2(0.0f, 10.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
+		ImGui::Text("Fyredon Editor");
+		ImGui::PopStyleColor();
+
+
+		ImGui::Text("Sliders");
+		ImGui::SliderFloat("Slider", &slider, 0.f, 10.f);
+
+		ImGui::Dummy(ImVec2(0.0f, 10.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
+		ImGui::Text("Viewport Controls");
+		ImGui::PopStyleColor();
+	
+		if (ImGui::Button("Button"))
+		{
+			button = !button;
+		}
+
+		// End ImGui
+		ImGui::End();
+	}
+
+	// Draw app gui
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
 
 // Start of Application paint operations (within Tick())
 void Fyredon::EditorApplication::paint_begin()
 {
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
 }
 
 // End of Application paint operations (within Tick())
@@ -137,6 +195,9 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	// ============= Set Context and Viewport =============
 	glfwMakeContextCurrent(window);
 	glViewport(0, 0, width, height);
+
+	// ============= Setup GUI =============
+	setup_gui();
 }
 
 // Info : Setup OpenGL function loading via GLEW 
@@ -163,6 +224,26 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	FD_DEBUG_BLOCK_MSG("DEVICE VERSION", "s", render_device.version);
 	FD_DEBUG_BLOCK_MSG("DEVICE SL VERSION", "s", render_device.sl_version);
 	FD_DEBUG_BLOCK_END();
+}
+
+// Info : DearImGui Setup operations
+void Fyredon::EditorApplication::setup_gui()
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 450");
+}
+
+// Info : DearImGui Shutdown operations
+void Fyredon::EditorApplication::shutdown_gui()
+{
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 }
 
 // ============= GLFW Callbacks Implementation =============
