@@ -46,9 +46,13 @@ protected:
 	void setup_ogl_window_contex();
 	void setup_ogl_loading();
 
-	// DearImGui Setup
+	// GUI Setup
 	void setup_gui();
 	void shutdown_gui();
+
+	// GUI Components
+	void gui_menu();
+	void gui_panel_test(); 
 
 	// Application Paint Steps
 	void paint_begin();
@@ -56,6 +60,7 @@ protected:
 	void paint_end();
 
 	// Nested Game Tick...
+	// Nested Game State...
 
 private:
 	const char *window_title; 

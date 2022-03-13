@@ -97,41 +97,11 @@ void Fyredon::EditorApplication::tick()
 // Application Painting 
 void Fyredon::EditorApplication::paint_app()
 {
-	// Test state
-	static float slider;
-	static bool button; 
+	// Draw GUI components 
+	gui_panel_test();
+	gui_menu();
 
-
-	// ============= Imgui layout =============
-	{
-		// Begin ImGui
-		ImGui::Begin("Fyredon Editor");
-
-		// ========== Viewer State ==========
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Fyredon Editor");
-		ImGui::PopStyleColor();
-
-
-		ImGui::Text("Sliders");
-		ImGui::SliderFloat("Slider", &slider, 0.f, 10.f);
-
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Viewport Controls");
-		ImGui::PopStyleColor();
-	
-		if (ImGui::Button("Button"))
-		{
-			button = !button;
-		}
-
-		// End ImGui
-		ImGui::End();
-	}
-
-	// Draw app gui
+	// imgui render and forward to OpenGL Impl
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -176,7 +146,7 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
 	// Create Window
 	const GLFWvidmode *monitor = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	//width = monitor->width, height = monitor->height;
+	width = monitor->width, height = monitor->height;
 	window = glfwCreateWindow(width, height, window_title, NULL, NULL);
 	if (window == NULL)
 	{
@@ -226,6 +196,9 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	FD_DEBUG_BLOCK_END();
 }
 
+
+// ============= GUI  =============
+// 
 // Info : DearImGui Setup operations
 void Fyredon::EditorApplication::setup_gui()
 {
@@ -244,6 +217,89 @@ void Fyredon::EditorApplication::shutdown_gui()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
+}
+
+void Fyredon::EditorApplication::gui_menu()
+{
+	// tmp state vars
+	static bool about = false;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 5));
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("Fyredon"))
+		{
+			ImGui::MenuItem("Fyredon Engine Version xx.xx.xx", NULL, false, false);
+			if (ImGui::MenuItem("New")) {}
+			if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+			if (ImGui::MenuItem("Save", "Ctrl+S")) {}
+			if (ImGui::MenuItem("Save Project As", "Ctrl+Shift+S")) {}
+			ImGui::EndMenu(); // End Fyredon Menu
+		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("PlaceHolder 1")) {}
+			if (ImGui::MenuItem("PlaceHolder 2")) {}
+			ImGui::EndMenu(); // End Edit Menu
+		}
+		if (ImGui::BeginMenu("View"))
+		{
+			if (ImGui::MenuItem("PlaceHolder 1")) {}
+			if (ImGui::MenuItem("PlaceHolder 2")) {}
+			ImGui::EndMenu(); // End View Menu
+		}
+		if (ImGui::BeginMenu("Help"))
+		{
+			if (ImGui::MenuItem("About")) about = true;
+			ImGui::EndMenu(); // End Help Menu
+		}
+		ImGui::EndMainMenuBar();
+	}
+	ImGui::PopStyleVar();
+
+	// Window Actions
+	if (about)
+	{
+		ImGui::Begin("About", &about);
+		ImGui::Text("Fyredon Engine\nDoes absolutely nothing currently");
+		ImGui::NewLine();
+		if (ImGui::Button("close"))
+		{
+			about = false; 
+		}
+		ImGui::End();
+	}
+}
+
+void Fyredon::EditorApplication::gui_panel_test()
+{
+	// Test state
+	static float slider;
+	static bool button;
+
+	{
+		ImGui::Begin("Panel Test");
+
+		ImGui::Dummy(ImVec2(0.0f, 10.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
+		ImGui::Text("Floating Panel");
+		ImGui::PopStyleColor();
+
+		ImGui::Text("Sliders");
+		ImGui::SliderFloat("Slider", &slider, 0.f, 10.f);
+
+		ImGui::Dummy(ImVec2(0.0f, 10.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
+		ImGui::Text("Viewport Controls");
+		ImGui::PopStyleColor();
+
+		if (ImGui::Button("Button"))
+		{
+			button = !button;
+		}
+
+		ImGui::End();
+	}
 }
 
 // ============= GLFW Callbacks Implementation =============
