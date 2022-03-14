@@ -1,6 +1,25 @@
 #pragma once
 #include "mesh.h"
 #include "FBXLoader.h"
+class fbxObjectData { // 
+public:
+	FbxNode* pNode;
+	struct
+	{
+		std::vector<glm::vec3> v_p;
+		std::vector<glm::vec3> v_n;
+		std::vector<glm::vec2> v_t;
+		std::vector<vert> verts;
+	} fbx_obj_data;
+	struct
+	{
+		std::vector<glm::vec3> v_p;
+		std::vector<glm::vec3> v_n;
+		std::vector<glm::vec2> v_t;
+		std::vector<vert> verts;
+	} fbx_obj_data_backup;
+};
+
 class fbx_mesh : public Mesh
 {
 public:
@@ -9,17 +28,11 @@ public:
 
 	void load_obj(bool has_tex = false);
 	void reFreshMeshWithCurrentFrame(double time = 0);
-	void refreshTransform(FbxMatrix transformMatrix);
+	void refreshTransform(fbxObjectData *fbxMeshData,FbxMatrix transformMatrix);
 	void obj_data_backup();
+	void loadFbxMeshToRender();
 public:
-	struct
-	{
-		std::vector<glm::vec3> v_p;
-		std::vector<glm::vec3> v_n;
-		std::vector<glm::vec2> v_t;
-		std::vector<vert> verts;
-	} obj_data_ori;
-
+	std::vector<fbxObjectData> fbxMeshData;
 	FBXLoader* fbxloader;
 	bool mHasNormal;
 	bool mHasUV;

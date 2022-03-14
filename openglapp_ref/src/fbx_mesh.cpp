@@ -31,6 +31,8 @@ void fbx_mesh::load_obj(bool has_tex)
 					this->fbxloader->GetAttributeTypeName(
 						pNode->GetNodeAttributeByIndex(index)->GetAttributeType());
 				if (typeName == "mesh") {
+					fbxObjectData fbxData = fbxObjectData();
+					fbxData.pNode = pNode;
 					FbxMesh *nMesh = pNode->GetMesh();
 					VBOMesh vboMesh = VBOMesh();
 					vboMesh.Initialize(nMesh);
@@ -39,19 +41,19 @@ void fbx_mesh::load_obj(bool has_tex)
 					std::cout << " UV count:" << vboMesh.lUVsLength << std::endl;
 					// add position
 					for (int vertice = 0; vertice < vboMesh.lVerticesLength; vertice+=4) {
-						this->obj_data.v_p.emplace_back(
+						fbxData.fbx_obj_data.v_p.emplace_back(
 							vboMesh.lVertices[vertice], vboMesh.lVertices[vertice + 1], vboMesh.lVertices[vertice + 2]);
 					}
 					
 					// add normal
 					for (int normal = 0; normal < vboMesh.lNormalsLength; normal += 3) {
-						this->obj_data.v_n.emplace_back(
+						fbxData.fbx_obj_data.v_n.emplace_back(
 							vboMesh.lNormals[normal], vboMesh.lNormals[normal + 1], vboMesh.lNormals[normal + 2]);
 					}
 					
 					// add uv
 					for (int uv = 0; uv < vboMesh.lUVsLength; uv += 2) {
-						this->obj_data.v_t.emplace_back(
+						fbxData.fbx_obj_data.v_t.emplace_back(
 							vboMesh.lUVs[uv], vboMesh.lUVs[uv + 1]);
 					}
 					
@@ -59,71 +61,109 @@ void fbx_mesh::load_obj(bool has_tex)
 					// Create Vertex
 					for (int vertice = 0; vertice < vboMesh.verticesCount; vertice++) {
 						vert vertex;
-						vertex.pos = obj_data.v_p[vertice];
-						vertex.normal = obj_data.v_n[vertice];
-						vertex.uv = obj_data.v_t[vertice];
+						vertex.pos = fbxData.fbx_obj_data.v_p[vertice];
+						vertex.normal = fbxData.fbx_obj_data.v_n[vertice];
+						vertex.uv = fbxData.fbx_obj_data.v_t[vertice];
 						vertex.col = glm::vec3(1.f, 1.f, 1.f);
 
 						// Append to vert array
-						obj_data.verts.push_back(std::move(vertex));
+						fbxData.fbx_obj_data.verts.push_back(std::move(vertex));
 					}
+					this->fbxMeshData.push_back(fbxData);
 				}
 			}		
 		}
 	}
 	obj_data_backup();
-	set_data_mesh(obj_data.verts);
+	//set_data_mesh(obj_data.verts);
+	reFreshMeshWithCurrentFrame(0.0);
+	loadFbxMeshToRender();
 }
 
 void fbx_mesh::reFreshMeshWithCurrentFrame(double time)
 {
-	FbxScene* lScene = this->fbxloader->Scene;
-	FbxNode* lRootNode = lScene->GetRootNode();
-	FbxAnimEvaluator* mySceneEvaluator = this->fbxloader->Scene->GetAnimationEvaluator();
-	FbxTime myTime;       // The time for each key in the animation curve(s)
-	myTime.SetSecondDouble(time);   // Starting time
-	FbxNode* myMeshNode = lRootNode->GetChild(0);
+	for (int i = 0; i < this->fbxMeshData.size(); i++) {
+		FbxScene* lScene = this->fbxloader->Scene;
+		FbxAnimEvaluator* mySceneEvaluator = this->fbxloader->Scene->GetAnimationEvaluator();
+		FbxTime myTime;       // The time for each key in the animation curve(s)
+		myTime.SetSecondDouble(time);   // Starting time
 
-	// Get a reference to node¡¯s global transform.
-	//FbxMatrix GlobalMatrix = mySceneEvaluator->GetNodeGlobalTransform(myMeshNode, myTime);
-	// Get a reference to node¡¯s local transform.
-	FbxMatrix LocalMatrix = mySceneEvaluator->GetNodeLocalTransform(myMeshNode, myTime);
+		// Get a reference to node¡¯s global transform.
+		//FbxMatrix GlobalMatrix = mySceneEvaluator->GetNodeGlobalTransform(myMeshNode, myTime);
+		// Get a reference to node¡¯s local transform.
+		FbxNode* myMeshNode = this->fbxMeshData[i].pNode;
+		FbxMatrix LocalMatrix = mySceneEvaluator->GetNodeLocalTransform(myMeshNode, myTime);
 
-	refreshTransform(LocalMatrix);
-	set_data_mesh(obj_data.verts);
+		refreshTransform(&this->fbxMeshData[i], LocalMatrix);
+	}
+	
+	//set_data_mesh(obj_data.verts);
+	loadFbxMeshToRender();
 }
 
-void fbx_mesh::refreshTransform(FbxMatrix transformMatrix)
+void fbx_mesh::refreshTransform(fbxObjectData* fbxMeshData, FbxMatrix transformMatrix)
 {
-	for (int index = 0; index < this->obj_data.verts.size(); index++) {
+	for (int index = 0; index < fbxMeshData->fbx_obj_data.verts.size(); index++) {
 		// refresh pos
-		double x = this->obj_data_ori.verts[index].pos[0];
-		double y = this->obj_data_ori.verts[index].pos[1];
-		double z = this->obj_data_ori.verts[index].pos[2];
+		double x = fbxMeshData->fbx_obj_data_backup.verts[index].pos[0];
+		double y = fbxMeshData->fbx_obj_data_backup.verts[index].pos[1];
+		double z = fbxMeshData->fbx_obj_data_backup.verts[index].pos[2];
 		FbxVector4 pos = FbxVector4(x, y, z);
 		FbxVector4 newPos = transformMatrix.MultNormalize(pos);
-		this->obj_data.verts[index].pos[0] = newPos.mData[0];
-		this->obj_data.verts[index].pos[1] = newPos.mData[1];
-		this->obj_data.verts[index].pos[2] = newPos.mData[2];
+		fbxMeshData->fbx_obj_data.verts[index].pos[0] = newPos.mData[0];
+		fbxMeshData->fbx_obj_data.verts[index].pos[1] = newPos.mData[1];
+		fbxMeshData->fbx_obj_data.verts[index].pos[2] = newPos.mData[2];
 		
 		// refresh normal
-		x = this->obj_data_ori.verts[index].normal[0];
-		y = this->obj_data_ori.verts[index].normal[1];
-		z = this->obj_data_ori.verts[index].normal[2];
+		x = fbxMeshData->fbx_obj_data_backup.verts[index].normal[0];
+		y = fbxMeshData->fbx_obj_data_backup.verts[index].normal[1];
+		z = fbxMeshData->fbx_obj_data_backup.verts[index].normal[2];
 		pos = FbxVector4(x, y, z);
 		newPos = transformMatrix.MultNormalize(pos);
 		newPos.Normalize();
-		this->obj_data.verts[index].normal[0] = newPos.mData[0];
-		this->obj_data.verts[index].normal[1] = newPos.mData[1];
-		this->obj_data.verts[index].normal[2] = newPos.mData[2];
+		fbxMeshData->fbx_obj_data.verts[index].normal[0] = newPos.mData[0];
+		fbxMeshData->fbx_obj_data.verts[index].normal[1] = newPos.mData[1];
+		fbxMeshData->fbx_obj_data.verts[index].normal[2] = newPos.mData[2];
 	}
 }
 
 void fbx_mesh::obj_data_backup()
 {
-	obj_data_ori.verts = obj_data.verts;
-	obj_data_ori.v_n = obj_data.v_n;
-	obj_data_ori.v_p = obj_data.v_p;
-	obj_data_ori.v_t = obj_data.v_t;
+	for (int i = 0; i < this->fbxMeshData.size(); i++) {
+		this->fbxMeshData[i].fbx_obj_data_backup.verts = this->fbxMeshData[i].fbx_obj_data.verts;
+		this->fbxMeshData[i].fbx_obj_data_backup.v_n = this->fbxMeshData[i].fbx_obj_data.v_n;
+		this->fbxMeshData[i].fbx_obj_data_backup.v_p = this->fbxMeshData[i].fbx_obj_data.v_p;
+		this->fbxMeshData[i].fbx_obj_data_backup.v_t = this->fbxMeshData[i].fbx_obj_data.v_t;
+	}
+}
+
+void fbx_mesh::loadFbxMeshToRender()
+{
+	this->obj_data.verts.clear();
+	this->obj_data.v_n.clear();
+	this->obj_data.v_p.clear();
+	this->obj_data.v_t.clear();
+	for (int i = 0; i < this->fbxMeshData.size(); i++) {
+		//load v_p
+		for (int vp = 0; vp < this->fbxMeshData[i].fbx_obj_data.v_p.size(); vp++) {
+			this->obj_data.v_p.emplace_back(this->fbxMeshData[i].fbx_obj_data.v_p[vp]);
+		}
+
+		//load v_n
+		for (int vn = 0; vn < this->fbxMeshData[i].fbx_obj_data.v_n.size(); vn++) {
+			this->obj_data.v_n.emplace_back(this->fbxMeshData[i].fbx_obj_data.v_n[vn]);
+		}
+
+		//load v_t
+		for (int vt = 0; vt < this->fbxMeshData[i].fbx_obj_data.v_t.size(); vt++) {
+			this->obj_data.v_t.emplace_back(this->fbxMeshData[i].fbx_obj_data.v_t[vt]);
+		}
+		
+		//load vert
+		for (int vr = 0; vr < this->fbxMeshData[i].fbx_obj_data.verts.size(); vr++) {
+			this->obj_data.verts.emplace_back(this->fbxMeshData[i].fbx_obj_data.verts[vr]);
+		}
+	}
+	set_data_mesh(obj_data.verts);
 }
 

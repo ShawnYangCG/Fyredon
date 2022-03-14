@@ -253,7 +253,7 @@ void Viewer::render()
 		if (this->timer > 1.0)
 			this->timer = 0;
 		else
-			this->timer += 0.006;
+			this->timer += 0.02;
 		testMesh->reFreshMeshWithCurrentFrame(this->timer);
 	}
 	else {
@@ -333,34 +333,14 @@ bool Viewer::esc_pressed()
 // Info : Test Mesh to verify viewer and OpenGL is setup correctly. 
 void Viewer::test_mesh()
 {
-	// Pig
-	/*
-	Mesh *pig = new Mesh("test_pig", "../../assets/mesh/pighead.obj");
-	pig->load_obj(false);
-	pig->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
-	pig->set_colour(glm::vec3(1.f, 0.f, 0.f));
-	pig->translate(glm::vec3(0.f, 0.2f, 2.f));
-	pig->scale(glm::vec3(2.f));
-	pig->mode = Render_Mode::RENDER_MESH;
-	prims.push_back(pig);
-	*/
-	// fbx test
-	Mesh* box = new Mesh("test_box2", "./box2.obj");
-	box->load_obj(false);
-	box->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
-	box->set_colour(glm::vec3(1.f, 0.f, 0.f));
-	box->translate(glm::vec3(0.f, 0.2f, 2.f));
-	box->scale(glm::vec3(2.f));
-	box->mode = Render_Mode::RENDER_MESH;
-	//prims.push_back(box);
 	
 	// fbx test
 	this->testMesh = new fbx_mesh("test_box", "./box2.fbx");
 	this->testMesh->load_obj(false);
 	this->testMesh->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
 	this->testMesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
-	this->testMesh->translate(glm::vec3(0.f, 0.2f, 2.f));
-	this->testMesh->scale(glm::vec3(2.f));
+	this->testMesh->translate(glm::vec3(0.f, 0.f, 0.f));
+	this->testMesh->scale(glm::vec3(1.f));
 	this->testMesh->mode = Render_Mode::RENDER_MESH;
 	prims.push_back(this->testMesh);
 	

@@ -3,13 +3,13 @@ D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\opengla
 D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(139,68): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
 D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(156,32): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
 D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(321,21): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(469,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(470,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(471,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(473,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(474,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(475,23): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(483,12): warning C4244: “初始化”: 从“size_t”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(449,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(450,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(451,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(453,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(454,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(455,23): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(463,12): warning C4244: “初始化”: 从“size_t”转换到“float”，可能丢失数据
   openglapp_ref.vcxproj -> D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\build\bin\openglapp_ref.exe
   D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\lib\GLEW\glew32.dll
   复制了 1 个文件
