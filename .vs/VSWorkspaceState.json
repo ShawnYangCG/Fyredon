@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\openglapp_ref",
+    "\\openglapp_ref\\incl",
+    "\\openglapp_ref\\src"
   ],
-  "SelectedNode": "\\openglapp_ref.sln",
+  "SelectedNode": "\\openglapp_ref\\src\\fbx_mesh.cpp",
   "PreviewInSolutionExplorer": false
 }

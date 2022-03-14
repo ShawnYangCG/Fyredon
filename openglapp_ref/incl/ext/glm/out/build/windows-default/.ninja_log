@@ -1,0 +1,6 @@
+# ninja log v5
+14	3080	6684654892860484	CMakeFiles/glm_shared.dir/detail/glm.obj	7811943141396263
+1	3099	6684654892891397	CMakeFiles/glm_static.dir/detail/glm.obj	50be2ad9237c3a11
+3099	3442	6684654895879296	glm_static.lib	beddf8fd02383a96
+3087	4239	6684654892860484	glm_shared.dll	abcfc5a46f7a51f
+3087	4239	6684654892860484	glm_shared.lib	abcfc5a46f7a51f

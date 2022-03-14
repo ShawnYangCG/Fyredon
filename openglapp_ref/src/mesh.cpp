@@ -154,7 +154,6 @@ void Mesh::load_obj(bool has_tex)
 
 	// Pass verts to primitive::mesh_data
 	set_data_mesh(obj_data.verts);
-
 	// Check Primitive is correct.
 	//debug();
 

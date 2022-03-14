@@ -57,13 +57,13 @@ Viewer::Viewer(std::size_t W, std::size_t H, const char *Title)
 
 	// Load OpenGL Extensions (GLEW)
 	extensions_load();
-
 	// ============= Camera =============
 	#if USE_FREE_CAMERA == 0
 	//camera = Camera(glm::vec3(0.f, 0.25f, 1.f), 1.f, 80.f, width / height, false); // Fixed
 	#else
 	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 1.f, 80.f, width / height, true);    // Free
 	#endif
+
 }
 
 Viewer::~Viewer() 
@@ -81,7 +81,7 @@ void Viewer::exec()
 	// ============= Test Operations =============
 	// Create Test Mesh
 	test_mesh();
-
+	
 	// ============= Application Loop =============
 	bool esc = false; 
 	while (!glfwWindowShouldClose(window) && !esc)
@@ -114,7 +114,7 @@ void Viewer::tick()
 
 	// ============= Render =============
 	render();
-
+	
 	// ============= Post Tick Operations =============
 	tick_c++;
 }
@@ -245,6 +245,20 @@ void Viewer::render()
 		axis->render();
 	}
 
+	// Play pressed
+	if (isPlay)
+	{
+		//std::cout << "play: " << isPlay << std::endl;
+		this->timerIsRun = true;
+		if (this->timer > 1.0)
+			this->timer = 0;
+		else
+			this->timer += 0.006;
+		testMesh->reFreshMeshWithCurrentFrame(this->timer);
+	}
+	else {
+		this->timerIsRun = false;
+	}
 	// Draw Primtivies
 	get_GLError();
 	if (prims.size() && draw_prims)
@@ -255,12 +269,10 @@ void Viewer::render()
 			p->shader.setVec("camPos_world",   camera.Cam_Pos);
 			p->shader.setVec("lightPos_world", light_pos);
 			p->shader.setFloat("lightStr",     light_strength);
-
 			p->set_cameraTransform(camera.get_ViewMatrix(), camera.get_PerspMatrix());
 			p->render();
 		}
 	}
-
 	// ==================== Render GUI ====================
 	gui_render();
 
@@ -322,6 +334,7 @@ bool Viewer::esc_pressed()
 void Viewer::test_mesh()
 {
 	// Pig
+	/*
 	Mesh *pig = new Mesh("test_pig", "../../assets/mesh/pighead.obj");
 	pig->load_obj(false);
 	pig->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
@@ -330,6 +343,28 @@ void Viewer::test_mesh()
 	pig->scale(glm::vec3(2.f));
 	pig->mode = Render_Mode::RENDER_MESH;
 	prims.push_back(pig);
+	*/
+	// fbx test
+	Mesh* box = new Mesh("test_box2", "./box2.obj");
+	box->load_obj(false);
+	box->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
+	box->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	box->translate(glm::vec3(0.f, 0.2f, 2.f));
+	box->scale(glm::vec3(2.f));
+	box->mode = Render_Mode::RENDER_MESH;
+	//prims.push_back(box);
+	
+	// fbx test
+	this->testMesh = new fbx_mesh("test_box", "./box2.fbx");
+	this->testMesh->load_obj(false);
+	this->testMesh->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
+	this->testMesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	this->testMesh->translate(glm::vec3(0.f, 0.2f, 2.f));
+	this->testMesh->scale(glm::vec3(2.f));
+	this->testMesh->mode = Render_Mode::RENDER_MESH;
+	prims.push_back(this->testMesh);
+	
+	
 }
 
 // =========================================== DearImGUI Implementation ===========================================
@@ -398,7 +433,12 @@ void Viewer::gui_render()
 			draw_grid = !draw_grid;
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
-		
+		// Draw Play
+		if (ImGui::Button("Play"))
+		{
+			isPlay = !isPlay;
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
 		// End ImGui
 		ImGui::End();
 	}

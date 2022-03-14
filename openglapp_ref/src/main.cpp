@@ -3,11 +3,14 @@
 // Project Headers
 #include "viewer.h"
 
+
 int main(int argc, char **argv)
 {
+
 	// Create Viewer Application Instance
 	Viewer app(1024, 1024, "Niall Viewer App Reference");
-
+	
+	//testFBX a = testFBX();
 	// Exec
 	app.exec();
 

@@ -61,7 +61,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)incl;$(ProjectDir)incl\ext\dearimgui</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
@@ -70,11 +70,13 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;$(ProjectDir)lib\GLEW\glew32.lib;$(ProjectDir)lib\GLFW\glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;$(ProjectDir)lib\GLEW\glew32.lib;$(ProjectDir)lib\GLFW\glfw3dll.lib;$(ProjectDir)lib\debug\libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(ProjectDir)lib\GLEW\glew32.dll $(ProjectDir)build\bin /y
 xcopy $(ProjectDir)lib\GLFW\glfw3.dll $(ProjectDir)build\bin /y
+xcopy $(ProjectDir)lib\debug\libfbxsdk.dll $(ProjectDir)build\bin /y
 xcopy $(ProjectDir)imgui.ini $(ProjectDir)build\bin /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -104,6 +106,7 @@ xcopy $(ProjectDir)\imgui.ini $(ProjectDir)\build\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="clock.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\ext.cpp" />
     <ClCompile Include="src\ext\dearimgui\imgui.cpp" />
@@ -113,22 +116,33 @@ xcopy $(ProjectDir)\imgui.ini $(ProjectDir)\build\bin</Command>
     <ClCompile Include="src\ext\dearimgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\ext\dearimgui\imgui_tables.cpp" />
     <ClCompile Include="src\ext\dearimgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\FBXLoader.cpp" />
+    <ClCompile Include="src\fbx_mesh.cpp" />
     <ClCompile Include="src\ground.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\mesh.cpp" />
     <ClCompile Include="src\primitive.cpp" />
     <ClCompile Include="src\shader.cpp" />
+    <ClCompile Include="src\targa.cpp" />
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\viewer.cpp" />
+    <ClCompile Include="testFBX.cpp" />
+    <ClCompile Include="timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="clock.h" />
     <ClInclude Include="incl\camera.h" />
+    <ClInclude Include="incl\FBXLoader.h" />
+    <ClInclude Include="incl\fbx_mesh.h" />
     <ClInclude Include="incl\ground.h" />
     <ClInclude Include="incl\mesh.h" />
     <ClInclude Include="incl\primitive.h" />
     <ClInclude Include="incl\shader.h" />
+    <ClInclude Include="incl\targa.h" />
     <ClInclude Include="incl\texture.h" />
     <ClInclude Include="incl\viewer.h" />
+    <ClInclude Include="testFBX.h" />
+    <ClInclude Include="timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

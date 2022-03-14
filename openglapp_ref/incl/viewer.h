@@ -10,6 +10,7 @@
 #include "primitive.h"
 #include "ground.h"
 #include "mesh.h"
+#include "fbx_mesh.h"
 
 // Ext Headers
 #include "ext/glm/glm.hpp"
@@ -71,10 +72,17 @@ private:
 	GLFWwindow *window; 
 	std::size_t width, height;
 	std::string title; 
-	bool draw_grid, draw_axis, draw_prims; 
+	bool draw_grid, draw_axis, draw_prims, isPlay; 
 
 	const byte *render_device;
 	const byte *version;
+
+	// FBXfile
+	FBXLoader *fbxloader;
+	// temp timer
+	double timer = 0;
+	bool timerIsRun = false;
+	fbx_mesh* testMesh;
 
 	// Camera 
 	Camera camera; 
