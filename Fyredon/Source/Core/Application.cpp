@@ -3,6 +3,7 @@
 #include "Fyredon/Core/Application.h"
 #include "Fyredon/Core/threads.h"
 #include "Fyredon/Core/TerrainGeneration.h"
+#include "Fyredon/Core/FileSys.h"
 
 // Project Includes
 #include "Fyredon/Extern/dearimgui/imgui.h"

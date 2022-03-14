@@ -43,7 +43,8 @@ project "Fyredon"
 		systemversion "latest"
 
 		defines{
-			"FD_BUILD_DLL" -- to define the dll import/export api
+			"FD_BUILD_DLL", -- to define the dll import/export api
+			"FD_ROOT"
 		}
 
 	-- Debug configuration
