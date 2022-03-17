@@ -11,6 +11,8 @@
 #include "ground.h"
 #include "mesh.h"
 #include "fbx_mesh.h"
+#include "../TerrainGenerator.h"
+
 
 // Ext Headers
 #include "ext/glm/glm.hpp"
@@ -63,6 +65,7 @@ public:
 
 	// Debug
 	void test_mesh();
+	void terrain();
 
 private:
 	void get_GLError();
@@ -83,6 +86,8 @@ private:
 	double timer = 0;
 	bool timerIsRun = false;
 	fbx_mesh* testMesh;
+
+	TerrainGenerator* tg;
 
 	// Camera 
 	Camera camera; 

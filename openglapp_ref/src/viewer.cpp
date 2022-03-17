@@ -20,6 +20,7 @@
 #include "ext/dearimgui/imgui_impl_glfw.h"
 #include "ext/dearimgui/imgui_impl_opengl3.h"
 
+
 #define USE_FREE_CAMERA 1
 
 // Global GLFW State
@@ -81,6 +82,7 @@ void Viewer::exec()
 	// ============= Test Operations =============
 	// Create Test Mesh
 	test_mesh();
+	//terrain();
 	
 	// ============= Application Loop =============
 	bool esc = false; 
@@ -345,6 +347,18 @@ void Viewer::test_mesh()
 	prims.push_back(this->testMesh);
 	
 	
+}
+
+void Viewer::terrain() {
+	this->tg = new TerrainGenerator("heightmap1", "./assets/heightmap/height_map.png");
+	this->tg->read_height_map("height_map.png");
+	this->tg->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
+	this->tg->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	this->tg->translate(glm::vec3(0.f, 0.f, 0.f));
+	this->tg->scale(glm::vec3(1.f));
+	this->tg->mode = Render_Mode::RENDER_MESH;
+	prims.push_back(this->tg);
+	//std::cout << "prim: " << prims.size();
 }
 
 // =========================================== DearImGUI Implementation ===========================================
