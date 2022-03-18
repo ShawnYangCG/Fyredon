@@ -73,13 +73,13 @@ void Fyredon::GUI_Menu::main_menu()
 				}
 				ImGui::EndMainMenuBar();
 			}
+			break;
 		}
-
 		case (config::DEBUG):
 		{
 			if (ImGui::BeginMainMenuBar())
 			{
-				ImGui::MenuItem((title + "Debug Menu").c_str(), NULL, false, false);
+				ImGui::MenuItem((title + " Debug Menu").c_str(), NULL, false, false);
 			}
 			ImGui::EndMainMenuBar();
 		}

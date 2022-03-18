@@ -35,6 +35,7 @@ public:
 	
 	EditorApplication() = delete;
 	EditorApplication(std::size_t Width, std::size_t Height, const char *FilePath);
+	~EditorApplication(); 
 
 	// Call from client main()
 	void init();
@@ -49,21 +50,14 @@ protected:
 	void setup_ogl_window_contex();
 	void setup_ogl_loading();
 
+	// Application Paint Steps
+	void paint_begin();
+	void paint_end();
+
 	// GUI Setup
 	void setup_gui();
 	void shutdown_gui();
-
-	// GUI Components
-	//void gui_menu();
-	//void gui_panel_test(); 
-
-	//std::vector<GUI_Panel*> gui_panels;
-	//void tick_gui();
-
-	// Application Paint Steps
-	void paint_begin();
-	void paint_app(); 
-	void paint_end();
+	void tick_gui();
 
 	// Nested Game Tick...
 	// Nested Game State...
@@ -84,6 +78,8 @@ private:
 		const unsigned char* sl_version;
 	} render_device; 
 
+	// GUI 
+	std::vector<GUI_Panel*> gui_panels;
 
 }; // end of EditorApplication class
 

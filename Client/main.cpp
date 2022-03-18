@@ -2,7 +2,6 @@
 
 // Project Includes
 // Subsystem : Fyredon / Core
-#include "Fyredon/Core/Example.h"
 #include "Fyredon/Core/Application.h"
 
 

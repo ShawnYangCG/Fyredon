@@ -3,6 +3,9 @@
 /*=============================================================================
 	Application.h: Base Engine Editor Application
 =============================================================================*/
+// Project Includes
+#include "Fyredon/Other/pch.h"
+
 // Implements 
 #include "Fyredon/Core/Application.h"
 
@@ -11,14 +14,12 @@
 //#include "Fyredon/Extern/GLEW/glew.h"
 //#include "Fyredon/Extern/GLFW/glfw3.h"
 
-// Project Includes
-#include "Fyredon/Other/pch.h"
 #include "Fyredon/Core/threads.h"
 #include "Fyredon/Core/TerrainGeneration.h"
 #include "Fyredon/Core/FileSys.h"
 
 // GUI
-//#include "Fyredon/Core/GUI_Menu.h"
+#include "Fyredon/Core/GUI_Menu.h"
 
 // Extern Includes
 #include "Fyredon/Extern/dearimgui/imgui.h"
@@ -52,7 +53,14 @@ namespace
 
 Fyredon::EditorApplication::EditorApplication(std::size_t Width, std::size_t Height, const char* FilePath)
 	: window_title("Fyredon Game Engine : Editor Application"), width(Width), height(Height), project_filepath(FilePath)
+{}
+
+Fyredon::EditorApplication::~EditorApplication()
 {
+	if (gui_panels.size())
+	{
+		for (GUI_Panel* panel : gui_panels) delete panel; 
+	}
 }
 
 // Info : Called before application loop is ran, to do inital application setup. 
@@ -87,7 +95,6 @@ void Fyredon::EditorApplication::exec()
 	{
 		// Do awesome stuff
 		tick(); 
-
 	}
 
 	// Gui Shutdown
@@ -100,10 +107,9 @@ void Fyredon::EditorApplication::tick()
 	paint_begin();
 
 	// Cool stuff going on here ...
+	// tick engine...
 
-	// Update GUI
-	//paint_app();
-	//tick_gui();
+	tick_gui();
 
 	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
 	ImGui::Render();
@@ -112,7 +118,7 @@ void Fyredon::EditorApplication::tick()
 	paint_end();
 }
 
-/*
+
 void Fyredon::EditorApplication::tick_gui()
 {
 	for (GUI_Panel* panel : gui_panels)
@@ -121,18 +127,7 @@ void Fyredon::EditorApplication::tick_gui()
 		panel->tick();
 	}
 }
-*/
 
-// Application Painting (old)
-void Fyredon::EditorApplication::paint_app()
-{
-	// Draw GUI components 
-	//gui_panel_test();
-	//gui_menu();
-	// 
-	//ImGui::Render();
-	//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
 
 // Start of Application paint operations (within Tick())
 void Fyredon::EditorApplication::paint_begin()
@@ -140,7 +135,7 @@ void Fyredon::EditorApplication::paint_begin()
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// GUI new frame
+	// GUI new frame, todo wrap im ImGui wrapper class...
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -175,7 +170,9 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
 	// Create Window
 	const GLFWvidmode *monitor = glfwGetVideoMode(glfwGetPrimaryMonitor());
+#ifdef EDITOR_FULLSCREEN
 	width = monitor->width, height = monitor->height;
+#endif
 	window = glfwCreateWindow(width, height, window_title, NULL, NULL);
 	if (window == NULL)
 	{
@@ -231,11 +228,15 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 // Info : DearImGui Setup operations
 void Fyredon::EditorApplication::setup_gui()
 {
+	// Inital Panel Layout
+	gui_panels.emplace_back(new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 5)); // Menu bar. 
+	
+	// ImGui Setup 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	ImGui::StyleColorsDark();
-
+	// GL GUI Setup
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 450");
 }

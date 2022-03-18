@@ -14,8 +14,9 @@ namespace Fyredon
 
 class GUI_Menu : public GUI_Panel
 {
-	enum config {EDIT_VIEW_HELP_ABOUT = 0, DEBUG};
 public:
+	enum config { EDIT_VIEW_HELP_ABOUT = 0, DEBUG };
+
 	GUI_Menu(config menu_config, int32_t y_pad = 2);
 
 	virtual void tick() override;
