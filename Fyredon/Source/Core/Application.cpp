@@ -1,15 +1,29 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Application.h: Base Engine Editor Application
+=============================================================================*/
 // Implements 
-#include "Fyredon/Other/pch.h"
 #include "Fyredon/Core/Application.h"
+
+// GL
+//#define GLEW_STATIC // Fyredon DLL --> GLEW (static linking)
+//#include "Fyredon/Extern/GLEW/glew.h"
+//#include "Fyredon/Extern/GLFW/glfw3.h"
+
+// Project Includes
+#include "Fyredon/Other/pch.h"
 #include "Fyredon/Core/threads.h"
 #include "Fyredon/Core/TerrainGeneration.h"
 #include "Fyredon/Core/FileSys.h"
 
-// Project Includes
+// GUI
+//#include "Fyredon/Core/GUI_Menu.h"
+
+// Extern Includes
 #include "Fyredon/Extern/dearimgui/imgui.h"
 #include "Fyredon/Extern/dearimgui/imgui_impl_glfw.h"
 #include "Fyredon/Extern/dearimgui/imgui_impl_opengl3.h"
-
 
 // Std Includes
 #include <iostream>
@@ -20,7 +34,6 @@
 
 #define EDITOR_WINDOW_RESIZE
 // #define EDITOR_FULLSCREEN 
-
 
 namespace
 {
@@ -89,22 +102,36 @@ void Fyredon::EditorApplication::tick()
 	// Cool stuff going on here ...
 
 	// Update GUI
-	paint_app();
+	//paint_app();
+	//tick_gui();
+
+	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	
 	paint_end();
 }
 
+/*
+void Fyredon::EditorApplication::tick_gui()
+{
+	for (GUI_Panel* panel : gui_panels)
+	{
+		// If panel active...
+		panel->tick();
+	}
+}
+*/
 
-// Application Painting 
+// Application Painting (old)
 void Fyredon::EditorApplication::paint_app()
 {
 	// Draw GUI components 
-	gui_panel_test();
-	gui_menu();
-
-	// imgui render and forward to OpenGL Impl
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	//gui_panel_test();
+	//gui_menu();
+	// 
+	//ImGui::Render();
+	//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 // Start of Application paint operations (within Tick())
@@ -113,6 +140,7 @@ void Fyredon::EditorApplication::paint_begin()
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// GUI new frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -220,6 +248,7 @@ void Fyredon::EditorApplication::shutdown_gui()
 	ImGui::DestroyContext();
 }
 
+/*
 void Fyredon::EditorApplication::gui_menu()
 {
 	// tmp state vars
@@ -302,6 +331,8 @@ void Fyredon::EditorApplication::gui_panel_test()
 		ImGui::End();
 	}
 }
+*/
+
 
 // ============= GLFW Callbacks Implementation =============
 // 

@@ -17,12 +17,15 @@
 // Std Headers
 #include <cstddef> // std::size_t
 
+// FD
+//class GLFWwindow;
+
 namespace Fyredon 
 {
-
+	class GUI_Panel;
 /*
-*   ============ Editor Application Class Info ============ 
-*   Core class that defines an instance of the engine editor application to be createdand executed
+*   ============ Editor Application Class ============
+*   Core class that defines an instance of the engine editor application to be created and executed
 *	by the client app.
 */
 
@@ -51,8 +54,11 @@ protected:
 	void shutdown_gui();
 
 	// GUI Components
-	void gui_menu();
-	void gui_panel_test(); 
+	//void gui_menu();
+	//void gui_panel_test(); 
+
+	//std::vector<GUI_Panel*> gui_panels;
+	//void tick_gui();
 
 	// Application Paint Steps
 	void paint_begin();
@@ -82,11 +88,7 @@ private:
 }; // end of EditorApplication class
 
 
-/*
-*   ============ GLFW Input Callbacks  ============
-*   Declare callbacks to be used by GLFW in response to input and window events. 
-*/
-
+//  ============ GLFW Input Callbacks ============
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
