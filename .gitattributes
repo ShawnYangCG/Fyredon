@@ -10,3 +10,5 @@
 /openglapp_ref/build/bin/openglapp_ref.pdb filter=lfs diff=lfs merge=lfs -text
 /Extern/FBX/libfbxsdk-md.lib filter=lfs diff=lfs merge=lfs -text
 /Extern/FBX/libfbxsdk-mt.lib filter=lfs diff=lfs merge=lfs -text
+/Extern/Binary/FBX/libfbxsdk-md.lib filter=lfs diff=lfs merge=lfs -text
+/Extern/Binary/FBX/libfbxsdk-mt.lib filter=lfs diff=lfs merge=lfs -text
