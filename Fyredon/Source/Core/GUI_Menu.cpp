@@ -47,7 +47,6 @@ void Fyredon::GUI_Menu::main_menu()
 			{
 				if (ImGui::BeginMenu("Fyredon"))
 				{
-					ImGui::MenuItem(title.c_str(), NULL, false, false);
 					if (ImGui::MenuItem("New")) {}
 					if (ImGui::MenuItem("Open", "Ctrl+O")) {}
 					if (ImGui::MenuItem("Save", "Ctrl+S")) {}
@@ -71,6 +70,8 @@ void Fyredon::GUI_Menu::main_menu()
 					if (ImGui::MenuItem("About")) menu_state.about = 1;
 					ImGui::EndMenu(); // End Help Menu
 				}
+
+				ImGui::MenuItem(title.c_str(), NULL, false, false);
 				ImGui::EndMainMenuBar();
 			}
 			break;
@@ -93,7 +94,7 @@ void Fyredon::GUI_Menu::about_popout()
 	ImGui::Begin("About");
 	ImGui::Text("Fyredon Engine\nDoes absolutely nothing currently !");
 	ImGui::NewLine();
-	if (ImGui::Button("close"))
+	if (ImGui::Button("Close"))
 	{
 		menu_state.about = false;
 	}

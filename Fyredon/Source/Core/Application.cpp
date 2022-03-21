@@ -20,6 +20,7 @@
 
 // GUI
 #include "Fyredon/Core/GUI_Menu.h"
+#include "Fyredon/Core/GUI_FloatingWidget.h"
 
 // Extern Includes
 #include "Fyredon/Extern/dearimgui/imgui.h"
@@ -230,6 +231,15 @@ void Fyredon::EditorApplication::setup_gui()
 {
 	// Inital Panel Layout
 	gui_panels.emplace_back(new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 5)); // Menu bar. 
+	gui_panels.emplace_back(new GUI_FloatingWidget()); // Floating Widget. 
+
+	for (std::size_t i = 0; i < 3; ++i)
+	{
+		auto widg = new GUI_FloatingWidget();
+		std::string tmp = "Panel " + std::to_string(i + 1);
+		widg->set_title(tmp.c_str());
+		gui_panels.push_back(widg);
+	}
 	
 	// ImGui Setup 
 	IMGUI_CHECKVERSION();
@@ -248,92 +258,6 @@ void Fyredon::EditorApplication::shutdown_gui()
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 }
-
-/*
-void Fyredon::EditorApplication::gui_menu()
-{
-	// tmp state vars
-	static bool about = false;
-
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 5));
-	if (ImGui::BeginMainMenuBar())
-	{
-		if (ImGui::BeginMenu("Fyredon"))
-		{
-			ImGui::MenuItem("Fyredon Engine Version xx.xx.xx", NULL, false, false);
-			if (ImGui::MenuItem("New")) {}
-			if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-			if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-			if (ImGui::MenuItem("Save Project As", "Ctrl+Shift+S")) {}
-			ImGui::EndMenu(); // End Fyredon Menu
-		}
-		if (ImGui::BeginMenu("Edit"))
-		{
-			if (ImGui::MenuItem("PlaceHolder 1")) {}
-			if (ImGui::MenuItem("PlaceHolder 2")) {}
-			ImGui::EndMenu(); // End Edit Menu
-		}
-		if (ImGui::BeginMenu("View"))
-		{
-			if (ImGui::MenuItem("PlaceHolder 1")) {}
-			if (ImGui::MenuItem("PlaceHolder 2")) {}
-			ImGui::EndMenu(); // End View Menu
-		}
-		if (ImGui::BeginMenu("Help"))
-		{
-			if (ImGui::MenuItem("About")) about = true;
-			ImGui::EndMenu(); // End Help Menu
-		}
-		ImGui::EndMainMenuBar();
-	}
-	ImGui::PopStyleVar();
-
-	// Window Actions
-	if (about)
-	{
-		ImGui::Begin("About", &about);
-		ImGui::Text("Fyredon Engine\nDoes absolutely nothing currently");
-		ImGui::NewLine();
-		if (ImGui::Button("close"))
-		{
-			about = false; 
-		}
-		ImGui::End();
-	}
-}
-
-void Fyredon::EditorApplication::gui_panel_test()
-{
-	// Test state
-	static float slider;
-	static bool button;
-
-	{
-		ImGui::Begin("Panel Test");
-
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Floating Panel");
-		ImGui::PopStyleColor();
-
-		ImGui::Text("Sliders");
-		ImGui::SliderFloat("Slider", &slider, 0.f, 10.f);
-
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Viewport Controls");
-		ImGui::PopStyleColor();
-
-		if (ImGui::Button("Button"))
-		{
-			button = !button;
-		}
-
-		ImGui::End();
-	}
-}
-*/
-
 
 // ============= GLFW Callbacks Implementation =============
 // 
