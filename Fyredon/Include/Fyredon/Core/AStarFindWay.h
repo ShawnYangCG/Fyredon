@@ -13,15 +13,15 @@ vector<vector<int>>* aStar(T** grade, int width, int height, T threshold, int st
 	struct Point {
 		int x;
 		int y;
-		double weight;
+		int cost;//current cost
+		double w_cost;//whole cost
 		const Point* parent;
-		int cost;
 
-		Point(int x, int y, double w, Point* p = nullptr, int cost = 0) : x(x), y(y), weight(w), parent(p), cost(cost) {}
-		Point(int x, int y, const Point& end, const Point* p = nullptr) : x(x), y(y), parent(p) { cost = p->cost + 1; weight = *this - end + cost; }
+		Point(int x, int y, double w, Point* p = nullptr, int cost = 0) : x(x), y(y), w_cost(w), parent(p), cost(cost) {}
+		Point(int x, int y, const Point& end, const Point* p = nullptr) : x(x), y(y), parent(p) { cost = p->cost + 1; w_cost = *this - end + cost; }
 		bool operator == (const Point& p) const { return this->x == p.x && this->y == p.y; }
 		bool operator != (const Point& p) const { return !(*this == p); }
-		bool operator < (const Point& p) const { return this->weight > p.weight; }
+		bool operator < (const Point& p) const { return this->w_cost > p.w_cost; }
 		int operator - (const Point& p) const { return abs(this->x - p.x) + abs(this->y - p.y); }
 		vector<vector<int>>* getWay() const {
 			if (!parent) return new vector<vector<int>>{ {x, y} };
