@@ -82,7 +82,7 @@ void Viewer::exec()
 	// ============= Test Operations =============
 	// Create Test Mesh
 	test_mesh();
-	//terrain();
+	terrain();
 	
 	// ============= Application Loop =============
 	bool esc = false; 
@@ -350,8 +350,8 @@ void Viewer::test_mesh()
 }
 
 void Viewer::terrain() {
-	this->tg = new TerrainGenerator("heightmap1", "./assets/heightmap/height_map.png");
-	this->tg->read_height_map("height_map.png");
+	this->tg = new TerrainGenerator("heightmap1", "./assets/heightmap/Heightmap.png");
+	this->tg->read_height_map("Heightmap.png");
 	this->tg->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
 	this->tg->set_colour(glm::vec3(1.f, 0.f, 0.f));
 	this->tg->translate(glm::vec3(0.f, 0.f, 0.f));
