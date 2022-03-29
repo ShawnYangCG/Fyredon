@@ -4,7 +4,6 @@
 	TerrainGeneration.h: Terrain Generation
 =============================================================================*/
 
-
 #ifndef	TERRAIN_GENERATION_H
 #define TERRAIN_GENERATION_H
 

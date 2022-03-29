@@ -6,11 +6,11 @@
 #pragma once
 
 // Project Includes
-#include <Fyredon/Other/dllport.h>
+#include "Fyredon/Other/dllport.h"
 #include "Fyredon/Core/GUI_Panel.h"
 
 // Extern Includes
-#include "Fyredon/Extern/dearimgui/imgui.h"
+#include "dearimgui/imgui.h"
 
 namespace Fyredon
 { 

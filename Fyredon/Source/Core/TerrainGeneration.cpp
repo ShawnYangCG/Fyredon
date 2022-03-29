@@ -1,8 +1,9 @@
 #include "Fyredon/Other/pch.h"
 #include <Fyredon/Core/TerrainGeneration.h>
-#include "Fyredon/Extern/GLEW/glew.h"
+#include "GLEW/glew.h"
+
 #define STB_IMAGE_IMPLEMENTATION
-#include <Fyredon/Extern/stb/stb_image.h>
+#include <stb/stb_image.h>
 
 TerrainGenerator::TerrainGenerator() {
 	read_height_map("height_map.png");

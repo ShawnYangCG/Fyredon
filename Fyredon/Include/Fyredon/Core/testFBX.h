@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <stdio.h>
-#include <Fyredon/Extern/FBX/fbxsdk.h>
+#include <FBX/fbxsdk.h>
 
 class testFBX
 {

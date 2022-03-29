@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_Menu.h: Top Window GUI Menu
+	GUI_Menu.cpp: Top Window GUI Menu
 =============================================================================*/
 
 #include "Fyredon/Other/pch.h"
@@ -10,7 +10,7 @@
 #include "Fyredon/Core/GUI_Menu.h"
 
 // Extern Includes
-#include "Fyredon/Extern/dearimgui/imgui.h"
+#include "dearimgui/imgui.h"
 
 Fyredon::GUI_Menu::GUI_Menu(config menu_config, int32_t y_pad)
 	: GUI_Panel(), cfg(menu_config), pad_y(y_pad)

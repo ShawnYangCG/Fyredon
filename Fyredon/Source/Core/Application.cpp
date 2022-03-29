@@ -23,9 +23,9 @@
 #include "Fyredon/Core/GUI_FloatingWidget.h"
 
 // Extern Includes
-#include "Fyredon/Extern/dearimgui/imgui.h"
-#include "Fyredon/Extern/dearimgui/imgui_impl_glfw.h"
-#include "Fyredon/Extern/dearimgui/imgui_impl_opengl3.h"
+#include "dearimgui/imgui.h"
+#include "dearimgui/imgui_impl_glfw.h"
+#include "dearimgui/imgui_impl_opengl3.h"
 
 // Std Includes
 #include <iostream>

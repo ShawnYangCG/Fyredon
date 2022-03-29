@@ -1,14 +1,14 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_FloatingWidget.h: Floating Dialog/Widget
+	GUI_FloatingWidget.cpp: Floating Dialog/Widget
 =============================================================================*/
 #include "Fyredon/Other/pch.h"
 // Implements 
 #include "Fyredon/Core/GUI_FloatingWidget.h"
 
 // Extern Includes
-#include "Fyredon/Extern/dearimgui/imgui.h"
+#include "dearimgui/imgui.h"
 
 Fyredon::GUI_FloatingWidget::GUI_FloatingWidget()
 	: GUI_Panel()

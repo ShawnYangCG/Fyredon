@@ -11,8 +11,8 @@
 
 // Extern Includes
 #define GLEW_STATIC // Fyredon DLL --> GLEW (static linking)
-#include "Fyredon/Extern/GLEW/glew.h"
-#include "Fyredon/Extern/GLFW/glfw3.h"
+#include "GLEW/glew.h"
+#include "GLFW/glfw3.h"
 
 // Std Headers
 #include <cstddef> // std::size_t

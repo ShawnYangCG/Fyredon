@@ -11,4 +11,5 @@ outdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 externdir = "Extern"
 
 include "Fyredon"
+include "Render"
 include "Client"

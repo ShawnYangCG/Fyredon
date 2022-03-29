@@ -47,7 +47,7 @@ Index of this file:
 #endif
 #if !defined(IMGUI_DISABLE_INCLUDE_IMCONFIG_H) || defined(IMGUI_INCLUDE_IMCONFIG_H)
 //#include "imconfig.h"
-#include "Fyredon/Extern/dearimgui/imconfig.h"
+#include "dearimgui/imconfig.h"
 #endif
 
 #ifndef IMGUI_DISABLE
