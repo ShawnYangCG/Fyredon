@@ -7,7 +7,7 @@
 #include "Fyredon/Other/pch.h"
 
 // Implements 
-#include "Fyredon/Core/GUI_Menu.h"
+#include "Fyredon/GUI/GUI_Menu.h"
 
 // Extern Includes
 #include "dearimgui/imgui.h"

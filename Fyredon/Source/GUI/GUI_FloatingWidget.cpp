@@ -5,7 +5,7 @@
 =============================================================================*/
 #include "Fyredon/Other/pch.h"
 // Implements 
-#include "Fyredon/Core/GUI_FloatingWidget.h"
+#include "Fyredon/GUI/GUI_FloatingWidget.h"
 
 // Extern Includes
 #include "dearimgui/imgui.h"

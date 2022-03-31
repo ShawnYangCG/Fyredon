@@ -1,13 +1,12 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Application.h: Base Engine Editor Application
+	Application.h: Base Engine Editor Application : Niall 
 =============================================================================*/
 #pragma once
 
 // Project Includes
 #include <Fyredon/Other/dllport.h>
-#include <Fyredon/Debug/Logger.h>
 
 // Extern Includes
 #define GLEW_STATIC // Fyredon DLL --> GLEW (static linking)
@@ -17,12 +16,10 @@
 // Std Headers
 #include <cstddef> // std::size_t
 
-// FD
-//class GLFWwindow;
-
 namespace Fyredon 
 {
 	class GUI_Panel;
+	class Camera; 
 /*
 *   ============ Editor Application Class ============
 *   Core class that defines an instance of the engine editor application to be created and executed
@@ -32,16 +29,26 @@ namespace Fyredon
 class FD_API EditorApplication
 {
 public:
-	
-	EditorApplication() = delete;
-	EditorApplication(std::size_t Width, std::size_t Height, const char *FilePath);
 	~EditorApplication(); 
 
+	static EditorApplication& get_instance();
+
 	// Call from client main()
-	void init();
+	void init(std::size_t Width, std::size_t Height, const char* Title);
 	void exec(); 
 
+	// GLFW / Input State (modified via public callback access)
+	static struct {
+		int    width, height;
+		double mouse_offset_x = 0.f, mouse_offset_y = 0.f;
+		double mousepos_x = 0.f, mousepos_y = 0.f;
+		double mousepos_prev_x = 0.f, mousepos_prev_y = 0.f;
+		double scroll_y = 0.f;
+		bool is_init = false;
+	} GLFWState;
+
 protected:
+	EditorApplication() = default;
 
 	// Application Tick
 	void tick();
@@ -49,6 +56,7 @@ protected:
 	// OpenGL Setup
 	void setup_ogl_window_contex();
 	void setup_ogl_loading();
+	GLFWwindow* get_ogl_context();
 
 	// Application Paint Steps
 	void paint_begin();
@@ -63,6 +71,8 @@ protected:
 	// Nested Game State...
 
 private:
+	static EditorApplication app; // singleton
+
 	const char *window_title; 
 	const char *project_filepath;
 
@@ -80,6 +90,10 @@ private:
 
 	// GUI 
 	std::vector<GUI_Panel*> gui_panels;
+
+	// Camera 
+	Camera camera;
+	float last_yawoffs, last_pitchoffs, last_zoom;
 
 }; // end of EditorApplication class
 

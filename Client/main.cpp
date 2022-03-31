@@ -1,20 +1,22 @@
-// Info : Client Application (engine editor) entry point.
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	main.cpp: Entry point to client editor application
+=============================================================================*/
 
 // Project Includes
-// Subsystem : Fyredon / Core
 #include "Fyredon/Core/Application.h"
-
 
 int main() 
 {
-	// Create Fyredon Engine Editor Application
-	Fyredon::EditorApplication app(1024, 1024, "null");
+	// Get Fyredon Engine Editor Application
+	Fyredon::EditorApplication& editor_app = Fyredon::EditorApplication::get_instance();
 
 	// Initalize Editor Application
-	app.init();
+	editor_app.init(1024, 1024, "null");
 
-	// Execture Editor Application loop 
-	app.exec();
+	// Exec Editor Application loop 
+	editor_app.exec();
 
 	return 0;
 }

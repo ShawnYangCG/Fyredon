@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Application.h: Base Engine Editor Application
+	Application.h: Base Engine Editor Application : Niall, [..]
 =============================================================================*/
 // Project Includes
 #include "Fyredon/Other/pch.h"
@@ -9,52 +9,49 @@
 // Implements 
 #include "Fyredon/Core/Application.h"
 
-// GL
+// GL, TBD : Move GLEW impl and incl to here.
 //#define GLEW_STATIC // Fyredon DLL --> GLEW (static linking)
 //#include "Fyredon/Extern/GLEW/glew.h"
 //#include "Fyredon/Extern/GLFW/glfw3.h"
 
+// Core 
 #include "Fyredon/Core/threads.h"
 #include "Fyredon/Core/TerrainGeneration.h"
 #include "Fyredon/Core/FileSys.h"
 
-// GUI
-#include "Fyredon/Core/GUI_Menu.h"
-#include "Fyredon/Core/GUI_FloatingWidget.h"
+// Debug
+#include <Fyredon/Debug/Logger.h>
 
-// Extern Includes
+// GUI
+#include "Fyredon/GUI/GUI_Menu.h"
+#include "Fyredon/GUI/GUI_FloatingWidget.h"
+
+// Render
+#include "Fyredon/Render/Camera.h"
+
+// Extern 
 #include "dearimgui/imgui.h"
 #include "dearimgui/imgui_impl_glfw.h"
 #include "dearimgui/imgui_impl_opengl3.h"
 
-// Std Includes
+// Std
 #include <iostream>
 #include <stdexcept>
 
 #define GL_VERSION_MAJOR 4
 #define GL_VERSION_MINOR 5
-
 #define EDITOR_WINDOW_RESIZE
 // #define EDITOR_FULLSCREEN 
 
-namespace
-{
-	// Global GLFW State
-	struct
-	{
-		int    width, height;
-		double mouse_offset_x = 0.f, mouse_offset_y = 0.f;
-		double mousepos_x = 0.f, mousepos_y = 0.f;
-		double mousepos_prev_x = 0.f, mousepos_prev_y = 0.f;
-		double scroll_y = 0.f;
-		bool is_init = false;
+// ================ Init Singleton Instance ================
+Fyredon::EditorApplication Fyredon::EditorApplication::app;
 
-	}GLFWState;
+Fyredon::EditorApplication& Fyredon::EditorApplication::get_instance()
+{
+	return app;
 }
 
-Fyredon::EditorApplication::EditorApplication(std::size_t Width, std::size_t Height, const char* FilePath)
-	: window_title("Fyredon Game Engine : Editor Application"), width(Width), height(Height), project_filepath(FilePath)
-{}
+// ================ Editor Application Class Implementation ================
 
 Fyredon::EditorApplication::~EditorApplication()
 {
@@ -65,13 +62,17 @@ Fyredon::EditorApplication::~EditorApplication()
 }
 
 // Info : Called before application loop is ran, to do inital application setup. 
-void Fyredon::EditorApplication::init()
+void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, const char* Title)
 {
 	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 
 	setup_ogl_window_contex();
+
 	// ---- GLEW, GL Function Loading 
 	setup_ogl_loading();
+
+	// ---- Do GUI Setup 
+	setup_gui();
 
 	// Do Debug setup ...
 	FD_DEBUG_INFO("s", "This is an info log");
@@ -83,8 +84,6 @@ void Fyredon::EditorApplication::init()
 	// Do Threading setup ...
 	//ThreadManager tm = ThreadManager();
 	//TerrainGenerator tg = TerrainGenerator();
-
-	// Do GUI Setup ....
 }
 
 void Fyredon::EditorApplication::exec()
@@ -158,7 +157,7 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	{
 		// Logger class repalce this :)
 		std::cerr << "Error::Viewer:: GLFW failed to initalize.\n";
-		throw std::runtime_error("GLFW Fail"); // Need to talk about exceptions use...
+		throw std::runtime_error("GLFW Init Fail"); // Need to talk about exceptions use...
 	}
 
 	// Window State
@@ -192,9 +191,6 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	// ============= Set Context and Viewport =============
 	glfwMakeContextCurrent(window);
 	glViewport(0, 0, width, height);
-
-	// ============= Setup GUI =============
-	setup_gui();
 }
 
 // Info : Setup OpenGL function loading via GLEW 
@@ -223,6 +219,10 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	FD_DEBUG_BLOCK_END();
 }
 
+GLFWwindow* Fyredon::EditorApplication::get_ogl_context()
+{
+	return window; 
+}
 
 // ============= GUI  =============
 // 
@@ -262,41 +262,41 @@ void Fyredon::EditorApplication::shutdown_gui()
 // ============= GLFW Callbacks Implementation =============
 // 
 // GLFW Callbacks 
+static auto EditorApp = Fyredon::EditorApplication::get_instance();
 
-// Info : Called when window (thus window framebuffer) is resized, width, height are in pixels. 
+// Info : Called when window (thus window framebuffer) is resized. (width, height is in pixels) 
 void Fyredon::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	//std::cout << "FB Size = [" << width << "," << height << "]" << std::endl;
-	GLFWState.width = width, GLFWState.height = height;
-	glViewport(0, 0, GLFWState.width, GLFWState.height);
+	EditorApp.GLFWState.width = width, EditorApp.GLFWState.height = height;
+	glViewport(0, 0, width, height);
 }
 
 // Info : Called on mouse input event.
 void Fyredon::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	// Set init mouse
-	if (!GLFWState.is_init)
+	if (!EditorApp.GLFWState.is_init)
 	{
-		GLFWState.mousepos_prev_x = xpos;
-		GLFWState.mousepos_prev_y = ypos;
-		GLFWState.is_init = true;
+		EditorApp.GLFWState.mousepos_prev_x = xpos;
+		EditorApp.GLFWState.mousepos_prev_y = ypos;
+		EditorApp.GLFWState.is_init = true;
 	}
 	// Mouse Offset
-	GLFWState.mouse_offset_x = (xpos - GLFWState.mousepos_prev_x);
-	GLFWState.mouse_offset_y = (ypos - GLFWState.mousepos_prev_y);
+	EditorApp.GLFWState.mouse_offset_x = (xpos - EditorApp.GLFWState.mousepos_prev_x);
+	EditorApp.GLFWState.mouse_offset_y = (ypos - EditorApp.GLFWState.mousepos_prev_y);
 
 	// Pos
-	GLFWState.mousepos_x = xpos;
-	GLFWState.mousepos_y = ypos;
+	EditorApp.GLFWState.mousepos_x = xpos;
+	EditorApp.GLFWState.mousepos_y = ypos;
 
 	// Prev Pos
-	GLFWState.mousepos_prev_x = xpos;
-	GLFWState.mousepos_prev_y = ypos;
+	EditorApp.GLFWState.mousepos_prev_x = xpos;
+	EditorApp.GLFWState.mousepos_prev_y = ypos;
 }
 
 // Info : Called on mouse scroll event. 
 void Fyredon::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	GLFWState.scroll_y = yoffset;
+	EditorApp.GLFWState.scroll_y = yoffset;
 }
 
