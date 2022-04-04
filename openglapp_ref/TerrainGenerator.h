@@ -16,7 +16,11 @@ public:
 
 	void read_height_map(std::string path);
 
+	float heightFromIndex(int index);
+
 	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec3> normals;
+
 
 
 	void load_obj(bool has_tex = false);

@@ -45,8 +45,8 @@ void TerrainGenerator::read_height_map(std::string path) {
 		}
 	}
 
-	for (size_t z = 0; z < (z_res - 1); z++) {
-		for (size_t x = 0; x < (x_res - 1); x++) {
+	for (size_t z = 0; z < (z_res - 1 ); z++) {
+		for (size_t x = 0; x < (x_res - 1 ); x++) {
 
 			//this->obj_data.v_p.emplace_back(this->vertices[i]);
 			glm::vec3 normal = glm::vec3(0, 1, 0);
@@ -54,6 +54,7 @@ void TerrainGenerator::read_height_map(std::string path) {
 			glm::vec2 uv = glm::vec2(0, 0);
 			//this->obj_data.v_t.emplace_back(uv);
 
+			//current
 			int i = z * (x_res)+x;
 			vert vertex0;
 			vertex0.pos = this->vertices[i];
@@ -61,18 +62,21 @@ void TerrainGenerator::read_height_map(std::string path) {
 			vertex0.uv = uv;
 			vertex0.col = glm::vec3(1.f, 1.f, 1.f);
 
+			// right
 			vert vertex1;
 			vertex1.pos = this->vertices[i + 1];
 			vertex1.normal = normal;
 			vertex1.uv = uv;
 			vertex1.col = glm::vec3(1.f, 1.f, 1.f);
 
+			// up
 			vert vertex2;
 			vertex2.pos = this->vertices[i + x_res];
 			vertex2.normal = normal;
 			vertex2.uv = uv;
 			vertex2.col = glm::vec3(1.f, 1.f, 1.f);
 
+			// up and right
 			vert vertex3;
 			vertex3.pos = this->vertices[i + x_res + 1];
 			vertex3.normal = normal;
@@ -101,6 +105,8 @@ void TerrainGenerator::read_height_map(std::string path) {
 			vertex2.normal = n2;
 			vertex3.normal = n2;
 
+			
+
 			//if (i % x_res - 1 != 0) {
 
 				obj_data.verts.push_back(vertex0);
@@ -116,6 +122,50 @@ void TerrainGenerator::read_height_map(std::string path) {
 		}
 	}
 
+	std::cout << obj_data.verts.size() << " size\n";
+	for (size_t z = 0; z < (z_res - 1); z++) {
+		for (size_t x = 0; x < (x_res - 1); x++) {
+
+			int index = z * z_res + x;
+			std::cout << index << " index\n";
+			glm::vec3 current = obj_data.verts[index].pos;
+			glm::vec3 up = obj_data.verts[index].pos;
+			glm::vec3 right = obj_data.verts[index].pos;
+			glm::vec3 down = obj_data.verts[index].pos;
+			glm::vec3 left = obj_data.verts[index].pos;
+
+			if (x != 0) {
+				left = obj_data.verts[index - 1].pos;
+				
+			} 
+			
+			if (z != 0) {
+				down = obj_data.verts[index - x_res].pos;
+			} 
+			
+			if (z != z_res - 2) {
+				
+				up = obj_data.verts[index + x_res].pos;
+			} 
+			
+			if (x != x_res - 2) {
+				right = obj_data.verts[index + 1].pos;
+			} 
+			
+			if (!(x == 0 || (z == 0) || (z == z_res - 2) || (x == x_res - 2))) {
+				glm::vec3 normal;
+				normal.x = left.y - right.y;
+			    normal.y = down.y - up.y;
+				normal.z = 0.2;
+
+				float len = sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
+				this->normals.push_back(normal/len);
+			}
+
+			// TODO index normals
+		}
+	}
+
 
 
 	std::cout << "verts " << obj_data.verts.size() << "\n";
@@ -123,3 +173,20 @@ void TerrainGenerator::read_height_map(std::string path) {
 	set_data_mesh(obj_data.verts);
 
 }
+
+
+float TerrainGenerator::heightFromIndex(int index) {
+	if (index < this->vertices.size()) {
+		return this->vertices[index].y;
+	}	else {
+		return NULL;
+	}
+
+}
+
+//TODO return height from given (x,z)
+
+//TODO apply textures
+
+//TODO move verts based on (x,z) and radius
+
