@@ -15,6 +15,7 @@
 #include "GLFW/glfw3.h"
 
 // Std Headers
+#include <vector>
 #include <cstddef> // std::size_t
 
 namespace Fyredon {
@@ -48,7 +49,7 @@ public:
 	} GLFWState;
 
 protected:
-	EditorApplication() = default;
+	EditorApplication();
 
 	// Application Tick
 	void tick_editor();
@@ -70,7 +71,7 @@ protected:
 	void shutdown_gui();
 	void tick_gui();
 
-	// Engine (temp)
+	// Engine/World (temp)
 	void update_camera();
 	void get_dt();
 

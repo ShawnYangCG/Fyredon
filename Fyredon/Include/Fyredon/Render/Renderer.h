@@ -34,32 +34,26 @@ public:
 	void render_prep();
 	void render(Camera& cam_ref); // Single Tick of renderer 
 
-	// Per Tick Operations
-	void create_test_prims();
-
-	// State Query
-	void query_drawState();
-
 	// Debug
 	void test_mesh();
+	void create_test_prims();
 
 private:
 	void get_GLError();
 
 private:
-	// Renderer stores pointers to each entitiy it uses, no ownership. 
-	// 
+	// Renderer stores pointers to each entitiy it uses, no ownership (apart from grid and ground plane)
 	// Render Prims / Mesh
 	std::vector<Primitive*> prims;
 	GroundPlane* ground;
 	Primitive* axis;
 
-	// Render Lights (single test) 
+	// Render Lights (single test) rm this later...
 	glm::vec3 light_pos;
 	float light_strength;
 
 
-	// Render State
+	// Renderer Draw State
 	bool draw_grid, draw_axis, draw_prims; 
 	bool ren_normals, ren_wire;
 

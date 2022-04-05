@@ -43,8 +43,9 @@
 #define EDITOR_WINDOW_RESIZE
 // #define EDITOR_FULLSCREEN 
 
-// ================ Init Singleton Instance ================
+// ================ Init Singleton Instance + Static Data ================
 Fyredon::EditorApplication Fyredon::EditorApplication::app;
+decltype(Fyredon::EditorApplication::GLFWState) Fyredon::EditorApplication::GLFWState;
 
 Fyredon::EditorApplication& Fyredon::EditorApplication::get_instance()
 {
@@ -52,6 +53,13 @@ Fyredon::EditorApplication& Fyredon::EditorApplication::get_instance()
 }
 
 // ================ Editor Application Class Implementation ================
+
+Fyredon::EditorApplication::EditorApplication() 
+	: dt(0.f), cur_t(0.f), prev_t(0.f), width(512), height(512), last_yawoffs(0.f),
+	last_pitchoffs(0.f), last_zoom(0.f)
+{
+	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, width / height, true);
+}
 
 Fyredon::EditorApplication::~EditorApplication()
 {

@@ -3,7 +3,7 @@
 /*=============================================================================
 	Camera.cpp: Camera Class Impelementation 
 =============================================================================*/
-#include "Fyredon//Other/pch.h"
+#include "Fyredon/Other/pch.h"
 // Implments
 #include "Fyredon/Render/Camera.h"
 

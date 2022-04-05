@@ -23,6 +23,7 @@ class Camera
 {
 public:
 	Camera(glm::vec3 Pos, float Fov, float Aspect, bool Freelook);
+	Camera() {}
 	~Camera() = default; 
 
 	// View Members

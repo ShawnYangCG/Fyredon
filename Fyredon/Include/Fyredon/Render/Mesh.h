@@ -35,7 +35,7 @@ public:
 	virtual bool check_state() const override;
 
 	void load_obj(bool has_tex = false);
-	void load_texture(const char *filepath, uint unit = 0);
+	void load_texture(const char *filepath, GLuint unit = 0);
 
 public:
 	std::string file_path; 

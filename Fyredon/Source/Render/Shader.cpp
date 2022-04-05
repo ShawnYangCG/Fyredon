@@ -22,6 +22,8 @@
 
 // Creation of Shader, Loading and Building, now decoupled from Ctor, for completeness of OpenGL state. 
 
+// ToDo : Replace Logger output with Debug Class
+
 Fyredon::Shader::Shader(const char *sname, const char *vertpath, const char *fragpath)
 {
 	name = sname; 
