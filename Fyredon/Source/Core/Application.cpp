@@ -38,6 +38,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#pragma warning( disable : 26495) 
+
 #define GL_VERSION_MAJOR 4
 #define GL_VERSION_MINOR 5
 #define EDITOR_WINDOW_RESIZE

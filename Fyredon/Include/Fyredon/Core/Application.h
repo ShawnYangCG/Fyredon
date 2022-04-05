@@ -10,7 +10,9 @@
 #include "Fyredon/Render/Camera.h"
 
 // Extern Includes
+#ifndef GLEW_STATIC
 #define GLEW_STATIC // Fyredon DLL --> GLEW (static linking)
+#endif
 #include "GLEW/glew.h"
 #include "GLFW/glfw3.h"
 
