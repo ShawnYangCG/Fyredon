@@ -1,0 +1,7 @@
+# Files
+*.vcxproj.user
+
+# Dirs
+openglapp_ref/.vs/
+
+
