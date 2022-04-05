@@ -1,4 +1,9 @@
-// COMP5823M - A1 : Niall Horn - texture.h
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Texture.h: Basic texture loading and state management class : Niall
+=============================================================================*/
+
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
@@ -7,21 +12,18 @@
 #include <string>
 #include <sstream>
 
-using byte = unsigned char;
-using uint = unsigned int;
+namespace Fyredon {
 
+using GLuint = unsigned int;
 
 class Texture
 {
 public:
-	enum filter_type
-	{
-		NEAREST = 0, LINEAR
-	};
+	enum filter_type { NEAREST = 0, LINEAR };
 public:
-	Texture(const char *name, const char *tex_path, uint Unit);
-	Texture() {};
-	~Texture() = default; 
+	Texture(const char* Tex_Name, const char* Tex_Path, GLuint Tex_Unit);
+	Texture() = default;
+	~Texture();
 
 	// State Setup
 	void load();
@@ -34,12 +36,16 @@ public:
 	std::ostringstream debug();
 
 public:
-	bool valid_state; 
-	int32_t width, height, nChannels; 
-	std::string name, filePath;
-	uint ID, unit;
-	filter_type activeFilter; 
+	bool valid_state;
+	int32_t width, height, channels;
+	std::string name, file_path;
+	GLuint ID, unit;
+	filter_type filter;
 };
+
+}
+
+
 
 
 #endif

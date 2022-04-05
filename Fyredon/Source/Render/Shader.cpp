@@ -1,36 +1,41 @@
-// COMP5823M - A1 : Niall Horn - shader.cpp
+// Copyright Fyredon. All Rights Reserved.
 
+/*=============================================================================
+	Shader.cpp: Load, Compile, Link shaders to define shadw program : Niall
+=============================================================================*/
+#include "Fyredon/Other/pch.h"
 // Implements 
-#include "shader.h" 
+#include "Fyredon/Render/Shader.h" 
+
+// Ext Headers
+// GLEW
+#include "GLEW/glew.h" 
+// GLM
+#include "glm/gtc/type_ptr.hpp"
 
 // Std Headers
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
-// Ext Headers
-// GLEW
-#include "ext/GLEW/glew.h" 
-// GLM
-#include "ext/glm/gtc/type_ptr.hpp"
-
 #define BUFFER_SIZE 512
 
-// Creation of Shader,Loading and Building, now decoupled from Ctor, for completeness of OpenGL state. 
+// Creation of Shader, Loading and Building, now decoupled from Ctor, for completeness of OpenGL state. 
 
-Shader::Shader(const char *sname, const char *vertpath, const char *fragpath)
+Fyredon::Shader::Shader(const char *sname, const char *vertpath, const char *fragpath)
 {
 	name = sname; 
 	valid_state = false;
 	vert_path = vertpath, frag_path = fragpath; 
 } 
 
-Shader::~Shader()
+// ToDo : Look into this seg fault ...
+Fyredon::Shader::~Shader()
 {
 	//glDeleteProgram(ID);
 }
 
-void Shader::load()
+void Fyredon::Shader::load()
 {
 	std::ifstream vShaderFile, fShaderFile;
 	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -53,7 +58,7 @@ void Shader::load()
 	}
 	catch (std::ifstream::failure err) // Catch ifstream failure error to object err
 	{
-		std::cerr << "ERROR::Shader::" << name << "::Failed to load shader code::" << err.what() << std::endl;
+		std::cerr << "ERROR::Fyredon::Shader::" << name << "::Failed to load shader code::" << err.what() << std::endl;
 		std::terminate();
 	}
 
@@ -89,64 +94,64 @@ void Shader::load()
 	valid_state = true;
 }
 
-void Shader::use()
+void Fyredon::Shader::use()
 {
-	if (!valid_state) {std::cerr << "ERROR::Shader::" << name << ":: invalid state" << std::endl; return;}
+	if (!valid_state) {std::cerr << "ERROR::Fyredon::Shader::" << name << ":: invalid state" << std::endl; return;}
 	glUseProgram(ID);
 }
 
 // ========================== Set Uniform Member Functions ========================== 
-void Shader::setBool(const std::string &name, bool value) const
+void Fyredon::Shader::setBool(const std::string &name, bool value) const
 {
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (!id){ std::cerr << "ERROR::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return;}
+	if (!id){ std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return;}
 	glUniform1i(id, (int)value); 
 }
 
-void Shader::setInt(const std::string &name, int value) const
+void Fyredon::Shader::setInt(const std::string &name, int value) const
 {
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (id == -1) { std::cerr << "ERROR::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
+	if (id == -1) { std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
 	glUniform1i(id, value);
 }
 
-void Shader::setFloat(const std::string &name, float value) const
+void Fyredon::Shader::setFloat(const std::string &name, float value) const
 {
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (id == -1) { std::cerr << "ERROR::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
+	if (id == -1) { std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
 	glUniform1f(id, value);
 }
 
-void Shader::setVec(const std::string &name, const glm::vec3 value) const
+void Fyredon::Shader::setVec(const std::string &name, const glm::vec3 value) const
 {
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (id == -1) { std::cerr << "ERROR::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
+	if (id == -1) { std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
 	glUniform3fv(id, 1, glm::value_ptr(value));
 }
 
-void Shader::setMat3(const std::string &name, const glm::mat3x3 value) const
+void Fyredon::Shader::setMat3(const std::string &name, const glm::mat3x3 value) const
 {
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (id == -1) { std::cerr << "ERROR::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
+	if (id == -1) { std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
 	glUniformMatrix3fv(id, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::setMat4(const std::string &name, const glm::mat4x4 value) const
+void Fyredon::Shader::setMat4(const std::string &name, const glm::mat4x4 value) const
 {
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (id == -1) { std::cerr << "ERROR::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
+	if (id == -1) { std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
 	glUniformMatrix4fv(id, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 
 // ========================== Check Compile and Link ========================== 
-void Shader::check_compile(unsigned int &shader, std::string type)
+void Fyredon::Shader::check_compile(unsigned int &shader, std::string type)
 {
 	int sucess;
 	char err_log[BUFFER_SIZE];
@@ -156,13 +161,13 @@ void Shader::check_compile(unsigned int &shader, std::string type)
 	if (!sucess)
 	{
 		glGetShaderInfoLog(shader, BUFFER_SIZE, NULL, err_log);
-		std::cout << "ERROR::Shader::" << name << " " << type << "::Compile Failed : " 
+		std::cout << "ERROR::Fyredon::Shader::" << name << " " << type << "::Compile Failed : " 
 			<< err_log << std::endl;
 		std::terminate();
 	}
 }
 
-void Shader::check_link()
+void Fyredon::Shader::check_link()
 {
 	int sucess;
 	char err_log[BUFFER_SIZE];
@@ -172,14 +177,14 @@ void Shader::check_link()
 	if (!sucess)
 	{
 		glGetProgramInfoLog(ID, BUFFER_SIZE, NULL, err_log);
-		std::cerr << "ERROR::Shader::" << name << "::Linkage Failed : " 
+		std::cerr << "ERROR::Fyredon::Shader::" << name << "::Linkage Failed : " 
 			<< err_log << std::endl;
 		std::terminate();
 	}
 }
 
 // ========================== Debug / Output Shader Code ========================== 
-void Shader::debug_vert()
+void Fyredon::Shader::debug_vert()
 {
 	if (vert_shader_code.size() >= 1)
 	{
@@ -195,7 +200,7 @@ void Shader::debug_vert()
 	}
 }
 
-void Shader::debug_frag()
+void Fyredon::Shader::debug_frag()
 {
 	if (frag_shader_code.size() >= 1)
 	{

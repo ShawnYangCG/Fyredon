@@ -1,4 +1,9 @@
-// COMP5823M - A1 : Niall Horn - mesh.h
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Mesh.h: .obj based mesh : Niall
+=============================================================================*/
+
 #ifndef MESH_H
 #define MESH_H
 
@@ -8,7 +13,7 @@
 
 // Ext Headers 
 // GLM
-#include "ext/glm/glm.hpp"
+#include "glm/glm.hpp"
 
 // Project Headers
 #include "primitive.h"
@@ -17,6 +22,8 @@
 // Info : Primitive based class for rendering meshes based on loaded .obj file, along with textures. 
 // Vertex Attribute layout same as Primitive (P(x,y,z), N(x,y,z), C(r,g,b), UV(u,v))
 
+namespace Fyredon
+{
 class Mesh : public Primitive
 {
 public:
@@ -48,6 +55,8 @@ public:
 	bool use_tex;
 	Texture *tex; 
 };
+}
+
 
 
 #endif

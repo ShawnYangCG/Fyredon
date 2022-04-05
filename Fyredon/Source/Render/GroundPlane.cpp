@@ -1,13 +1,20 @@
-// COMP5823M - A1 : Niall Horn - ground.cpp
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	GroundPlane.cpp: :Niall
+=============================================================================*/
+#include "Fyredon/Other/pch.h"
 
 // Implements
-#include "ground.h"
+#include "Fyredon/Render/GroundPlane.h"
 
+// Extern
+#include "glm/common.hpp"
 
-// =================== Ground Implementation ===================
+// =================== Ground Plane Implementation ===================
 
-Ground::Ground()
-	: Mesh("Ground_Plane", "../../assets/mesh/grid.obj")
+Fyredon::GroundPlane::GroundPlane()
+	: Mesh("Ground_Plane", "../../../assets/mesh/grid.obj")
 {
 	size = 1.f, tile = 2.f; 
 	load_obj(true);
@@ -18,7 +25,7 @@ Ground::Ground()
 	mode = Render_Mode::RENDER_MESH;
 }
 
-void Ground::set_size(float Size)
+void Fyredon::GroundPlane::set_size(float Size)
 {
 	size = Size; 
 	for (vert &v : obj_data.verts)
@@ -29,7 +36,7 @@ void Ground::set_size(float Size)
 	set_data_mesh(obj_data.verts);
 }
 
-void Ground::set_tile(float Tile)
+void Fyredon::GroundPlane::set_tile(float Tile)
 {
 	tile = Tile;
 	for (vert &v : obj_data.verts)

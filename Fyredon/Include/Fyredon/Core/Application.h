@@ -7,6 +7,7 @@
 
 // Project Includes
 #include <Fyredon/Other/dllport.h>
+#include "Fyredon/Render/Camera.h"
 
 // Extern Includes
 #define GLEW_STATIC // Fyredon DLL --> GLEW (static linking)
@@ -16,10 +17,9 @@
 // Std Headers
 #include <cstddef> // std::size_t
 
-namespace Fyredon 
-{
-	class GUI_Panel;
-	class Camera; 
+namespace Fyredon {
+
+class GUI_Panel;
 /*
 *   ============ Editor Application Class ============
 *   Core class that defines an instance of the engine editor application to be created and executed
@@ -40,8 +40,8 @@ public:
 	// GLFW / Input State (modified via public callback access)
 	static struct {
 		int    width, height;
-		double mouse_offset_x = 0.f, mouse_offset_y = 0.f;
-		double mousepos_x = 0.f, mousepos_y = 0.f;
+		double mouse_offset_x  = 0.f, mouse_offset_y  = 0.f;
+		double mousepos_x      = 0.f, mousepos_y      = 0.f;
 		double mousepos_prev_x = 0.f, mousepos_prev_y = 0.f;
 		double scroll_y = 0.f;
 		bool is_init = false;
@@ -51,7 +51,10 @@ protected:
 	EditorApplication() = default;
 
 	// Application Tick
-	void tick();
+	void tick_editor();
+
+	// Engine / Game Tick
+	void tick_engine();
 
 	// OpenGL Setup
 	void setup_ogl_window_contex();
@@ -67,8 +70,9 @@ protected:
 	void shutdown_gui();
 	void tick_gui();
 
-	// Nested Game Tick...
-	// Nested Game State...
+	// Engine (temp)
+	void update_camera();
+	void get_dt();
 
 private:
 	static EditorApplication app; // singleton
@@ -95,8 +99,11 @@ private:
 	Camera camera;
 	float last_yawoffs, last_pitchoffs, last_zoom;
 
-}; // end of EditorApplication class
+	// Editor State
+	float dt;
+	float cur_t, prev_t; 
 
+}; // EditorApp
 
 //  ============ GLFW Input Callbacks ============
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);

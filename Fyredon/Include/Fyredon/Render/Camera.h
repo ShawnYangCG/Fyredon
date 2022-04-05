@@ -1,50 +1,50 @@
-// COMP5823M - A1 : Niall Horn - camera.h
-#ifndef CAMERA_H
-#define CAMERA_H
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Camera.h: Camera class with 5DOF : Niall
+=============================================================================*/
+#pragma once
 
 // Std Headers
 #include <sstream>
 
 // Ext Headers 
 // GLM
-#include "ext/glm/gtc/matrix_transform.hpp"
-#include "ext/glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 // FDs
 struct GLFWwindow;
 
+namespace Fyredon
+{
 // Info : Basic Camera class using GLFW for input polling
-
 class Camera
 {
 public:
-	Camera(glm::vec3 pos, float target_offset, float fov, float ar, bool freelook);
-	Camera() {};
+	Camera(glm::vec3 Pos, float Fov, float Aspect, bool Freelook);
 	~Camera() = default; 
 
 	// View Members
-	glm::vec3 Cam_Pos;
-	glm::vec3 Cam_Up;
+	glm::vec3 position;
+	glm::vec3 ref_up;
 
 	// Camera Basis Members
-	glm::vec3 Cam_Basis_X;
-	glm::vec3 Cam_Basis_Y;
-	glm::vec3 Cam_Basis_Z;
+	glm::vec3 basis_x, basis_y, basis_z;
 
 	// Mouse Rotation Members - 
-	float Yaw, Pitch;
-	float Yaw_Min, Pitch_Min;
-	float Yaw_Max, Pitch_Max;
+	float yaw, pitch;
+	float yaw_min, yaw_max;
+	float pitch_min, pitch_max;
 
 	// Camera Data
-	float Sensitvity;
-	float FOV, Aspect_Ratio, Near_Plane, Far_Plane;
+	float sensitvity;
+	float fov, aspect_ratio, near_plane, far_plane;
 	bool free_look;
 
 public:
-	glm::mat4 get_ViewMatrix();
-
-	glm::mat4 get_PerspMatrix();
+	glm::mat4 get_view_matrix();
+	glm::mat4 get_proj_matrix();
 
 	void update_camera(GLFWwindow *window, float Camera_Speed, float dt, float yaw, float pitch);
 
@@ -53,5 +53,5 @@ public:
 private:
 	void calc_basis();
 };
+}
 
-#endif

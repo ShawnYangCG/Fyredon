@@ -1,24 +1,28 @@
-// COMP5823M - A1 : Niall Horn - shader.h
-#ifndef SHADER_H
-#define SHADER_H
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Shader.h: Load, Compile, Link shaders to define shadw program : Niall
+=============================================================================*/
+#pragma once
 
 // Ext Headers
-// GLEW
-#include "ext/GLEW/glew.h" 
-// GLM
-#include "ext/glm/glm.hpp"
-#include "ext/glm/gtc/type_ptr.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 // Std Headers
 #include <string>
-#include <vector>
 
-// Info : Basic Shader class, that defines a shader program containg a Vertex and Fragment stage. 
+namespace Fyredon
+{
+	using GLuint = unsigned int; 
+
+// Info : Basic Shader class, that defines a shader program containg a Vertex and Fragment stage.
+//        This will be replaced with base shader classes later. 
 
 class Shader
 {
 public:
-	Shader() {};
+	Shader() = default;
 	Shader(const char *name, const char *vertparth, const char *fragpath);
 	~Shader();
 
@@ -49,5 +53,6 @@ private:
 	std::string vert_shader_code, frag_shader_code;
 };
 
-#endif 
+}
+
 

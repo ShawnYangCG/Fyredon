@@ -10,7 +10,7 @@
 // Std Headers / Use PCH
 //#include <iostream>
 //#include <vector>
-//#include <thread>
+#include <thread>
 
 // Ext Headers
 // GLEW
@@ -24,13 +24,10 @@
 
 // =========================================== Viewer Class Implementation ===========================================
 
-Fyredon::Renderer::Renderer()
+Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
+	ogl_wincontext(ogl_wincontext)
 {
-	// ============= Init =============
 	tick_c = 0;
-	last_yawoffs = 0.f;
-	last_pitchoffs = 0.f;
-	last_zoom = 0.f;
 	draw_prims = true; 
 	draw_grid = true;
 	draw_axis = true;
@@ -38,145 +35,15 @@ Fyredon::Renderer::Renderer()
 	light_pos = glm::vec3(0.f, 5.f, 3.f);
 	ren_normals = false; 
 	ren_wire = false; 
-
-	// ============= OpenGL Setup ============= 
-	// Setup OpenGL Context and Window (GLFW)
-	window_context(); 
-
-	// Load OpenGL Extensions (GLEW)
-	extensions_load();
-
-	// ============= Camera =============
-	#if USE_FREE_CAMERA == 0
-	//camera = Camera(glm::vec3(0.f, 0.25f, 1.f), 1.f, 80.f, width / height, false); // Fixed
-	#else
-	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 1.f, 80.f, width / height, true);    // Free
-	#endif
-}
-
-Viewer::~Viewer() 
-{
-	glfwDestroyWindow(window); window = nullptr;
-	glfwTerminate();
-}
-
-// Initalizes viewer state and calls indefinite application execution loop.
-void Viewer::exec()
-{
-	// ============= Init Operations =============
-	render_prep();
-
-	// ============= Test Operations =============
-	// Create Test Mesh
-	test_mesh();
-
-	// ============= Application Loop =============
-	bool esc = false; 
-	while (!glfwWindowShouldClose(window) && !esc)
-	{
-		// Tick viewer application
-		tick();
-
-		// Query Esc key
-		esc = esc_pressed();
-	} 
-
-	// ============= Shutdown GUI =============
-	gui_shutdown();
-}
-
-
-// Single tick of the viewer application, all runtime operations are called from here. 
-void Viewer::tick()
-{
-	// ============= App Operations =============
-	get_dt();
-	update_window();
-	update_camera();
-
-	// ============= Input Query =============
-	// [..]
-
-	// ============= Simulation =============
-	// [..]
-
-	// ============= Render =============
-	render();
-
-	// ============= Post Tick Operations =============
-	tick_c++;
-}
-
-// Create Window via GLFW and Initalize OpenGL Context on current thread. 
-void Viewer::window_context()
-{
-	// ============= GLFW Setup =============
-	glfwInit();
-	if (!glfwInit())
-	{
-		std::cerr << "Error::Viewer:: GLFW failed to initalize.\n";
-		std::terminate();
-	}
-	// Window State
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_MAJOR);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_MINOR);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // Fixed Window Size. 
-	glfwWindowHint(GLFW_SAMPLES, 16); // MSAA.
-	// Create Window
-	window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
-	if (window == NULL)
-	{
-		std::cerr << "Error::Viewer:: GLFW failed to initalize.\n";
-		glfwTerminate();
-		std::terminate();
-	}
-
-	// ============= Set GLFW Callbacks =============
-	// Window Callack
-	glfwSetFramebufferSizeCallback(window, &framebuffer_size_callback);
-	// Mouse Callbacks
-	glfwSetCursorPosCallback(window, &mouse_callback);
-	glfwSetScrollCallback(window, &scroll_callback);
-
-	// ============= Set Context and Viewport =============
-	glfwMakeContextCurrent(window);
-	glViewport(0, 0, width, height);
-
-	// ============= Setup GUI =============
-	gui_setup();
-}
-
-// Load OpenGL Functions via GLEW and output device info.
-void Viewer::extensions_load()
-{
-	// GLEW Setup
-	glewExperimental = GL_TRUE;
-	glewInit();
-	if (glewInit() != GLEW_OK)
-	{
-		std::cerr << "ERROR::Viewer:: GLFW failed to initalize.\n";
-		std::terminate();
-	}
-
-	// Query GL Device and Version Info - 
-	render_device = glGetString(GL_RENDERER);
-	version = glGetString(GL_VERSION);
-	// Cleanup Debug Output
-	std::cout << "======== DEBUG::OPENGL::BEGIN ========\n"
-		<< "RENDER DEVICE = " << render_device << "\n"
-		<< "VERSION = " << version << "\n";
-	std::cout << "======== DEBUG::OPENGL::END ========\n\n";
 }
 
 // Initalize Render State
-void Viewer::render_prep()
+void Fyredon::Renderer::render_prep()
 {
-	// ============= OpenGL Pre Render State =============
 	// Multisampling 
 	glEnable(GL_MULTISAMPLE);
 
-	// Sizes
+	// Prim Sizes
 	glPointSize(5.f);
 	glLineWidth(2.5f);
 
@@ -184,10 +51,13 @@ void Viewer::render_prep()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
 
-	// ============= Create Viewer Primtivies =============
+// Info : Contain these test render prims here for now.
+void Fyredon::Renderer::create_test_prims()
+{
 	// Ground Plane
-	ground = new Ground;
+	ground = new GroundPlane;
 	ground->set_size(4.f);
 	ground->set_tile(2.f);
 
@@ -205,12 +75,12 @@ void Viewer::render_prep()
 	axis->set_data_mesh(data, 6);
 	axis->scale(glm::vec3(1.f));
 	axis->translate(glm::vec3(0.f, 0.01f, 0.f));
-	axis->set_shader("../../shaders/guides.vert", "../../shaders/guides.frag");
+	axis->set_shader("../../../Shaders/guides.vert", "../../../Shaders/guides.frag");
 	axis->mode = Render_Mode::RENDER_LINES;
 }
 
-// Render Operations
-void Viewer::render()
+// Info : Basic forward rendering pipeline, render to framebuffer.
+void Fyredon::Renderer::render(Camera &cam_ref)
 {
 	// ==================== Render State ====================
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
@@ -221,14 +91,14 @@ void Viewer::render()
 	// Draw Grid 
 	if (draw_grid)
 	{
-		ground->set_cameraTransform(camera.get_ViewMatrix(), camera.get_PerspMatrix());
+		ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		ground->render();
 	}
 
 	// Draw Axis
 	if (draw_axis)
 	{
-		axis->set_cameraTransform(camera.get_ViewMatrix(), camera.get_PerspMatrix());
+		axis->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		glLineWidth(2.5f); // Reset for axis width.
 		axis->render();
 	}
@@ -240,76 +110,47 @@ void Viewer::render()
 		for (Primitive *p : prims)
 		{
 			// Update Uniforms
-			p->shader.setVec("camPos_world",   camera.Cam_Pos);
+			p->shader.setVec("camPos_world", cam_ref.position);
 			p->shader.setVec("lightPos_world", light_pos);
 			p->shader.setFloat("lightStr",     light_strength);
 
-			p->set_cameraTransform(camera.get_ViewMatrix(), camera.get_PerspMatrix());
+			p->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 			p->render();
 		}
 	}
 
-	// ==================== Render GUI ====================
-	gui_render();
-
 	// ====================  Swap and Poll ====================
 	get_GLError();
-	glfwSwapBuffers(window);
-	glfwPollEvents();
+
+	//glfwSwapBuffers(window);
+	//glfwPollEvents();
 }
 
-void Viewer::query_drawState()
+void Fyredon::Renderer::query_drawState()
 {
-	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+	if (glfwGetKey(ogl_wincontext, GLFW_KEY_G) == GLFW_PRESS)
 	{
 		draw_grid = !draw_grid;
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
-	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+	if (glfwGetKey(ogl_wincontext, GLFW_KEY_H) == GLFW_PRESS)
 	{
 		draw_axis = !draw_axis;
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
-void Viewer::update_window()
-{
-	// Nth frame update
-	if (tick_c % 5 != 0) return;
-
-	// Update Window Title 
-	std::string title_u;
-	title_u = title + "      OpenGL " + std::to_string(GL_MAJOR) + "." + std::to_string(GL_MINOR)
-		+ "       FPS : " + std::to_string(1.f / dt);
-	
-	glfwSetWindowTitle(window, title_u.c_str());
-}
-
-void Viewer::get_GLError()
+// Terrible Error Checking, not specfic at all. 
+void Fyredon::Renderer::get_GLError()
 {
 	GLenum err = glGetError();
 	if (err != GL_NO_ERROR) std::cerr << "ERROR::Viewer::GL_ERROR = " << err << std::endl;
 }
 
-void Viewer::get_dt()
-{
-	prev_t = cur_t; 
-	cur_t = glfwGetTime();
-	dt = cur_t - prev_t; 
-}
-
-bool Viewer::esc_pressed()
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) return true;
-	return false; 
-}
-
 // =========================================== DEBUG CODE ===========================================
 
-// Info : Test Mesh to verify viewer and OpenGL is setup correctly. 
-void Viewer::test_mesh()
+void Fyredon::Renderer::test_mesh()
 {
-	// Pig
 	Mesh *pig = new Mesh("test_pig", "../../assets/mesh/pighead.obj");
 	pig->load_obj(false);
 	pig->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
@@ -319,147 +160,4 @@ void Viewer::test_mesh()
 	pig->mode = Render_Mode::RENDER_MESH;
 	prims.push_back(pig);
 }
-
-// =========================================== DearImGUI Implementation ===========================================
-
-// Info : imgui Startup 
-void Viewer::gui_setup()
-{
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	ImGui::StyleColorsDark();
-
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 400");
-}
-
-// Info : GUI Render with forwarding the relveant data based on input.
-void Viewer::gui_render()
-{
-	get_GLError();
-	bool window = true; 
-
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	// ============= GUI Static Locals / State =============
-	// Viewer State
-	static float lpos[3]{ light_pos.x, light_pos.y, light_pos.z };
-
-	// ============= Imgui layout =============
-	{
-		// Begin ImGui
-		ImGui::Begin("Viewer App");
-
-		// ========== Viewer State ==========
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Viewer Controls");
-		ImGui::PopStyleColor();
-		ImGui::Text("Light");
-		ImGui::SliderFloat("Light Strength", &light_strength, 0.f, 10.f);
-		if (ImGui::SliderFloat3("Light Position", lpos, -100.f, 100.f))
-		{
-			light_pos.x = lpos[0], light_pos.y = lpos[1], light_pos.z = lpos[2];
-		}
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Viewport Controls");
-		ImGui::PopStyleColor();
-		// Render Cloth Normals
-		if (ImGui::Button("Draw Mesh"))
-		{
-			draw_prims = !draw_prims;
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-		// Draw Axis
-		if (ImGui::Button("Draw Origin Axis"))
-		{
-			draw_axis = !draw_axis; 
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-		// Draw Grid
-		if (ImGui::Button("Draw Grid"))
-		{
-			draw_grid = !draw_grid;
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-		
-		// End ImGui
-		ImGui::End();
-	}
-
-	// ============= Imgui Render =============
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	get_GLError();
-}
-
-// Info : imgui shut down. 
-void Viewer::gui_shutdown()
-{
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-}
-
-// =========================================== GLFW State + Callbacks ===========================================
-
-void Viewer::update_camera()
-{
-	// Fetch global GLFW State
-	width = GLFWState.width, height = GLFWState.height;
-
-	// Only set yaw,pitch if delta from last tick (update_camera() call). 
-	float delta_yaw   = (GLFWState.mouse_offset_x   != last_yawoffs)   ? GLFWState.mouse_offset_x : 0.f; 
-	float delta_pitch = (GLFWState.mouse_offset_y   != last_pitchoffs) ? GLFWState.mouse_offset_y : 0.f;
-	float delta_zoom  =  (GLFWState.scroll_y        != last_zoom)      ? GLFWState.scroll_y       : 0.f;
-	// Set last offsets
-	last_yawoffs   = GLFWState.mouse_offset_x;
-	last_pitchoffs = GLFWState.mouse_offset_y;
-	last_zoom = GLFWState.scroll_y;
-
-	// Update Camera State
-	camera.update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
-
-	// Update Aspect Ratio if changed
-	if (width != 0 && height != 0)
-	{
-		float ar = width / height;
-		camera.Aspect_Ratio = ar;
-	}
-}
-
-// ======= Callback Functions =======
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
-{
-	GLFWState.width = width, GLFWState.height = height; 
-	glViewport(0, 0, GLFWState.width, GLFWState.height);
-}
-
-void mouse_callback(GLFWwindow *window, double xpos, double ypos)
-{
-	if (!GLFWState.is_init)
-	{
-		GLFWState.mousepos_prev_x = xpos;
-		GLFWState.mousepos_prev_y = ypos;
-		GLFWState.is_init = true;
-	}
-	// Mouse Offset
-	GLFWState.mouse_offset_x =  (xpos - GLFWState.mousepos_prev_x);
-	GLFWState.mouse_offset_y =  (ypos - GLFWState.mousepos_prev_y);
-
-	// Prev Pos
-	GLFWState.mousepos_prev_x = xpos;
-	GLFWState.mousepos_prev_y = ypos;
-}
-
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
-{
-	GLFWState.scroll_y = yoffset;
-}
-
 

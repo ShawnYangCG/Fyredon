@@ -17,37 +17,28 @@
 // Ext Headers
 #include "glm/glm.hpp"
 
-// ForwardDecl
-class Framebuffer; 
 struct GLFWwindow;
+
+namespace Fyredon {
+
+class Framebuffer;
 struct GLFWState;
 
-// Typedef 
-//using byte = unsigned char;  // use std17 Byte 
-
-
-namespace Fyredon
-{
 class Renderer
 {
 public:
-	Renderer() = delete;
-	Renderer();
-	~Renderer();
+	Renderer(GLFWwindow *ogl_context);
+	~Renderer() = default; 
 
 	// Rendering
 	void render_prep();
-	void render(); // Single Tick of renderer 
-
+	void render(Camera& cam_ref); // Single Tick of renderer 
 
 	// Per Tick Operations
-	void update_window();
-	void update_camera();
+	void create_test_prims();
 
 	// State Query
 	void query_drawState();
-	bool esc_pressed();
-	void get_dt();
 
 	// Debug
 	void test_mesh();
@@ -56,25 +47,31 @@ private:
 	void get_GLError();
 
 private:
-
+	// Renderer stores pointers to each entitiy it uses, no ownership. 
+	// 
 	// Render Prims / Mesh
 	std::vector<Primitive*> prims;
-	Ground* ground;
+	GroundPlane* ground;
 	Primitive* axis;
 
 	// Render Lights (single test) 
 	glm::vec3 light_pos;
 	float light_strength;
-	bool ren_normals;
-	bool ren_wire;
+
 
 	// Render State
 	bool draw_grid, draw_axis, draw_prims; 
+	bool ren_normals, ren_wire;
 
-	// Viewer Intrinsics
-	std::size_t tick_c; 
-	float dt;
-	float cur_t, prev_t;
+	/* More optimal flags
+	struct 
+	{
+		uint8_t draw_grid : 1, draw_axis : 1, draw_prims : 1;
+		uint8_t ren_normals : 1, ren_wire : 1;
+	} draw_state; */
+
+	// Passed from editor. 
+	GLFWwindow* ogl_wincontext; 
 };
 
 }

@@ -1,7 +1,11 @@
-// COMP5823M - A2 : Niall Horn - primitive.cpp
+// Copyright Fyredon. All Rights Reserved.
 
+/*=============================================================================
+	Primitive.cpp: Base primtive class for rendering meshes : Niall
+=============================================================================*/
+#include "Fyredon/Other/pch.h"
 // Implements 
-#include "primitive.h"
+#include "Fyredon/Render/Primitive.h"
 
 // Std Headers
 #include <iostream>
@@ -9,16 +13,17 @@
 
 // Ext Headers 
 // GLEW
-#include "ext/GLEW/glew.h" 
+#include "GLEW/glew.h" 
 // GLFW
-#include "ext/GLFW/glfw3.h" 
+#include "GLFW/glfw3.h" 
 // GLM
-#include "ext/glm/glm.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 
 // ================================== Primitive Class Implementation ==================================
 
-Primitive::Primitive(const char *Name)
+Fyredon::Primitive::Primitive(const char *Name)
 	: name(Name), vert_count(0), mode(Render_Mode::RENDER_POINTS)
 {
 	flags.buffers_set  = 0;
@@ -30,14 +35,14 @@ Primitive::Primitive(const char *Name)
 	model = glm::mat4(1);
 }
 
-Primitive::~Primitive()
+Fyredon::Primitive::~Primitive()
 {
 	if (!flags.buffers_set) return; 
 	if (VAO) glDeleteVertexArrays(1, &VAO);
 	if (VBO) glDeleteBuffers(1, &VBO);
 }
 
-void Primitive::render()
+void Fyredon::Primitive::render()
 {
 	// Check for state to render
 	if (!check_state())
@@ -87,7 +92,7 @@ void Primitive::render()
 // Data   : (x,y,z) | (x,y,z) | (r,g,b) | (u,v)
 // ================================
 
-void Primitive::set_data_mesh(const std::vector<vert> &data)
+void Fyredon::Primitive::set_data_mesh(const std::vector<vert> &data)
 {
 	// Copy Mesh Data
 	vert_data.clear();
@@ -112,7 +117,7 @@ void Primitive::set_data_mesh(const std::vector<vert> &data)
 	// Setup Buffers
 	create_buffers();
 }
-void Primitive::set_data_mesh(const float *data, std::size_t vert_n)
+void Fyredon::Primitive::set_data_mesh(const float *data, std::size_t vert_n)
 {
 	flags.data_set = 0; 
 	// Copy Mesh Data
@@ -127,7 +132,7 @@ void Primitive::set_data_mesh(const float *data, std::size_t vert_n)
 	create_buffers();
 }
 
-void Primitive::create_buffers()
+void Fyredon::Primitive::create_buffers()
 {
 	// Delete previous resources 
 	if (VAO) glDeleteVertexArrays(1, &VAO);
@@ -166,7 +171,7 @@ void Primitive::create_buffers()
 // These functions could be optimized to only update delta attribute regions of the buffer, layout would need to change.  
 
 // Only sets position of vertices (allows for updating positions per tick)
-void Primitive::update_data_position(const std::vector<glm::vec3> &posData)
+void Fyredon::Primitive::update_data_position(const std::vector<glm::vec3> &posData)
 {
 	for (std::size_t v = 0; v < vert_count; ++v)
 	{
@@ -183,7 +188,7 @@ void Primitive::update_data_position(const std::vector<glm::vec3> &posData)
 }
 
 // Only sets colour of vertcies (allows for updating colours per tick)
-void Primitive::update_data_colour(const std::vector<glm::vec3> &colData)
+void Fyredon::Primitive::update_data_colour(const std::vector<glm::vec3> &colData)
 {
 	for (std::size_t v = 0; v < vert_count; ++v)
 	{
@@ -199,13 +204,13 @@ void Primitive::update_data_colour(const std::vector<glm::vec3> &colData)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Primitive::set_colour(const glm::vec3 &col)
+void Fyredon::Primitive::set_colour(const glm::vec3 &col)
 {
 	std::vector<glm::vec3> data(vert_count, col);
 	update_data_colour(data);
 }
 
-void Primitive::set_shader(const char *vert_path, const char *frag_path)
+void Fyredon::Primitive::set_shader(const char *vert_path, const char *frag_path)
 {
 	// Create Shader
 	std::string shader_name = name + "_Shader";
@@ -219,7 +224,7 @@ void Primitive::set_shader(const char *vert_path, const char *frag_path)
 	if (shader.valid_state) flags.shader_set = 1; 
 }
 
-void Primitive::set_cameraTransform(const glm::mat4x4 &view, const glm::mat4x4 &persp)
+void Fyredon::Primitive::set_cameraTransform(const glm::mat4x4 &view, const glm::mat4x4 &persp)
 {
 	if (!flags.shader_set) return; 
 	shader.setMat4("view", view);
@@ -228,29 +233,29 @@ void Primitive::set_cameraTransform(const glm::mat4x4 &view, const glm::mat4x4 &
 }
 
 // Flags that need to be set for rendering to be valid
-bool Primitive::check_state() const
+bool Fyredon::Primitive::check_state() const
 {
 	return flags.buffers_set & flags.camTrs_set & flags.data_set & flags.shader_set;
 }
 
 // Model Matrix Transformations 
-void Primitive::translate(const glm::vec3 &offs)
+void Fyredon::Primitive::translate(const glm::vec3 &offs)
 {
 	model = glm::translate(model, offs);
 }
 
-void Primitive::rotate(float d_ang, const glm::vec3 &axis)
+void Fyredon::Primitive::rotate(float d_ang, const glm::vec3 &axis)
 {
 	model = glm::rotate(model, glm::radians(d_ang), axis);
 }
 
-void Primitive::scale(const glm::vec3 &scale)
+void Fyredon::Primitive::scale(const glm::vec3 &scale)
 {
 	model = glm::scale(model, scale);
 }
 
 // Debug
-void Primitive::debug() const
+void Fyredon::Primitive::debug() const
 {
 	// Check for correct mesh_data size to vertex count with attributes. (11 * sizeof(float) per vert).
 	assert((vert_data.size() * sizeof(float)) == (vert_count * sizeof(float) * 11));

@@ -1,22 +1,25 @@
-// COMP5823M - A2 : Niall Horn - primitive.h
-#ifndef PRIMITIVE_H
-#define PRIMITIVE_H
+// Copyright Fyredon. All Rights Reserved.
 
+/*=============================================================================
+	Primitive.h: Base primtive class for rendering meshes : Niall
+=============================================================================*/
+#pragma once
+ 
 // Std Headers
 #include <string>
 #include <vector>
 
-// Ext Headers 
 // GLM
-#include "ext/glm/glm.hpp"
-// GLEW
-#include "ext/GLEW/glew.h" 
+#include "glm/glm.hpp"
 
 // Project Headers
-#include "shader.h"
-#include "texture.h"
+#include "Fyredon/Render/Shader.h"
 
-struct vert; 
+// Info : Base Primitive object for rendering within the viewer app. 
+namespace Fyredon
+{
+
+struct vert;
 
 enum Render_Mode
 {
@@ -24,8 +27,6 @@ enum Render_Mode
 	RENDER_LINES,
 	RENDER_POINTS
 };
-
-// Info : Base Primitive object for rendering within the viewer app. 
 
 class Primitive
 {
@@ -96,4 +97,4 @@ struct vert
 	glm::vec2 uv;
 };
 
-#endif
+}

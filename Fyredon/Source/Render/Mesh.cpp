@@ -1,17 +1,21 @@
-// COMP5823M - A1 : Niall Horn - mesh.cpp
+// Copyright Fyredon. All Rights Reserved.
 
+/*=============================================================================
+	Mesh.cpp: .obj based mesh : Niall
+=============================================================================*/
+#include "Fyredon/Other/pch.h"
 // Implements
-#include "mesh.h"
+#include "Fyredon/Render/Mesh.h"
+
+#include "GLEW/glew.h"
 
 // Std Headers
 #include <fstream>
 #include <sstream>
 
-// #define DEBUG_LOG
-
 // =================== Mesh Implementation ===================
 
-Mesh::Mesh(const char *name, const char *filePath)
+Fyredon::Mesh::Mesh(const char *name, const char *filePath)
 	: Primitive(name), file_path(filePath)
 {
 	use_tex = false; 
@@ -21,14 +25,14 @@ Mesh::Mesh(const char *name, const char *filePath)
 	mode = Render_Mode::RENDER_MESH;
 }
 
-Mesh::~Mesh()
+Fyredon::Mesh::~Mesh()
 {
 	if (tex) delete tex; 
 }
 
 // For now mesh is treated as triangle soup. No reuse of shared vertices. 
 // Very basic, assumes obj file has tris. 
-void Mesh::load_obj(bool has_tex)
+void Fyredon::Mesh::load_obj(bool has_tex)
 {
 	// Check file exists
 	std::ifstream in(file_path);
@@ -163,7 +167,7 @@ void Mesh::load_obj(bool has_tex)
 #endif
 }
 
-void Mesh::load_texture(const char *filepath, uint unit)
+void Fyredon::Mesh::load_texture(const char *filepath, uint unit)
 {
 	std::string tex_name = name + " texture";
 	tex = new Texture(tex_name.c_str(), filepath, unit);
@@ -175,7 +179,7 @@ void Mesh::load_texture(const char *filepath, uint unit)
 }
 
 // Add Texture requirement to check_state if used. 
-bool Mesh::check_state() const
+bool Fyredon::Mesh::check_state() const
 {
 	if (use_tex)
 	{
@@ -185,7 +189,7 @@ bool Mesh::check_state() const
 }
 
 // Override Primitive::Render()
-void Mesh::render()
+void Fyredon::Mesh::render()
 {
 	// Check for state to render
 	if (!check_state())

@@ -59,6 +59,9 @@ Fyredon::EditorApplication::~EditorApplication()
 	{
 		for (GUI_Panel* panel : gui_panels) delete panel; 
 	}
+
+	glfwDestroyWindow(window); window = nullptr;
+	glfwTerminate();
 }
 
 // Info : Called before application loop is ran, to do inital application setup. 
@@ -79,8 +82,8 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	FD_DEBUG_ERROR("sd", "This is an error log", 123);
 	FD_DEBUG_WARN("sf", "This is a warning log", 123.456);
 
+	// ALl 
 	// Do FileSystem setup ...
-
 	// Do Threading setup ...
 	//ThreadManager tm = ThreadManager();
 	//TerrainGenerator tg = TerrainGenerator();
@@ -93,27 +96,31 @@ void Fyredon::EditorApplication::exec()
 	// Edtior Loop (Game loop nested in here)
 	while (!glfwWindowShouldClose(window))
 	{
-		// Do awesome stuff
-		tick(); 
+		tick_engine();
+		tick_editor();
 	}
 
-	// Gui Shutdown
+	// Shutdown
 	shutdown_gui();
 }
 
+// Info : This should be encapsulated into its own class later for game + engine state
+void Fyredon::EditorApplication::tick_engine()
+{
+	get_dt();
+
+	// Tick Game
+	// ...
+
+	update_camera();
+}
+
 // Info : All operations done within the editor application for a single tick
-void Fyredon::EditorApplication::tick()
+void Fyredon::EditorApplication::tick_editor()
 {
 	paint_begin();
 
-	// Cool stuff going on here ...
-	// tick engine...
-
 	tick_gui();
-
-	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	
 	paint_end();
 }
@@ -126,6 +133,10 @@ void Fyredon::EditorApplication::tick_gui()
 		// If panel active...
 		panel->tick();
 	}
+
+	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 
@@ -164,15 +175,16 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_VERSION_MAJOR);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifndef EDITOR_WINDOW_RESIZE
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // Fixed Window Size. 
-#endif
 	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
+	#ifndef EDITOR_WINDOW_RESIZE
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // Fixed Window Size. 
+	#endif
+
 	// Create Window
 	const GLFWvidmode *monitor = glfwGetVideoMode(glfwGetPrimaryMonitor());
-#ifdef EDITOR_FULLSCREEN
+	#ifdef EDITOR_FULLSCREEN
 	width = monitor->width, height = monitor->height;
-#endif
+	#endif
 	window = glfwCreateWindow(width, height, window_title, NULL, NULL);
 	if (window == NULL)
 	{
@@ -210,6 +222,7 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	render_device.name        = glGetString(GL_RENDERER);
 	render_device.version     = glGetString(GL_VERSION);
 	render_device.sl_version  = glGetString(GL_SHADING_LANGUAGE_VERSION);
+
 	// Cleanup Debug Output
 	FD_DEBUG_BLOCK_BEGIN("DEBUG::OPENGL::DEVICE_INFO");
 	FD_DEBUG_BLOCK_MSG("DEVICE VENDOR", "s", render_device.vendor);
@@ -222,6 +235,38 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 GLFWwindow* Fyredon::EditorApplication::get_ogl_context()
 {
 	return window; 
+}
+
+void Fyredon::EditorApplication::get_dt()
+{
+	prev_t = cur_t;
+	cur_t  = glfwGetTime();
+	dt = cur_t - prev_t;
+}
+
+void Fyredon::EditorApplication::update_camera()
+{
+	// Fetch global GLFW State
+	width = GLFWState.width, height = GLFWState.height;
+
+	// Only set yaw,pitch if delta from last tick (update_camera() call). 
+	float delta_yaw   = GLFWState.mouse_offset_x != last_yawoffs   ? GLFWState.mouse_offset_x : 0.f;
+	float delta_pitch = GLFWState.mouse_offset_y != last_pitchoffs ? GLFWState.mouse_offset_y : 0.f;
+	float delta_zoom  = GLFWState.scroll_y       != last_zoom      ? GLFWState.scroll_y       : 0.f;
+	// Set last offsets
+	last_yawoffs   = GLFWState.mouse_offset_x;
+	last_pitchoffs = GLFWState.mouse_offset_y;
+	last_zoom      = GLFWState.scroll_y;
+
+	// Update Camera State
+	camera.update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
+
+	// Update Aspect Ratio if changed
+	if (GLFWState.width != 0 && GLFWState.height != 0)
+	{
+		float ar = width / height;
+		camera.aspect_ratio = ar;
+	}
 }
 
 // ============= GUI  =============
@@ -251,7 +296,7 @@ void Fyredon::EditorApplication::setup_gui()
 	ImGui_ImplOpenGL3_Init("#version 450");
 }
 
-// Info : DearImGui Shutdown operations
+// Info : DearImGui Shutdown operations (move to imgui wrapper class)
 void Fyredon::EditorApplication::shutdown_gui()
 {
 	ImGui_ImplOpenGL3_Shutdown();

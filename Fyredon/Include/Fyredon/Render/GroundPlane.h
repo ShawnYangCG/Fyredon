@@ -1,21 +1,27 @@
-// COMP5823M - A2 : Niall Horn - ground.h
-#ifndef GROUND_H
-#define GROUND_H
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	GroundPlane.h: :Niall
+=============================================================================*/
+#pragma once
 
 // Project Headers
-#include "mesh.h"
+#include "Fyredon/Render/Mesh.h"
 
-class Ground : public Mesh
+namespace Fyredon
+{
+class GroundPlane : public Mesh
 {
 public:
-	Ground();
-	~Ground() = default;
+	GroundPlane();
+	~GroundPlane() = default;
 
 	void set_size(float Size);
 	void set_tile(float Tile);
 
 public:
-	float size, tile; 
+	float size, tile;
 };
 
-#endif
+}
+
