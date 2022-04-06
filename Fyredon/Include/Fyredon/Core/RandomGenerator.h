@@ -1,11 +1,10 @@
-﻿#pragma once
-
-// Copyright Fyredon. All Rights Reserved.
+﻿// Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
     RandomGenerator.h: Basic PRNG Generation : Zechen
 =============================================================================*/
 
+#pragma once
 #include<climits>
 #include <iostream>
 

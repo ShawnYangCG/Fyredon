@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GroundPlane.cpp: :Niall
+	GroundPlane.cpp: : Niall
 =============================================================================*/
 #include "Fyredon/Other/pch.h"
 

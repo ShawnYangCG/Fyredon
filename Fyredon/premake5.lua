@@ -51,7 +51,8 @@ project "Fyredon"
 	-- Debug configuration
 	filter "configurations:Debug"
 		defines{
-			"FD_DEBUG"
+			"FD_DEBUG",
+			"GLEW_STATIC"
 		}
 		runtime "Debug"
 		symbols "on"
@@ -60,7 +61,8 @@ project "Fyredon"
 	-- Release configuration
 	filter "configurations:Release"
 		defines{
-			"FD_RELEASE"
+			"FD_RELEASE",
+			"GLEW_STATIC"
 		}
 
 		runtime "Release"

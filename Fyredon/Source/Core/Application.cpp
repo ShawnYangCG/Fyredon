@@ -9,10 +9,10 @@
 // Implements 
 #include "Fyredon/Core/Application.h"
 
-// GL, TBD : Move GLEW impl and incl to here.
-//#define GLEW_STATIC // Fyredon DLL --> GLEW (static linking)
-//#include "Fyredon/Extern/GLEW/glew.h"
-//#include "Fyredon/Extern/GLFW/glfw3.h"
+/* GL, TBD : Move GLEW impland incl to here.
+#define GLEW_STATIC 
+#include "Fyredon/Extern/GLEW/glew.h"
+#include "Fyredon/Extern/GLFW/glfw3.h" */
 
 // Core 
 #include "Fyredon/Core/threads.h"
@@ -58,7 +58,7 @@ Fyredon::EditorApplication& Fyredon::EditorApplication::get_instance()
 
 Fyredon::EditorApplication::EditorApplication() 
 	: dt(0.f), cur_t(0.f), prev_t(0.f), width(512), height(512), last_yawoffs(0.f),
-	last_pitchoffs(0.f), last_zoom(0.f)
+	last_pitchoffs(0.f), last_zoom(0.f), window_title("null")
 {
 	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, width / height, true);
 }
@@ -77,6 +77,8 @@ Fyredon::EditorApplication::~EditorApplication()
 // Info : Called before application loop is ran, to do inital application setup. 
 void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, const char* Title)
 {
+	// Override defaults
+	width = Width, height = Height, window_title = Title; 
 	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 
 	setup_ogl_window_contex();

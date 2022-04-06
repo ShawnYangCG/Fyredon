@@ -15,7 +15,7 @@
 // Ext Headers
 // GLEW
 #include "GLEW/glew.h" 
-// stb
+// stb (defined here, nowhere else)
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 

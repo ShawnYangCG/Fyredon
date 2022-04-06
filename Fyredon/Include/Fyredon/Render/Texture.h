@@ -3,9 +3,7 @@
 /*=============================================================================
 	Texture.h: Basic texture loading and state management class : Niall
 =============================================================================*/
-
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#pragma once
 
 // Std Headers
 #include <iostream>
@@ -44,8 +42,3 @@ public:
 };
 
 }
-
-
-
-
-#endif
