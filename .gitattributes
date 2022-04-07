@@ -4,3 +4,6 @@
 /openglapp_ref/lib/debug/libfbxsdk-mt.lib filter=lfs diff=lfs merge=lfs -text
 /openglapp_ref/lib/release/libfbxsdk-md.lib filter=lfs diff=lfs merge=lfs -text
 /openglapp_ref/lib/release/libfbxsdk-mt.lib filter=lfs diff=lfs merge=lfs -text
+/.vs/Fyredon/v16/ipch/AutoPCH/b2e3e76f621452ce/TESTFBX.ipch filter=lfs diff=lfs merge=lfs -text
+/.vs/Fyredon/v16/ipch/AutoPCH/f0151232428976c7/THREADS.ipch filter=lfs diff=lfs merge=lfs -text
+/.vs/Fyredon/v16/ipch/AutoPCH/fd7a59fc9a2bbf20/APPLICATION.ipch filter=lfs diff=lfs merge=lfs -text
