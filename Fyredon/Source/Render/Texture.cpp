@@ -32,6 +32,9 @@ Fyredon::Texture::Texture(const char *Tex_Name, GLuint Tex_Unit)
 
 	// Gen Tex
 	glGenTextures(1, &ID);
+	glBindTexture(GL_TEXTURE_2D, ID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 // Default Constructor for fallback only.

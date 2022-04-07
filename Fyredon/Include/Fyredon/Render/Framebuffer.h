@@ -7,16 +7,21 @@
 
 namespace Fyredon {
 
+class Texture; 
 using GLuint = unsigned int;
 
+// This is super simple, colour attachment only, no multi-sampiling. 
 class Framebuffer
 {
 public:
-	Framebuffer(); 
+	Framebuffer(Texture * ColourTexture);
+	~Framebuffer(); 
 
+	void bind();
+	void clear();
 
+	Texture* colour_texture; 
 	GLuint ID; 
-
 };
 
 }

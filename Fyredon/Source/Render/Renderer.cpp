@@ -7,6 +7,8 @@
 // Impelments
 #include "Fyredon/Render/Renderer.h"
 
+#include "Fyredon/Render/Framebuffer.h"
+
 // Std Headers / Use PCH
 //#include <iostream>
 //#include <vector>
@@ -36,6 +38,12 @@ Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
 	// Temp
 	light_strength = 2.0f;
 	light_pos = glm::vec3(0.f, 5.f, 3.f);
+
+	// Framebuffer Setup
+	col_tex     = new Texture("ColorAttachment", 0);
+	framebuffer = new Framebuffer(col_tex);
+
+	create_test_prims();
 }
 
 // Initalize Render State (abstract these calls later)
@@ -60,6 +68,10 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	// ==================== Render State ====================
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Bind Framebuffer
+	framebuffer->clear();
+	framebuffer->bind(); 
 
 	// ==================== Render Viewer Primtivies ====================
 	get_GLError();
@@ -93,12 +105,20 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	}
 	get_GLError();
 
+	// Unbind Framebuffers
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	// ====================  Swap and Poll ====================
 	// Renderting to framebuffer, not needed. 
 	//glfwSwapBuffers(window);
 	//glfwPollEvents();
 }
 
+
+Fyredon::Texture* Fyredon::Renderer::get_colour_attachment()
+{
+	return col_tex; 
+}
 
 // =========================================== DEBUG CODE ===========================================
 

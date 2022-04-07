@@ -28,6 +28,7 @@
 
 // Render
 #include "Fyredon/Render/Camera.h"
+#include "Fyredon/Render/Texture.h"
 
 // Extern 
 #include "dearimgui/imgui.h"
@@ -91,6 +92,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 
 	// ---- RendererSS Setup
 	renderer = new Renderer(window);
+	viewport_tex = nullptr; // Retrive from renderer
 
 	// Do Debug setup ...
 	FD_DEBUG_INFO("s", "This is an info log");

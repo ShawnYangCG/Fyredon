@@ -33,6 +33,7 @@ public:
 	// Rendering
 	void render_prep();
 	void render(Camera& cam_ref); // Single Tick of renderer 
+	Texture* get_colour_attachment();
 
 	// Debug
 	void test_mesh();
@@ -52,6 +53,9 @@ private:
 	glm::vec3 light_pos;
 	float light_strength;
 
+	// Framebuffer
+	Texture* col_tex; 
+	Framebuffer* framebuffer; 
 
 	// Renderer Draw State
 	bool draw_grid, draw_axis, draw_prims; 

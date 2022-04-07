@@ -21,6 +21,7 @@
 namespace Fyredon {
 
 class GUI_Panel;
+class Texture; 
 /*
 *   ============ Editor Application Class ============
 *   Core class that defines an instance of the engine editor application to be created and executed
@@ -80,6 +81,7 @@ private:
 
 	// Renderer (Render Subsys)
 	Renderer *renderer; 
+	Texture* viewport_tex; 
 
 	const char *window_title; 
 	const char *project_filepath;

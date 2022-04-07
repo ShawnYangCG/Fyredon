@@ -19,9 +19,10 @@ class Texture
 {
 public:
 	enum filter_type { NEAREST = 0, LINEAR };
+
 public:
 	Texture(const char* Tex_Name, GLuint Tex_Unit);
-	Texture() = default;
+	Texture();
 	virtual ~Texture();
 
 	virtual void set_params(filter_type filter);
@@ -39,7 +40,7 @@ public:
 
 // ========== Texture Image class (from file) ==========
 
-class TextureImage : Texture
+class TextureImage : public Texture
 {
 public:
 	enum filter_type { NEAREST = 0, LINEAR };

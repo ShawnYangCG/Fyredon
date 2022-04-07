@@ -170,7 +170,7 @@ void Fyredon::Mesh::load_obj(bool has_tex)
 void Fyredon::Mesh::load_texture(const char *filepath, GLuint unit)
 {
 	std::string tex_name = name + " texture";
-	tex = new Texture(tex_name.c_str(), filepath, unit);
+	tex = new TextureImage(tex_name.c_str(), filepath, unit);
 	tex->load();
 
 	if (tex->valid_state) has_tex = true; else return; 

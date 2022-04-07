@@ -51,7 +51,7 @@ public:
 
 	// Texture 
 	bool use_tex;
-	Texture *tex; 
+	TextureImage *tex; 
 };
 }
 
