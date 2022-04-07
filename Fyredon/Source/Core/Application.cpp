@@ -248,7 +248,7 @@ GLFWwindow* Fyredon::EditorApplication::get_ogl_context()
 {
 	return window; 
 }
-
+ 
 void Fyredon::EditorApplication::get_dt()
 {
 	prev_t = cur_t;
