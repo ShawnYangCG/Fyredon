@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <iostream>
 #include <vector>
-#include "incl/ext/GLEW/glew.h"
+#include "../GLEW/glew.h"
 #include "mesh.h"
 //#include "Fyredon/Extern/stb/stb_image.h"
 

@@ -1,6 +1,6 @@
 #include "TerrainGenerator.h"
 //#define STB_IMAGE_IMPLEMENTATION
-#include "incl/ext/stb/stb_image.h"
+#include "../incl/ext/stb/stb_image.h"
 
 TerrainGenerator::TerrainGenerator(const char* name, const char* filePath)
 	:Mesh(name, filePath){
@@ -48,11 +48,8 @@ void TerrainGenerator::read_height_map(std::string path) {
 	for (size_t z = 0; z < (z_res - 1 ); z++) {
 		for (size_t x = 0; x < (x_res - 1 ); x++) {
 
-			//this->obj_data.v_p.emplace_back(this->vertices[i]);
 			glm::vec3 normal = glm::vec3(0, 1, 0);
-			//this->obj_data.v_n.emplace_back(normal);
 			glm::vec2 uv = glm::vec2(0, 0);
-			//this->obj_data.v_t.emplace_back(uv);
 
 			//current
 			int i = z * (x_res)+x;
@@ -85,90 +82,37 @@ void TerrainGenerator::read_height_map(std::string path) {
 
 			//Set Vector U to(Triangle.p2 minus Triangle.p1)
 			//	Set Vector V to(Triangle.p3 minus Triangle.p1)
-
 			//	Set Normal.x to(multiply U.y by V.z) minus(multiply U.z by V.y)
 			//	Set Normal.y to(multiply U.z by V.x) minus(multiply U.x by V.z)
 			//	Set Normal.z to(multiply U.x by V.y) minus(multiply U.y by V.x)
 
 			glm::vec3 u1 = vertex3.pos - vertex0.pos;
 			glm::vec3 v1 = vertex1.pos - vertex0.pos;
-			glm::vec3 n1 = glm::cross(u1, v1);
+			glm::vec3 n1 = glm::normalize(glm::cross(u1, v1));
 
 			glm::vec3 u2 = vertex2.pos - vertex0.pos;
 			glm::vec3 v2 = vertex3.pos - vertex0.pos;
-			glm::vec3 n2 = glm::cross(u2, v2);
-
+			glm::vec3 n2 = glm::normalize(glm::cross(u2, v2));
 
 
 			vertex0.normal = n1;
 			vertex1.normal = n1;
+			vertex3.normal = n1;
+			obj_data.verts.push_back(vertex0);
+			obj_data.verts.push_back(vertex3);
+			obj_data.verts.push_back(vertex1);
+
+			vertex0.normal = n2;
 			vertex2.normal = n2;
 			vertex3.normal = n2;
-
-			
-
-			//if (i % x_res - 1 != 0) {
-
-				obj_data.verts.push_back(vertex0);
-				obj_data.verts.push_back(vertex3);
-				obj_data.verts.push_back(vertex1);
-			//}
-
-			//if (i % z_res - 1 != 0) {
-				obj_data.verts.push_back(vertex0);
-				obj_data.verts.push_back(vertex2);
-				obj_data.verts.push_back(vertex3);
-			//}
+			obj_data.verts.push_back(vertex0);
+			obj_data.verts.push_back(vertex2);
+			obj_data.verts.push_back(vertex3);
 		}
 	}
 
-	std::cout << obj_data.verts.size() << " size\n";
-	for (size_t z = 0; z < (z_res - 1); z++) {
-		for (size_t x = 0; x < (x_res - 1); x++) {
-
-			int index = z * z_res + x;
-			std::cout << index << " index\n";
-			glm::vec3 current = obj_data.verts[index].pos;
-			glm::vec3 up = obj_data.verts[index].pos;
-			glm::vec3 right = obj_data.verts[index].pos;
-			glm::vec3 down = obj_data.verts[index].pos;
-			glm::vec3 left = obj_data.verts[index].pos;
-
-			if (x != 0) {
-				left = obj_data.verts[index - 1].pos;
-				
-			} 
-			
-			if (z != 0) {
-				down = obj_data.verts[index - x_res].pos;
-			} 
-			
-			if (z != z_res - 2) {
-				
-				up = obj_data.verts[index + x_res].pos;
-			} 
-			
-			if (x != x_res - 2) {
-				right = obj_data.verts[index + 1].pos;
-			} 
-			
-			if (!(x == 0 || (z == 0) || (z == z_res - 2) || (x == x_res - 2))) {
-				glm::vec3 normal;
-				normal.x = left.y - right.y;
-			    normal.y = down.y - up.y;
-				normal.z = 0.2;
-
-				float len = sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
-				this->normals.push_back(normal/len);
-			}
-
-			// TODO index normals
-		}
-	}
-
-
-
-	std::cout << "verts " << obj_data.verts.size() << "\n";
+	//std::cout << obj_data.verts.size() << " size\n";
+	//std::cout << "verts " << obj_data.verts.size() << "\n";
 
 	set_data_mesh(obj_data.verts);
 

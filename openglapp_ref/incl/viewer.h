@@ -11,7 +11,7 @@
 #include "ground.h"
 #include "mesh.h"
 #include "fbx_mesh.h"
-#include "../TerrainGenerator.h"
+#include "TerrainGenerator.h"
 
 
 // Ext Headers
