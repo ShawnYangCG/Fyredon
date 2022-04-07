@@ -76,7 +76,6 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		glLineWidth(2.5f); // Reset for axis width.
 		axis->render();
 	}
-
 	// Draw Primtivies
 	get_GLError();
 	if (prims.size() && draw_prims)
@@ -93,7 +92,6 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		}
 	}
 	get_GLError();
-
 
 	// ====================  Swap and Poll ====================
 	// Renderting to framebuffer, not needed. 

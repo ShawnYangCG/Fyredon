@@ -8,37 +8,55 @@
 // Std Headers
 #include <iostream>
 #include <string>
-#include <sstream>
 
 namespace Fyredon {
 
 using GLuint = unsigned int;
+
+// ========== Base Texture class, (used for Framebuffer Texture State) ==========
 
 class Texture
 {
 public:
 	enum filter_type { NEAREST = 0, LINEAR };
 public:
-	Texture(const char* Tex_Name, const char* Tex_Path, GLuint Tex_Unit);
+	Texture(const char* Tex_Name, GLuint Tex_Unit);
 	Texture() = default;
-	~Texture();
+	virtual ~Texture();
 
-	// State Setup
-	void load();
-	void set_params(filter_type filter);
-
-	// Tick Calls
-	void activate();
-	void bind();
-
-	std::ostringstream debug();
+	virtual void set_params(filter_type filter);
+	virtual void activate();
+	virtual void bind();
 
 public:
-	bool valid_state;
-	int32_t width, height, channels;
-	std::string name, file_path;
-	GLuint ID, unit;
+	std::string name;
 	filter_type filter;
+	GLuint ID, unit;
+	int32_t width, height, channels;
+	bool valid_state;
+
 };
+
+// ========== Texture Image class (from file) ==========
+
+class TextureImage : Texture
+{
+public:
+	enum filter_type { NEAREST = 0, LINEAR };
+public:
+	TextureImage(const char* File_Path, const char* Tex_Name, GLuint Tex_Unit);
+	TextureImage() = default;
+	virtual ~TextureImage() = default;
+
+	void load();
+
+public:
+	bool flip;
+	std::string file_path;
+};
+
+
+
+
 
 }

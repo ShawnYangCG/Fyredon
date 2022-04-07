@@ -8,6 +8,7 @@
 // Project Includes
 #include <Fyredon/Other/dllport.h>
 #include "Fyredon/Render/Camera.h"
+#include "Fyredon/Render/Renderer.h"
 
 // Extern Includes
 #include "GLEW/glew.h"
@@ -76,6 +77,9 @@ protected:
 
 private:
 	static EditorApplication app; // singleton
+
+	// Renderer (Render Subsys)
+	Renderer *renderer; 
 
 	const char *window_title; 
 	const char *project_filepath;

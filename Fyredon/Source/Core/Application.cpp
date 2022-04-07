@@ -86,15 +86,18 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// ---- GLEW, GL Function Loading 
 	setup_ogl_loading();
 
-	// ---- Do GUI Setup 
+	// ---- Editor GUI Setup 
 	setup_gui();
+
+	// ---- RendererSS Setup
+	renderer = new Renderer(window);
 
 	// Do Debug setup ...
 	FD_DEBUG_INFO("s", "This is an info log");
 	FD_DEBUG_ERROR("sd", "This is an error log", 123);
 	FD_DEBUG_WARN("sf", "This is a warning log", 123.456);
 
-	// ALl 
+	// We need a Susbsystem manager class, for now just create within EditorApp
 	// Do FileSystem setup ...
 	// Do Threading setup ...
 	//ThreadManager tm = ThreadManager();
@@ -121,10 +124,14 @@ void Fyredon::EditorApplication::tick_engine()
 {
 	get_dt();
 
-	// Tick Game
+	// Tick World
 	// ...
 
 	update_camera();
+
+	// Tick Renderer
+	renderer->render(camera);
+	// Retrive Viewport Texture
 }
 
 // Info : All operations done within the editor application for a single tick
