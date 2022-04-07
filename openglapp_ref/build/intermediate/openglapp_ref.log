@@ -1,112 +1,21 @@
-﻿  clock.cpp
-  camera.cpp
-  ext.cpp
-  imgui.cpp
-  imgui_demo.cpp
-  imgui_draw.cpp
-  imgui_impl_glfw.cpp
-  imgui_impl_opengl3.cpp
-  imgui_tables.cpp
-  imgui_widgets.cpp
-  FBXLoader.cpp
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\FBXLoader.cpp(1942,102): warning C4312: 'reinterpret_cast': conversion from 'GLsizei' to 'const GLvoid *' of greater size
-  fbx_mesh.cpp
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\fbx_mesh.cpp(113,65): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\fbx_mesh.cpp(114,65): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\fbx_mesh.cpp(115,65): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\fbx_mesh.cpp(124,68): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\fbx_mesh.cpp(125,68): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\fbx_mesh.cpp(126,68): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-  ground.cpp
-  main.cpp
-  mesh.cpp
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\mesh.cpp(216,44): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\mesh.cpp(222,44): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\mesh.cpp(228,44): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-  primitive.cpp
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\primitive.cpp(63,41): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\primitive.cpp(68,40): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\primitive.cpp(74,44): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-  shader.cpp
-  targa.cpp
-  texture.cpp
-  viewer.cpp
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(65,62): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(141,68): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(158,32): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(323,21): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(463,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(464,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(465,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(467,28): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(468,28): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(469,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(477,12): warning C4244: 'initializing': conversion from 'size_t' to 'float', possible loss of data
-  Generating Code...
-  Compiling...
-  TerrainGenerator.cpp
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\TerrainGenerator.cpp(58,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  testFBX.cpp
-  timer.cpp
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\timer.cpp(66,53): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\timer.cpp(70,51): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\timer.cpp(74,49): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  Generating Code...
-C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\timer.cpp(101): warning C4715: 'TimerManager::getTimer': not all control paths return a value
-  openglapp_ref.vcxproj -> C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\build\bin\openglapp_ref.exe
-  C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\lib\GLEW\glew32.dll
-  1 File(s) copied
-  C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\lib\GLFW\glfw3.dll
-  1 File(s) copied
-  C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\lib\debug\libfbxsdk.dll
-  1 File(s) copied
-  C:\Users\Izzy\Source\Repos\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\imgui.ini
-  1 File(s) copied
+﻿  viewer.cpp
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(64,62): warning C4244: “参数”: 从“size_t”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(139,68): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(156,32): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(321,21): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(449,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(450,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(451,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(453,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(454,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(455,23): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\src\viewer.cpp(463,12): warning C4244: “初始化”: 从“size_t”转换到“float”，可能丢失数据
+  openglapp_ref.vcxproj -> D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\build\bin\openglapp_ref.exe
+  D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\lib\GLEW\glew32.dll
+  复制了 1 个文件
+  D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\lib\GLFW\glfw3.dll
+  复制了 1 个文件
+  D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\lib\debug\libfbxsdk.dll
+  复制了 1 个文件
+  D:\Z_STUDY\GroupProject\comp5530m-group-project-team-fyredon-game-engine\openglapp_ref\imgui.ini
+  复制了 1 个文件
