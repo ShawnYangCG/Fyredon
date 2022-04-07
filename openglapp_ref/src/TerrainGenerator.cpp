@@ -49,35 +49,39 @@ void TerrainGenerator::read_height_map(std::string path) {
 		for (size_t x = 0; x < (x_res - 1 ); x++) {
 
 			glm::vec3 normal = glm::vec3(0, 1, 0);
-			glm::vec2 uv = glm::vec2(0, 0);
+			float u_text_0 = ((float)x) / x_res;
+			float v_text_0 = ((float)z) / z_res;
+			float u_text_1 = ((float)x+1) / x_res;
+			float v_text_1 = ((float)z+1) / z_res;
+
 
 			//current
 			int i = z * (x_res)+x;
 			vert vertex0;
 			vertex0.pos = this->vertices[i];
 			vertex0.normal = normal;
-			vertex0.uv = uv;
+			vertex0.uv = glm::vec2(u_text_0, v_text_0);
 			vertex0.col = glm::vec3(1.f, 1.f, 1.f);
 
 			// right
 			vert vertex1;
 			vertex1.pos = this->vertices[i + 1];
 			vertex1.normal = normal;
-			vertex1.uv = uv;
+			vertex1.uv = glm::vec2(u_text_1, v_text_0);
 			vertex1.col = glm::vec3(1.f, 1.f, 1.f);
 
 			// up
 			vert vertex2;
 			vertex2.pos = this->vertices[i + x_res];
 			vertex2.normal = normal;
-			vertex2.uv = uv;
+			vertex2.uv = glm::vec2(u_text_0, v_text_1);
 			vertex2.col = glm::vec3(1.f, 1.f, 1.f);
 
 			// up and right
 			vert vertex3;
 			vertex3.pos = this->vertices[i + x_res + 1];
 			vertex3.normal = normal;
-			vertex3.uv = uv;
+			vertex3.uv = glm::vec2(u_text_1, v_text_1);;
 			vertex3.col = glm::vec3(1.f, 1.f, 1.f);
 
 			//Set Vector U to(Triangle.p2 minus Triangle.p1)
