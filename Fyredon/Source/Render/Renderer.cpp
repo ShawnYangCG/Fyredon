@@ -88,8 +88,6 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		ground->render();
 	}
 
-	/*
-
 	// Draw Axis
 	if (draw_axis)
 	{
@@ -99,6 +97,9 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	}
 	// Draw Primtivies
 	get_GLError();
+
+	framebuffer->bind(); // Not remaining bound for some reason ...
+
 	if (prims.size() && draw_prims)
 	{
 		for (Primitive *p : prims)
@@ -113,13 +114,14 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		}
 	}
 	get_GLError();
-	*/
+
 
 	// Unbind Framebuffers
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// ====================  Swap and Poll ====================
-	// Renderting to framebuffer, not needed. 
+	// Renderting to framebuffer, should not needed (assuming we are calling this externally in viewer app). 
+
 	glfwSwapBuffers(ogl_wincontext);
 	glfwPollEvents();
 }
