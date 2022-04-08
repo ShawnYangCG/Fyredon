@@ -27,7 +27,7 @@
 // =========================================== Viewer Class Implementation ===========================================
 
 Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
-	ogl_wincontext(ogl_wincontext)
+	ogl_wincontext(ogl_context)
 {
 	draw_prims = true; 
 	draw_grid = true;
