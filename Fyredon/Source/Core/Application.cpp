@@ -114,7 +114,7 @@ void Fyredon::EditorApplication::exec()
 	while (!glfwWindowShouldClose(window))
 	{
 		tick_engine();
-		tick_editor();
+//		tick_editor();
 	}
 
 	// Shutdown
@@ -134,6 +134,7 @@ void Fyredon::EditorApplication::tick_engine()
 	// Tick Renderer
 	renderer->render(camera);
 	// Retrive Viewport Texture
+
 }
 
 // Info : All operations done within the editor application for a single tick

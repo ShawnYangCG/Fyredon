@@ -70,10 +70,11 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Bind Framebuffer
-	framebuffer->clear();
-	framebuffer->bind(); 
+//	framebuffer->clear();
+//	framebuffer->bind(); 
 
 	// ==================== Render Viewer Primtivies ====================
+		/*
 	get_GLError();
 	// Draw Grid 
 	if (draw_grid)
@@ -81,6 +82,8 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		ground->render();
 	}
+
+
 	// Draw Axis
 	if (draw_axis)
 	{
@@ -104,14 +107,15 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		}
 	}
 	get_GLError();
+	*/
 
 	// Unbind Framebuffers
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// ====================  Swap and Poll ====================
 	// Renderting to framebuffer, not needed. 
-	//glfwSwapBuffers(window);
-	//glfwPollEvents();
+	glfwSwapBuffers(ogl_wincontext);
+	glfwPollEvents();
 }
 
 
@@ -131,9 +135,9 @@ void Fyredon::Renderer::get_GLError()
 
 void Fyredon::Renderer::test_mesh()
 {
-	Mesh *pig = new Mesh("test_pig", "../../assets/mesh/pighead.obj");
+	Mesh *pig = new Mesh("test_pig", "..//Assets//Mesh//pighead.obj");
 	pig->load_obj(false);
-	pig->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
+	pig->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	pig->set_colour(glm::vec3(1.f, 0.f, 0.f));
 	pig->translate(glm::vec3(0.f, 0.2f, 2.f));
 	pig->scale(glm::vec3(2.f));
@@ -163,7 +167,7 @@ void Fyredon::Renderer::create_test_prims()
 	axis->set_data_mesh(data, 6);
 	axis->scale(glm::vec3(1.f));
 	axis->translate(glm::vec3(0.f, 0.01f, 0.f));
-	axis->set_shader("../../../Shaders/guides.vert", "../../../Shaders/guides.frag");
+	axis->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
 	axis->mode = Render_Mode::RENDER_LINES;
 }
 

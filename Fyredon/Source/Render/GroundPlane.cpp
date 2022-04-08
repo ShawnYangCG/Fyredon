@@ -11,15 +11,17 @@
 // Extern
 #include "glm/common.hpp"
 
+#include <filesystem>
+
 // =================== Ground Plane Implementation ===================
 
 Fyredon::GroundPlane::GroundPlane()
-	: Mesh("Ground_Plane", "../../../assets/mesh/grid.obj")
+	: Mesh("Ground_Plane", "..//Assets//Mesh//grid.obj")
 {
 	size = 1.f, tile = 2.f; 
 	load_obj(true);
-	set_shader("../../shaders/ground.vert", "../../shaders/ground.frag");
-	load_texture("../../assets/texture/grid_RGB.png", 0);
+	set_shader("..//Shaders//ground.vert", "..//Shaders//ground.frag");
+	load_texture("..//Assets//Images//Misc//grid_RGB.png", 0);
 	tex->set_params(Texture::filter_type::LINEAR);
 	set_colour(glm::vec3(1.f, 0.f, 0.f));
 	mode = Render_Mode::RENDER_MESH;
