@@ -43,6 +43,8 @@ Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
 	col_tex     = new Texture("ColorAttachment", 0);
 	framebuffer = new Framebuffer(col_tex);
 
+	render_prep();
+
 	create_test_prims();
 }
 
@@ -74,7 +76,7 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 //	framebuffer->bind(); 
 
 	// ==================== Render Viewer Primtivies ====================
-		/*
+	
 	get_GLError();
 	// Draw Grid 
 	if (draw_grid)
@@ -82,7 +84,7 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		ground->render();
 	}
-
+	/*
 
 	// Draw Axis
 	if (draw_axis)
