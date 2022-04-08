@@ -6,3 +6,6 @@
 #include "ECS/fbx_entity.h"
 #include "ECS/World.h"
 #include "ECS/System/AnimationSystem.h"
+#include "ECS/System/EngineRenderSystem.h"
+#include "ECS/mesh_component.h"
+#include "ECS/camera_entity.h"

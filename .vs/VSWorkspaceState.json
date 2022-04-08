@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\openglapp_ref",
+    "\\openglapp_ref\\incl"
   ],
+  "SelectedNode": "\\openglapp_ref\\openglapp_ref.sln",
   "PreviewInSolutionExplorer": false
 }

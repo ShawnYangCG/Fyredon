@@ -2,6 +2,7 @@
 
 transform_component::transform_component() {
 	this->componentName = "Transform";
+	this->memmory_size = sizeof(transform_component);
 }
 
 void transform_component::GUI_struct()

@@ -3,16 +3,53 @@
 Component::Component()
 {
 	this->componentName = "new component";
+	this->memmory_size = sizeof(Component);
 }
 
 Component::Component(std::string componentName)
 {
 	this->componentName = componentName;
+	this->memmory_size = sizeof(Component);
+}
+
+void Component::init()
+{
+	if (this->isRunning == false) {
+		// if we want rewrite this method we must contain this backup
+		free(this->componentBackup);
+		this->componentBackup = (Component*)malloc(this->memmory_size);
+		memcpy((void*)this->componentBackup, (void*)this, this->memmory_size);
+		this->isRunning = true;
+	}
+}
+
+void Component::reset()
+{
+	memcpy((void*)this, (void*)this->componentBackup, this->memmory_size);
+}
+
+void Component::tick()
+{
+	render();
+	renderGUI();
+}
+
+void Component::render()
+{
+}
+
+void Component::stop() {
+	if (this->isRunning == true) {
+		this->isRunning = false;
+	}
 }
 
 void Component::renderGUI()
 {
 	if (ImGui::CollapsingHeader(this->componentName.data())) {
+		// the lable of check box can not be same so we need to use underbar "_" between the name and the componentName
+		// the component name will not show in GUI if we use underbar naming method like below
+		ImGui::Checkbox(("Active_"+this->componentName).data(), &this->isActive);
 		GUI_struct();
 	}
 }
@@ -21,4 +58,9 @@ void Component::renderGUI()
 // the component, you need to rewrite this function
 void Component::GUI_struct()
 {
+}
+
+void Component::setRunning(bool isRunning)
+{
+	this->isRunning = isRunning;
 }

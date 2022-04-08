@@ -1069,6 +1069,9 @@ bool ImGui::ImageButton(ImTextureID user_texture_id, const ImVec2& size, const I
 
 bool ImGui::Checkbox(const char* label, bool* v)
 {
+    char name[30];
+    strcpy(name, label);
+    strtok((char*)name, "_");
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
         return false;
@@ -1118,7 +1121,7 @@ bool ImGui::Checkbox(const char* label, bool* v)
     if (g.LogEnabled)
         LogRenderedText(&label_pos, mixed_value ? "[~]" : *v ? "[x]" : "[ ]");
     if (label_size.x > 0.0f)
-        RenderText(label_pos, label);
+        RenderText(label_pos, name);
 
     IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Checkable | (*v ? ImGuiItemStatusFlags_Checked : 0));
     return pressed;

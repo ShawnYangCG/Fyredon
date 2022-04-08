@@ -113,6 +113,18 @@
     <ClCompile Include="src\ECS\fbx_entity.cpp">
       <Filter>Source Files\ECS</Filter>
     </ClCompile>
+    <ClCompile Include="src\ECS\mesh_component.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ECS\System\EngineRenderSystem.cpp">
+      <Filter>Source Files\ECS\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ECS\camera_entity.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ECS\camera_component.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="incl\viewer.h">
@@ -176,6 +188,18 @@
       <Filter>Header Files\ECS\System</Filter>
     </ClInclude>
     <ClInclude Include="incl\ECS\fbx_entity.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="incl\ECS\mesh_component.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="incl\ECS\System\EngineRenderSystem.h">
+      <Filter>Header Files\ECS\System</Filter>
+    </ClInclude>
+    <ClInclude Include="incl\ECS\camera_entity.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="incl\ECS\camera_component.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
   </ItemGroup>

@@ -36,14 +36,17 @@ fbx_entity* AnimationSystem::getEntityByName(std::string EntityName)
 void AnimationSystem::run()
 {
 	for (fbx_entity* entity : this->entities) {
-		if (entity->currentFrameIndex < entity->mesh->fbx_mesh_all_fream.size()) {
-			entity->mesh->playCurrentFrame((int)entity->currentFrameIndex);
-			float speed = ((fbx_property_component*)entity->getComponentByName("Property"))->speed;
-			entity->currentFrameIndex += speed;
+		Mesh* mesh = ((mesh_component*)(entity->getComponentByName("Mesh")))->mesh;
+		float *currentFrame = &((fbx_property_component*)entity->getComponentByName("Animation"))->currentFrameIndex;
+		if (*currentFrame < ((fbx_mesh*)mesh)->fbx_mesh_all_fream.size()) {
+			((fbx_mesh*)mesh)->playCurrentFrame((int)*currentFrame);
+			float speed = ((fbx_property_component*)entity->getComponentByName("Animation"))->speed;
+			*currentFrame += speed;
+
 		}
 		else {
-			entity->currentFrameIndex = (int)entity->currentFrameIndex % entity->mesh->fbx_mesh_all_fream.size();
-			entity->mesh->playCurrentFrame((int)entity->currentFrameIndex);
+			*currentFrame = (int)*currentFrame % ((fbx_mesh*)mesh)->fbx_mesh_all_fream.size();
+			((fbx_mesh*)mesh)->playCurrentFrame((int)*currentFrame);
 		}
 	}
 }

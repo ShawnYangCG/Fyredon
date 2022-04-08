@@ -57,6 +57,7 @@ public:
 	void scale(const glm::vec3 &scale);
 	void translate(const glm::vec3 &offs);
 	void rotate(float d_ang, const glm::vec3 &axis);
+	void localRotate(float x_ang = 0, float y_ang = 0, float z_ang = 0);
 
 public:
 	// Intrinsics

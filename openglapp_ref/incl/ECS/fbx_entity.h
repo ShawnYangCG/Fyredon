@@ -10,8 +10,7 @@ class fbx_entity : public Entity
 public:
 	// 3.
 	// add your own veriable here
-	fbx_mesh* mesh;
-	float currentFrameIndex = 0;
+	
 
 	// 4.
 	// rewrite the constructor

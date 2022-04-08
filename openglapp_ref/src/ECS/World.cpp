@@ -16,6 +16,34 @@ void World::addEntity(Entity* entity)
     }
 }
 
+void World::init()
+{
+    for (int i = 0; i < this->entities.size(); i++) {
+        this->entities[i]->init();
+    }
+}
+
+void World::tick()
+{
+    for (int i = 0; i < this->entities.size(); i++) {
+        this->entities[i]->tick();
+    }
+}
+
+void World::reset()
+{
+    for (int i = 0; i < this->entities.size(); i++) {
+        this->entities[i]->reset();
+    }
+}
+
+void World::stop()
+{
+    for (int i = 0; i < this->entities.size(); i++) {
+        this->entities[i]->stop();
+    }
+}
+
 Entity* World::getEntityByIndex(int index)
 {
     if (index < 0 || index >= this->entities.size()) {

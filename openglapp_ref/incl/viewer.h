@@ -51,6 +51,8 @@ public:
 	// Application 
 	void exec(); // Exec Viewer Application 
 	void tick(); // Single Tick
+	void init();
+	void stop();
 
 	// Per Tick Operations
 	void update_window();
@@ -73,7 +75,7 @@ private:
 	GLFWwindow *window; 
 	std::size_t width, height;
 	std::string title; 
-	bool draw_grid, draw_axis, draw_prims, isPlay; 
+	bool draw_grid, draw_axis, draw_prims, isPlay, isReset = false; 
 
 	const byte *render_device;
 	const byte *version;
@@ -105,6 +107,7 @@ private:
 	// ECS World
 	World* ECS_world;
 	AnimationSystem* aniSys;
+	EngineRenderSystem* egnRenSys;
 };
 
 // GLFW Input Callbacks 

@@ -108,11 +108,15 @@ xcopy $(ProjectDir)\imgui.ini $(ProjectDir)\build\bin</Command>
   <ItemGroup>
     <ClCompile Include="clock.cpp" />
     <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\ECS\camera_component.cpp" />
+    <ClCompile Include="src\ECS\camera_entity.cpp" />
     <ClCompile Include="src\ECS\Component.cpp" />
     <ClCompile Include="src\ECS\Entity.cpp" />
     <ClCompile Include="src\ECS\fbx_entity.cpp" />
     <ClCompile Include="src\ECS\fbx_property_component.cpp" />
+    <ClCompile Include="src\ECS\mesh_component.cpp" />
     <ClCompile Include="src\ECS\System\AnimationSystem.cpp" />
+    <ClCompile Include="src\ECS\System\EngineRenderSystem.cpp" />
     <ClCompile Include="src\ECS\transform_component.cpp" />
     <ClCompile Include="src\ECS\World.cpp" />
     <ClCompile Include="src\ext.cpp" />
@@ -139,12 +143,16 @@ xcopy $(ProjectDir)\imgui.ini $(ProjectDir)\build\bin</Command>
   <ItemGroup>
     <ClInclude Include="clock.h" />
     <ClInclude Include="incl\camera.h" />
+    <ClInclude Include="incl\ECS\camera_component.h" />
+    <ClInclude Include="incl\ECS\camera_entity.h" />
     <ClInclude Include="incl\ECS\Component.h" />
     <ClInclude Include="incl\ECS\ECS.h" />
     <ClInclude Include="incl\ECS\Entity.h" />
     <ClInclude Include="incl\ECS\fbx_entity.h" />
     <ClInclude Include="incl\ECS\fbx_property_component.h" />
+    <ClInclude Include="incl\ECS\mesh_component.h" />
     <ClInclude Include="incl\ECS\System\AnimationSystem.h" />
+    <ClInclude Include="incl\ECS\System\EngineRenderSystem.h" />
     <ClInclude Include="incl\ECS\transform_component.h" />
     <ClInclude Include="incl\ECS\World.h" />
     <ClInclude Include="incl\FBXLoader.h" />

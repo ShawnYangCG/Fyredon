@@ -17,8 +17,9 @@ public:
 	float speed = 0;
 	float startTime = 0;
 	float endTime = 0;
+	float currentFrameIndex = 0;
 	// ==============
-
+	
 	// 4.
 	// rewrite this function to create your own component GUI
 	virtual void GUI_struct() override;

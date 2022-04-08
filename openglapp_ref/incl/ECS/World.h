@@ -1,5 +1,7 @@
 #pragma once
-#include "ECS/ECS.h"
+#include "ECS/Entity.h"
+#include <iostream>
+class Entity;
 class World
 {
 public:
@@ -9,6 +11,10 @@ public:
 
 	World();
 	void addEntity(Entity* entity);
+	void init();
+	void tick();
+	void reset();
+	void stop();
 	Entity* getEntityByIndex(int index);
 	Entity* getEntityByName(std::string EntityName);
 };

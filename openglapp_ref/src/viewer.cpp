@@ -69,6 +69,7 @@ Viewer::Viewer(std::size_t W, std::size_t H, const char *Title)
 	//*********************** entity test ************************
 	this->ECS_world = new World();
 	this->aniSys = new AnimationSystem();
+	this->egnRenSys = new EngineRenderSystem(this->ECS_world);
 
 	Entity* entity0 = new Entity("entity 0");
 	entity0->addTransformComponent();
@@ -126,6 +127,10 @@ void Viewer::tick()
 	update_window();
 	update_camera();
 
+
+	// ============= update renderSystem camera ===============
+	this->egnRenSys->setCamera(&camera);
+	this->egnRenSys->setLight(&light_pos, &light_strength);
 	// ============= Input Query =============
 	// [..]
 
@@ -137,6 +142,15 @@ void Viewer::tick()
 	
 	// ============= Post Tick Operations =============
 	tick_c++;
+}
+
+void Viewer::init()
+{
+	this->ECS_world->init();
+}
+
+void Viewer::stop()
+{
 }
 
 // Create Window via GLFW and Initalize OpenGL Context on current thread. 
@@ -265,18 +279,30 @@ void Viewer::render()
 		axis->render();
 	}
 
+	if (isReset) {
+		this->ECS_world->reset();
+		isReset = false;
+	}
+
 	// Play pressed
 	if (isPlay)
 	{
-		//std::cout << "play: " << isPlay << std::endl;
+		// ============= initialize all component =============
+		init();
+
 		this->timerIsRun = true;
 		this->aniSys->run();
 	}
 	else {
+		this->ECS_world->stop();
 		this->timerIsRun = false;
 	}
 	// Draw Primtivies
 	get_GLError();
+
+	this->egnRenSys->tick();
+
+	/*
 	if (prims.size() && draw_prims)
 	{
 		for (Primitive *p : prims)
@@ -288,7 +314,7 @@ void Viewer::render()
 			p->set_cameraTransform(camera.get_ViewMatrix(), camera.get_PerspMatrix());
 			p->render();
 		}
-	}
+	}*/
 	// ==================== Render GUI ====================
 	gui_render();
 
@@ -353,43 +379,47 @@ void Viewer::test_mesh()
 	fbx_entity* fbxObject1 = new fbx_entity("human_walk", "./walking_2.fbx", 0.0, 1.0, 1.0);
 	
 	// these need to be done in render system
-	fbxObject1->mesh->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
-	fbxObject1->mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
-	fbxObject1->mesh->translate(glm::vec3(0.f, 0.f, 0.f));
-	fbxObject1->mesh->rotate(0.0f, glm::vec3(1.f, 0.f, 0.f));
-	fbxObject1->mesh->scale(glm::vec3(1.f, 1.f, 1.f));
-	fbxObject1->mesh->mode = Render_Mode::RENDER_MESH;
+	
+	Mesh* mesh = ((mesh_component*)fbxObject1->getComponentByName("Mesh"))->mesh;
+	mesh->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
+	mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	mesh->translate(glm::vec3(0.f, 0.f, 0.f));
+	mesh->rotate(0.0f, glm::vec3(1.f, 0.f, 0.f));
+	mesh->scale(glm::vec3(1.f, 1.f, 1.f));
+	mesh->mode = Render_Mode::RENDER_MESH;
 	this->ECS_world->addEntity(fbxObject1);
 	this->aniSys->addFbxEntity(fbxObject1);
-	prims.push_back(fbxObject1->mesh);
-
+	prims.push_back(mesh);
+	
 	// fbx test
 	fbx_entity* fbxObject2 = new fbx_entity("human_walk2", "./walking_2.fbx", 0.0, 1.0, 1.0);
 
 	// these need to be done in render system
-	fbxObject2->mesh->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
-	fbxObject2->mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
-	fbxObject2->mesh->translate(glm::vec3(0.5f, 0.f, 0.5f));
-	fbxObject2->mesh->rotate(90.0f, glm::vec3(0.f, 1.f, 0.f));
-	fbxObject2->mesh->scale(glm::vec3(1.f, 1.f, 1.f));
-	fbxObject2->mesh->mode = Render_Mode::RENDER_MESH;
+	mesh = ((mesh_component*)fbxObject2->getComponentByName("Mesh"))->mesh;
+	mesh->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
+	mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	mesh->translate(glm::vec3(0.5f, 0.f, 0.5f));
+	mesh->rotate(90.0f, glm::vec3(0.f, 1.f, 0.f));
+	mesh->scale(glm::vec3(1.f, 1.f, 1.f));
+	mesh->mode = Render_Mode::RENDER_MESH;
 	this->ECS_world->addEntity(fbxObject2);
 	this->aniSys->addFbxEntity(fbxObject2);
-	prims.push_back(fbxObject2->mesh);
+	prims.push_back(mesh);
 
 	// fbx test
 	fbx_entity* fbxObject3 = new fbx_entity("rotateBOX", "./box2.fbx", 0.0, 1.0, 1.0);
 
 	// these need to be done in render system
-	fbxObject3->mesh->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
-	fbxObject3->mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
-	fbxObject3->mesh->translate(glm::vec3(0.f, 0.f, -1.0f));
-	fbxObject3->mesh->rotate(90.0f, glm::vec3(0.f, 1.f, 0.f));
-	fbxObject3->mesh->scale(glm::vec3(1.f, 1.f, 1.f));
-	fbxObject3->mesh->mode = Render_Mode::RENDER_MESH;
+	mesh = ((mesh_component*)fbxObject3->getComponentByName("Mesh"))->mesh;
+	mesh->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
+	mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	mesh->translate(glm::vec3(0.f, 0.f, -1.0f));
+	mesh->rotate(90.0f, glm::vec3(0.f, 1.f, 0.f));
+	mesh->scale(glm::vec3(1.f, 1.f, 1.f));
+	mesh->mode = Render_Mode::RENDER_MESH;
 	this->ECS_world->addEntity(fbxObject3);
 	this->aniSys->addFbxEntity(fbxObject3);
-	prims.push_back(fbxObject3->mesh);
+	prims.push_back(mesh);
 }
 
 //#############################################################
@@ -398,7 +428,7 @@ void Viewer::ShowDemoWindowWidgets()
 	ImGui::SetNextWindowSize(ImVec2(300, 440));
 	ImGui::Begin("ECS");
 	if (this->ECS_world->selectedEntityIndex != -1) {
-		this->ECS_world->entities                                                                                                                                                                                                                                                                                                                                                                                                                                                                           [this->ECS_world->selectedEntityIndex]->render();
+		this->ECS_world->entities[this->ECS_world->selectedEntityIndex]->tick();
 		if (ImGui::Button("add component"))
 		{
 			//===== add button action here =====
@@ -481,6 +511,12 @@ void Viewer::gui_render()
 		if (ImGui::Button("Play"))
 		{
 			isPlay = !isPlay;
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+		// Draw Play
+		if (ImGui::Button("Reset"))
+		{
+			isReset = !isReset;
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 		// End ImGui

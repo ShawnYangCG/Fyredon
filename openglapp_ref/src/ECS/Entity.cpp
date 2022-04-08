@@ -14,8 +14,8 @@ Entity::Entity(std::string name)
 void Entity::addComponent()
 {
     std::string newName = "new component " + std::to_string((this->components.size() + 1));
-    if (this->componentList[newName] == NULL) {
-        this->componentList[newName] = this->componentList.size();
+    if (this->componentList.count(newName) == 0) {
+        this->componentList[newName] = this->components.size();
         Component* newComponent = new Component(newName);
         this->components.push_back(newComponent);
     }
@@ -24,11 +24,17 @@ void Entity::addComponent()
     } 
 }
 
+void Entity::addEntity(Entity* entity)
+{
+    entity->parent = this;
+    this->childs.push_back(entity);
+}
+
 void Entity::addComponent(std::string componentName)
 {
     std::string newName = componentName;
-    if (this->componentList[newName] == NULL) {
-        this->componentList[newName] = this->componentList.size();
+    if (this->componentList.count(newName) == 0) {
+        this->componentList[newName] = this->components.size();
         Component* newComponent = new Component(componentName);
         this->components.push_back(newComponent);
     }
@@ -40,8 +46,8 @@ void Entity::addComponent(std::string componentName)
 void Entity::addComponent(Component* component)
 {
     std::string newName = component->componentName;
-    if (this->componentList[newName] == NULL) {
-        this->componentList[newName] = this->componentList.size();
+    if (this->componentList.count(newName) == 0) {
+        this->componentList[newName] = this->components.size();
         this->components.push_back(component);
     }
     else {
@@ -75,8 +81,8 @@ void Entity::setName(std::string name)
 
 Component* Entity::getComponentByName(std::string componentName)
 {
-    if (this->componentList[componentName] == NULL) {
-        std::cout << "Error: Entity [" << this->name << "] do not contain component [" << componentName << "]" << std::endl;
+    if (this->componentList.count(componentName) == 0) {
+        //std::cout << "Error: Entity [" << this->name << "] do not contain component [" << componentName << "]" << std::endl;
         return nullptr;
     }
     return this->components[this->componentList[componentName]];
@@ -84,13 +90,42 @@ Component* Entity::getComponentByName(std::string componentName)
 
 void Entity::render()
 {
+}
+
+void Entity::tick()
+{
+    this->render();
     for (Component* component : components) {
-        component->renderGUI();
+        component->tick();
+    }
+}
+
+void Entity::init()
+{
+    for (Component* component : components) {
+        component->init();
+    }
+}
+
+void Entity::stop()
+{
+    for (Component* component : components) {
+        component->stop();
+    }
+}
+
+void Entity::reset()
+{
+    for (Component* component : components) {
+        component->reset();
     }
 }
 
 void Entity::addTransformComponent()
 {
     Component* Tcomponent = new transform_component();
-    this->components.push_back(Tcomponent);
+    if (this->componentList[Tcomponent->componentName] == NULL) {
+        this->componentList[Tcomponent->componentName] = this->components.size();
+        this->components.push_back(Tcomponent);
+    }
 }
