@@ -24,7 +24,7 @@
 // ====================== Texture Class Implementation ======================
 
 Fyredon::Texture::Texture(const char *Tex_Name, GLuint Tex_Unit)
-	: name(Tex_Name), unit(Tex_Unit), width(-1), height(-1), channels(-1)
+	: name(Tex_Name), unit(Tex_Unit), width(-1), height(-1), channels(3)
 {
 	valid_state = false; 
 	ID = -1; 
@@ -37,12 +37,27 @@ Fyredon::Texture::Texture(const char *Tex_Name, GLuint Tex_Unit)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+Fyredon::Texture::Texture(const char* Tex_Name, GLuint Tex_Unit, std::size_t Width, std::size_t Height)
+	: name(Tex_Name), unit(Tex_Unit), width(Width), height(Height), channels(3)
+{
+	valid_state = false;
+	ID = -1;
+	filter = filter_type::NEAREST;
+
+	// Gen Tex
+	glGenTextures(1, &ID);
+	glBindTexture(GL_TEXTURE_2D, ID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 // Default Constructor for fallback only.
 Fyredon::Texture::Texture() :
-	name("Null"), unit(-1), width(-1), height(-1), channels(-1)
+	name("Null"), unit(-1), width(1), height(1), channels(3)
 {
 	// Gen Tex
 	glGenTextures(1, &ID);
+	std::cout << "Warning, Default Texture Construction\n";
 }
 
 Fyredon::Texture::~Texture()

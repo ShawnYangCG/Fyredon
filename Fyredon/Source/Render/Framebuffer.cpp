@@ -16,7 +16,7 @@ Fyredon::Framebuffer::Framebuffer(Texture* ColourTexture)
 	: colour_texture(ColourTexture)
 {
 	// Gen FBO
-	glGenFramebuffers(0, &ID);
+	glGenFramebuffers(1, &ID);
 	// Bind Colour Attachment Texture (ColAttach0)
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colour_texture->ID, 0);

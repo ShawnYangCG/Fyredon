@@ -40,9 +40,12 @@ Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
 	light_pos = glm::vec3(0.f, 5.f, 3.f);
 
 	// Framebuffer Setup
-	col_tex     = new Texture("ColorAttachment", 0);
+	get_GLError();
+	int w, h; 
+	glfwGetWindowSize(ogl_context, &w, &h);
+	col_tex     = new Texture("ColorAttachment", 0, w, h);
 	framebuffer = new Framebuffer(col_tex);
-
+	get_GLError();
 	render_prep();
 
 	create_test_prims();
@@ -52,7 +55,7 @@ Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
 void Fyredon::Renderer::render_prep()
 {
 	// Multisampling 
-	glEnable(GL_MULTISAMPLE);
+	//glEnable(GL_MULTISAMPLE);
 
 	// Prim Sizes
 	glPointSize(5.f);
@@ -73,17 +76,18 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 	// Bind Framebuffer
 //	framebuffer->clear();
-//	framebuffer->bind(); 
+	framebuffer->bind(); 
 
 	// ==================== Render Viewer Primtivies ====================
 	
-	get_GLError();
+	//get_GLError();
 	// Draw Grid 
 	if (draw_grid)
 	{
 		ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		ground->render();
 	}
+
 	/*
 
 	// Draw Axis
@@ -112,7 +116,7 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	*/
 
 	// Unbind Framebuffers
-//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// ====================  Swap and Poll ====================
 	// Renderting to framebuffer, not needed. 

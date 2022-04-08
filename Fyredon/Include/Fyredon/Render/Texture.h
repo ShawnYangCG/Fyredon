@@ -22,6 +22,7 @@ public:
 
 public:
 	Texture(const char* Tex_Name, GLuint Tex_Unit);
+	Texture(const char* Tex_Name, GLuint Tex_Unit, std::size_t Width, std::size_t Height);
 	Texture();
 	virtual ~Texture();
 
