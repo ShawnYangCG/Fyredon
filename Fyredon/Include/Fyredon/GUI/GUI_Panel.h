@@ -9,7 +9,6 @@
 #include <Fyredon/Other/dllport.h>
 
 #include <string>
-//#include <functional>
 
 namespace Fyredon
 { 
@@ -26,7 +25,6 @@ public:
 protected:
 	virtual void draw() = 0;
 
-	//std::function<void> clicked_callback;
 	std::string title; 
 };
 }

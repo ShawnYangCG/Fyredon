@@ -44,8 +44,8 @@ private:
 	void get_GLError(const char *file, int32_t line);
 
 private:
-	// Renderer stores pointers to each entitiy it uses, no ownership (apart from grid and ground plane)
-	// Render Prims / Mesh
+
+	// Primtives for Renderer to draw per frame 
 	std::vector<Primitive*> prims;
 	GroundPlane* ground;
 	Primitive* axis;

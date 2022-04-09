@@ -73,6 +73,7 @@ void Fyredon::Renderer::render_prep()
 void Fyredon::Renderer::render(Camera &cam_ref)
 {
 	// ==================== Render State ====================
+	render_prep();
 	// Bind Framebuffer
 //	framebuffer->clear();
 	framebuffer->bind(); 

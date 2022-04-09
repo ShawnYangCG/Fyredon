@@ -80,28 +80,15 @@ void Fyredon::Texture::set_params(filter_type filter)
 
 void Fyredon::Texture::activate()
 {
-	switch (unit)
-	{
-		case 0:	
-			glActiveTexture(GL_TEXTURE0);
-			break;
-		case 1:	
-			glActiveTexture(GL_TEXTURE1);
-			break;
-		case 2:	
-			glActiveTexture(GL_TEXTURE2);
-			break;
-		case 3:
-			glActiveTexture(GL_TEXTURE3);
-			break;
-		default: std::cerr << "ERROR::Fyredon::Texture::" << name << ":: texture unit out of bounds" << std::endl;
-	}
+	if (unit > 32) std::cerr << "ERROR::Fyredon::Texture::" << name << ":: texture unit out of bounds" << std::endl;
+	glActiveTexture(0x84C0 + unit);
 }
 
-void Fyredon::Texture::bind()
-{
-	glBindTexture(GL_TEXTURE_2D, ID);
-}
+void Fyredon::Texture::deactivate() { glActiveTexture(0); }
+
+void Fyredon::Texture::bind() { glBindTexture(GL_TEXTURE_2D, ID); }
+
+void Fyredon::Texture::unbind() { glBindTexture(GL_TEXTURE_2D, 0); }
 
 // ====================== TextureImage Class Implementation ======================
 
@@ -129,12 +116,12 @@ void Fyredon::TextureImage::load()
 	if (!tex_data)
 	{
 		std::cerr << "ERROR::Fyredon::Texture::" << name << ":: Failed to load texture." << std::endl;
-		return;
+		throw std::runtime_error("Texture Load Failure\n");
 	}
 	if (channels < 3)
 	{
 		std::cerr << "ERROR::Fyredon::Texture::" << name << ":: Incorrect number of channels." << std::endl;
-		return;
+		throw std::runtime_error("Texture Load Failure\n");
 	}
 
 	// Gen Texture and Bind

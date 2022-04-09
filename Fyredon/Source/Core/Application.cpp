@@ -43,8 +43,8 @@
 
 #define GL_VERSION_MAJOR 4
 #define GL_VERSION_MINOR 5
-#define EDITOR_WINDOW_RESIZE
-// #define EDITOR_FULLSCREEN 
+//#define EDITOR_WINDOW_RESIZE
+//#define EDITOR_FULLSCREEN 
 
 // ================ Init Singleton Instance + Static Data ================
 Fyredon::EditorApplication Fyredon::EditorApplication::app;
@@ -152,13 +152,13 @@ void Fyredon::EditorApplication::tick_gui()
 	
 	for (GUI_Panel* panel : gui_panels)
 	{
-		panel->tick();
-	} 
+		if (panel) panel->tick();
+	}
+
 	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
-
 
 // Start of Application paint operations (within Tick())
 void Fyredon::EditorApplication::paint_begin()
@@ -183,13 +183,15 @@ void Fyredon::EditorApplication::paint_end()
 // Info : Move this into GUI Class, passing renderer texture. 
 void Fyredon::EditorApplication::viewport_gui()
 {
-	// Test Image (Framebuffer) 
 	Fyredon::Texture* tex = renderer->get_colour_attachment();
-	ImGui::Begin("Viewport");
-	ImVec2 uv_min = ImVec2(0.0f, 1.0f);                 // Top-left
-	ImVec2 uv_max = ImVec2(1.0f, 0.0f);                 // Lower-right
-	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
-	ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
+	ImGui::SetNextWindowPos(ImVec2(0, 20));
+	ImGui::SetNextWindowSize(ImVec2(1024, 1024));
+	ImGui::Begin("Game Viewport");
+	// Flip V Min. 
+	ImVec2 uv_min = ImVec2(0.0f, 1.0f);                 
+	ImVec2 uv_max = ImVec2(1.0f, 0.0f);                 
+	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);   
+	ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); 
 	ImGui::Image((ImTextureID)tex->ID, ImVec2(tex->width, tex->height), uv_min, uv_max, tint_col, border_col);
 	ImGui::End();
 }
@@ -211,8 +213,10 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 //	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
-	#ifndef EDITOR_WINDOW_RESIZE
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // Fixed Window Size. 
+	#ifdef EDITOR_WINDOW_RESIZE
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); 
+	#else
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	#endif
 
 	// Create Window
@@ -312,14 +316,15 @@ void Fyredon::EditorApplication::setup_gui()
 	// Inital Panel Layout
 	gui_panels.emplace_back(new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 5)); // Menu bar. 
 	gui_panels.emplace_back(new GUI_FloatingWidget()); // Floating Widget. 
-
-	for (std::size_t i = 0; i < 3; ++i)
+	gui_panels.back()->set_title("Floating Panel");
+	
+	/*for (std::size_t i = 0; i < 3; ++i)
 	{
 		auto widg = new GUI_FloatingWidget();
 		std::string tmp = "Panel " + std::to_string(i + 1);
 		widg->set_title(tmp.c_str());
 		gui_panels.push_back(widg);
-	}
+	}*/
 	
 	// ImGui Setup 
 	IMGUI_CHECKVERSION();
@@ -345,6 +350,7 @@ void Fyredon::EditorApplication::shutdown_gui()
 static auto EditorApp = Fyredon::EditorApplication::get_instance();
 
 // Info : Called when window (thus window framebuffer) is resized. (width, height is in pixels) 
+// ToDo : Link with GUI Viewport size. 
 void Fyredon::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	EditorApp.GLFWState.width = width, EditorApp.GLFWState.height = height;

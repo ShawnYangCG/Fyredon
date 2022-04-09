@@ -26,8 +26,10 @@ public:
 	virtual ~Texture();
 
 	virtual void set_params(filter_type filter);
-	virtual void activate();
-	virtual void bind();
+	void activate();
+	void deactivate();
+	void bind();
+	void unbind();
 
 public:
 	std::string name;
