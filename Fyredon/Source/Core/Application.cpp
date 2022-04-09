@@ -114,7 +114,7 @@ void Fyredon::EditorApplication::exec()
 	while (!glfwWindowShouldClose(window))
 	{
 		tick_engine();
-//		tick_editor();
+		tick_editor();
 	}
 
 	// Shutdown
@@ -133,8 +133,6 @@ void Fyredon::EditorApplication::tick_engine()
 
 	// Tick Renderer
 	renderer->render(camera);
-	// Retrive Viewport Texture
-
 }
 
 // Info : All operations done within the editor application for a single tick
@@ -150,12 +148,12 @@ void Fyredon::EditorApplication::tick_editor()
 
 void Fyredon::EditorApplication::tick_gui()
 {
+	viewport_gui();
+	
 	for (GUI_Panel* panel : gui_panels)
 	{
-		// If panel active...
 		panel->tick();
-	}
-
+	} 
 	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -166,7 +164,8 @@ void Fyredon::EditorApplication::tick_gui()
 void Fyredon::EditorApplication::paint_begin()
 {
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	// GUI new frame, todo wrap im ImGui wrapper class...
 	ImGui_ImplOpenGL3_NewFrame();
@@ -179,6 +178,20 @@ void Fyredon::EditorApplication::paint_end()
 {
 	glfwSwapBuffers(window);
 	glfwPollEvents();
+}
+
+// Info : Move this into GUI Class, passing renderer texture. 
+void Fyredon::EditorApplication::viewport_gui()
+{
+	// Test Image (Framebuffer) 
+	Fyredon::Texture* tex = renderer->get_colour_attachment();
+	ImGui::Begin("Viewport");
+	ImVec2 uv_min = ImVec2(0.0f, 1.0f);                 // Top-left
+	ImVec2 uv_max = ImVec2(1.0f, 0.0f);                 // Lower-right
+	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
+	ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
+	ImGui::Image((ImTextureID)tex->ID, ImVec2(tex->width, tex->height), uv_min, uv_max, tint_col, border_col);
+	ImGui::End();
 }
 
 // ============= Editor Application OpenGL Setup =============

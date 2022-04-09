@@ -21,7 +21,6 @@ public:
 	enum filter_type { NEAREST = 0, LINEAR };
 
 public:
-	Texture(const char* Tex_Name, GLuint Tex_Unit);
 	Texture(const char* Tex_Name, GLuint Tex_Unit, std::size_t Width, std::size_t Height);
 	Texture();
 	virtual ~Texture();

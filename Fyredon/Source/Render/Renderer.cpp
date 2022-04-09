@@ -73,15 +73,12 @@ void Fyredon::Renderer::render_prep()
 void Fyredon::Renderer::render(Camera &cam_ref)
 {
 	// ==================== Render State ====================
-	GL_ERROR();
-	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	// Bind Framebuffer
 //	framebuffer->clear();
-//	framebuffer->bind(); 
-
-	
+	framebuffer->bind(); 
+	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	GL_ERROR();
 
 	// ==================== Render Viewer Primtivies ====================
 	// Draw Grid 
@@ -101,7 +98,7 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	// Draw Primtivies
 	GL_ERROR();
 
-//	framebuffer->bind(); // Not remaining bound for some reason ...
+	framebuffer->bind(); // Not remaining bound for some reason ...
 
 	if (prims.size() && draw_prims)
 	{
@@ -116,16 +113,15 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 			p->render();
 		}
 	}
-	GL_ERROR();
+	GL_ERROR(); 
 
 	// Unbind Framebuffers
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); 
 
 	// ====================  Swap and Poll ====================
-	// Renderting to framebuffer, should not needed (assuming we are calling this externally in viewer app). 
-
-	glfwSwapBuffers(ogl_wincontext);
-	glfwPollEvents();
+	// Renderting to framebuffer, should not needed (unless debugging renderer in window context). 
+	//glfwSwapBuffers(ogl_wincontext);
+	//glfwPollEvents();
 }
 
 

@@ -27,8 +27,8 @@ struct GLFWState;
 class Renderer
 {
 public:
-	Renderer(GLFWwindow *ogl_context);
-	~Renderer() = default; 
+	Renderer(GLFWwindow* ogl_context);
+	~Renderer() = default;
 
 	// Rendering
 	void render_prep();
@@ -38,6 +38,7 @@ public:
 	// Debug
 	void create_test_mesh();
 	void create_test_prims();
+	void dbg_set_tex_id(GLuint id) { col_tex->ID = id; }
 
 private:
 	void get_GLError(const char *file, int32_t line);

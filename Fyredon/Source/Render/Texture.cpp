@@ -23,20 +23,6 @@
 
 // ====================== Texture Class Implementation ======================
 
-Fyredon::Texture::Texture(const char *Tex_Name, GLuint Tex_Unit)
-	: name(Tex_Name), unit(Tex_Unit), width(-1), height(-1), channels(3)
-{
-	valid_state = false; 
-	ID = -1; 
-	filter = filter_type::NEAREST;
-
-	// Gen Tex
-	glGenTextures(1, &ID);
-	glBindTexture(GL_TEXTURE_2D, ID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 Fyredon::Texture::Texture(const char* Tex_Name, GLuint Tex_Unit, std::size_t Width, std::size_t Height)
 	: name(Tex_Name), unit(Tex_Unit), width(Width), height(Height), channels(3)
 {
@@ -49,11 +35,13 @@ Fyredon::Texture::Texture(const char* Tex_Name, GLuint Tex_Unit, std::size_t Wid
 	glBindTexture(GL_TEXTURE_2D, ID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	set_params(filter);
 }
 
 // Default Constructor for fallback only.
-Fyredon::Texture::Texture() :
-	name("Null"), unit(-1), width(1), height(1), channels(3)
+Fyredon::Texture::Texture() 
+	: name("Null"), unit(-1), width(1), height(1), channels(3)
 {
 	// Gen Tex
 	glGenTextures(1, &ID);
@@ -118,7 +106,7 @@ void Fyredon::Texture::bind()
 // ====================== TextureImage Class Implementation ======================
 
 Fyredon::TextureImage::TextureImage(const char* File_Path, const char* Tex_Name, GLuint Tex_Unit)
-	: Fyredon::Texture(Tex_Name, Tex_Unit), file_path(File_Path), flip(true) 
+	: Fyredon::Texture(Tex_Name, Tex_Unit, -1, -1), file_path(File_Path), flip(true) 
 {}
 
 // Info : Do loading after construction

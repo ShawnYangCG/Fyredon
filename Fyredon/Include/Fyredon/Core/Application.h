@@ -71,6 +71,7 @@ protected:
 	void setup_gui();
 	void shutdown_gui();
 	void tick_gui();
+	void viewport_gui();
 
 	// Engine/World (temp)
 	void update_camera();
