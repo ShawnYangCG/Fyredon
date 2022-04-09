@@ -7,22 +7,22 @@
 // Impelments
 #include "Fyredon/Render/Renderer.h"
 
+// Project Headers
 #include "Fyredon/Render/Framebuffer.h"
+
+// Ext Headers
+#include "GLEW/glew.h" // GLEW
+#include "GLFW/glfw3.h" // GLFW
+// GLM
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 // Std Headers / Use PCH
 //#include <iostream>
 //#include <vector>
 #include <thread>
 
-// Ext Headers
-// GLEW
-#include "GLEW/glew.h" 
-// GLFW
-#include "GLFW/glfw3.h" 
-// GLM
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
+#define GL_ERROR() get_GLError(__FILE__, __LINE__)
 
 // =========================================== Viewer Class Implementation ===========================================
 
@@ -40,15 +40,17 @@ Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
 	light_pos = glm::vec3(0.f, 5.f, 3.f);
 
 	// Framebuffer Setup
-	get_GLError();
+	GL_ERROR();
 	int w, h; 
 	glfwGetWindowSize(ogl_context, &w, &h);
 	col_tex     = new Texture("ColorAttachment", 0, w, h);
 	framebuffer = new Framebuffer(col_tex);
-	get_GLError();
+	GL_ERROR();
 	render_prep();
 
 	create_test_prims();
+	create_test_mesh();
+	GL_ERROR();
 }
 
 // Initalize Render State (abstract these calls later)
@@ -71,16 +73,17 @@ void Fyredon::Renderer::render_prep()
 void Fyredon::Renderer::render(Camera &cam_ref)
 {
 	// ==================== Render State ====================
+	GL_ERROR();
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Bind Framebuffer
 //	framebuffer->clear();
-	framebuffer->bind(); 
+//	framebuffer->bind(); 
+
+	
 
 	// ==================== Render Viewer Primtivies ====================
-	
-	//get_GLError();
 	// Draw Grid 
 	if (draw_grid)
 	{
@@ -96,9 +99,9 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		axis->render();
 	}
 	// Draw Primtivies
-	get_GLError();
+	GL_ERROR();
 
-	framebuffer->bind(); // Not remaining bound for some reason ...
+//	framebuffer->bind(); // Not remaining bound for some reason ...
 
 	if (prims.size() && draw_prims)
 	{
@@ -113,11 +116,10 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 			p->render();
 		}
 	}
-	get_GLError();
-
+	GL_ERROR();
 
 	// Unbind Framebuffers
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); 
 
 	// ====================  Swap and Poll ====================
 	// Renderting to framebuffer, should not needed (assuming we are calling this externally in viewer app). 
@@ -134,14 +136,15 @@ Fyredon::Texture* Fyredon::Renderer::get_colour_attachment()
 
 // =========================================== DEBUG CODE ===========================================
 
-// Terrible Error Checking, not specfic at all. 
-void Fyredon::Renderer::get_GLError()
+// Info : Terrible Error Checking, not specfic at all. 
+void Fyredon::Renderer::get_GLError(const char* file, int32_t line)
 {
 	GLenum err = glGetError();
-	if (err != GL_NO_ERROR) std::cerr << "ERROR::Viewer::GL_ERROR = " << err << std::endl;
+	if (err != GL_NO_ERROR) 
+		std::cerr << "ERROR::Renderer::GL_ERROR : " << err << " line: " << line << " file: " << file << std::endl;
 }
 
-void Fyredon::Renderer::test_mesh()
+void Fyredon::Renderer::create_test_mesh()
 {
 	Mesh *pig = new Mesh("test_pig", "..//Assets//Mesh//pighead.obj");
 	pig->load_obj(false);
@@ -156,7 +159,7 @@ void Fyredon::Renderer::test_mesh()
 // Info : Contain these test render prims here for now.
 void Fyredon::Renderer::create_test_prims()
 {
-	// Ground Plane
+	// Ground Plane (1281 debug)
 	ground = new GroundPlane;
 	ground->set_size(4.f);
 	ground->set_tile(2.f);
@@ -176,6 +179,6 @@ void Fyredon::Renderer::create_test_prims()
 	axis->scale(glm::vec3(1.f));
 	axis->translate(glm::vec3(0.f, 0.01f, 0.f));
 	axis->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
-	axis->mode = Render_Mode::RENDER_LINES;
+	axis->mode = Render_Mode::RENDER_LINES; 
 }
 

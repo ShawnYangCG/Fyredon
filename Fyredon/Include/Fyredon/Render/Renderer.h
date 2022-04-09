@@ -36,11 +36,11 @@ public:
 	Texture* get_colour_attachment();
 
 	// Debug
-	void test_mesh();
+	void create_test_mesh();
 	void create_test_prims();
 
 private:
-	void get_GLError();
+	void get_GLError(const char *file, int32_t line);
 
 private:
 	// Renderer stores pointers to each entitiy it uses, no ownership (apart from grid and ground plane)
