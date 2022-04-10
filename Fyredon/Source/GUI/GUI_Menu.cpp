@@ -92,10 +92,9 @@ void Fyredon::GUI_Menu::main_menu()
 void Fyredon::GUI_Menu::about_popout()
 {
 	ImGui::Begin("About");
-	ImGui::Text("Fyredon Engine\nDoes absolutely nothing currently !");
+	ImGui::Text("Fyredon Engine\n Team Fyredon @ University Of Leeds\n MSc HPG 21-22");
 	ImGui::NewLine();
-	if (ImGui::Button("Close"))
-	{
+	if (ImGui::Button("Close")) {
 		menu_state.about = false;
 	}
 	ImGui::End();

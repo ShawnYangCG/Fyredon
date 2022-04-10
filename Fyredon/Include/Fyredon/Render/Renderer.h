@@ -43,8 +43,13 @@ public:
 private:
 	void get_GLError(const char *file, int32_t line);
 
-private:
 
+public:
+	// Public Renderer State 
+	bool draw_grid, draw_axis, draw_prims;
+	bool ren_normals, ren_wire;
+
+private:
 	// Primtives for Renderer to draw per frame 
 	std::vector<Primitive*> prims;
 	GroundPlane* ground;
@@ -58,9 +63,6 @@ private:
 	Texture* col_tex; 
 	Framebuffer* framebuffer; 
 
-	// Renderer Draw State
-	bool draw_grid, draw_axis, draw_prims; 
-	bool ren_normals, ren_wire;
 
 	/* More optimal flags
 	struct 

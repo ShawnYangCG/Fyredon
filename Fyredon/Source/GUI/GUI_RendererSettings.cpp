@@ -13,8 +13,8 @@
 Fyredon::GUI_RendererSettings::GUI_RendererSettings()
 	: GUI_Panel()
 {
-	state.draw_axis = true; 
-	state.draw_grid = true; 
+	state.draw_axis = nullptr; 
+	state.draw_grid = nullptr; 
 }
 
 void Fyredon::GUI_RendererSettings::tick()
@@ -33,10 +33,10 @@ void Fyredon::GUI_RendererSettings::draw()
 	ImGui::Text("Renderer Settings");
 	ImGui::PopStyleColor();
 	if (ImGui::Button("Draw Grid")) {
-		state.draw_grid = !state.draw_grid;
+		*state.draw_grid = !(*state.draw_grid);
 	}
 	if (ImGui::Button("Draw Axis")) {
-		state.draw_axis = !state.draw_axis;
+		*state.draw_axis = !(*state.draw_axis);
 	}
 	ImGui::End();
 }

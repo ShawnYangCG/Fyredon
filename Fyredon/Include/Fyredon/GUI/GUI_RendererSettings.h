@@ -21,13 +21,14 @@ public:
 
 	virtual void tick() override; 
 
+	struct {
+		bool *draw_grid;
+		bool *draw_axis;
+	} state;
+
 protected:
 	virtual void draw() override; 
 
-	struct 
-	{
-		bool draw_grid; 
-		bool draw_axis; 
-	} state;
 };
+
 }

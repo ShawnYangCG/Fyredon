@@ -22,7 +22,9 @@
 //#include <vector>
 #include <thread>
 
+//#define DEBUG_RENDERER
 #define GL_ERROR() get_GLError(__FILE__, __LINE__)
+
 
 // =========================================== Viewer Class Implementation ===========================================
 
@@ -73,9 +75,10 @@ void Fyredon::Renderer::render_prep()
 void Fyredon::Renderer::render(Camera &cam_ref)
 {
 	// ==================== Render State ====================
+	// Enforce Renderer Flags
 	render_prep();
-	// Bind Framebuffer
-//	framebuffer->clear();
+
+	// Bind Renderer Framebuffer
 	framebuffer->bind(); 
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -121,8 +124,10 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 	// ====================  Swap and Poll ====================
 	// Renderting to framebuffer, should not needed (unless debugging renderer in window context). 
-	//glfwSwapBuffers(ogl_wincontext);
-	//glfwPollEvents();
+#ifdef DEBUG_RENDERER
+	glfwSwapBuffers(ogl_wincontext);
+	glfwPollEvents();
+#endif
 }
 
 

@@ -24,6 +24,7 @@
 // GUI
 #include "Fyredon/GUI/GUI_Menu.h"
 #include "Fyredon/GUI/GUI_FloatingWidget.h"
+#include "Fyredon/GUI/GUI_RendererSettings.h"
 
 // Render
 #include "Fyredon/Render/Camera.h"
@@ -78,7 +79,9 @@ Fyredon::EditorApplication::~EditorApplication()
 void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, const char* Title)
 {
 	// Override defaults
-	width = Width, height = Height, window_title = Title; 
+	std::string title = Title; 
+	title += " Default Game Project :: ";
+	width = Width, height = Height, window_title = title.c_str();
 	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 
 	setup_ogl_window_contex();
@@ -89,22 +92,13 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// ---- Editor GUI Setup 
 	setup_gui();
 
+	// We need a Susbsystem manager class, for now just create within EditorApp
 	// ---- RendererSS Setup
 	renderer = new Renderer(window);
 	viewport_tex = nullptr; // Retrive from renderer
-
-	// Do Debug setup ...
-	FD_DEBUG_INFO("s", "This is an info log");
-	FD_DEBUG_ERROR("sd", "This is an error log", 123);
-	FD_DEBUG_WARN("sf", "This is a warning log", 123.456);
-
-	// We need a Susbsystem manager class, for now just create within EditorApp
-	// Do FileSystem setup ...
-	// Do Threading setup ...
-	//ThreadManager tm = ThreadManager();
-	//TerrainGenerator tg = TerrainGenerator();
 }
 
+// Info : Executes the Editor Application untill its window is closed
 void Fyredon::EditorApplication::exec()
 {
 	// Pre Exec Setup
@@ -116,7 +110,7 @@ void Fyredon::EditorApplication::exec()
 		tick_editor();
 	}
 
-	// Shutdown
+	// Post Exec Shutdown
 	shutdown_gui();
 }
 
@@ -162,8 +156,8 @@ void Fyredon::EditorApplication::tick_gui()
 void Fyredon::EditorApplication::paint_begin()
 {
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
-	//glDisable(GL_DEPTH_TEST);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	// GUI new frame, todo wrap im ImGui wrapper class...
 	ImGui_ImplOpenGL3_NewFrame();
@@ -305,30 +299,28 @@ void Fyredon::EditorApplication::update_camera()
 	}
 }
 
-// ============= GUI  =============
+// ============= ImGui GUI Setup =============
 // 
 // Info : DearImGui Setup operations
 void Fyredon::EditorApplication::setup_gui()
 {
-	// Inital Panel Layout
-	gui_panels.emplace_back(new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 5)); // Menu bar. 
-	gui_panels.emplace_back(new GUI_FloatingWidget()); // Floating Widget. 
-	gui_panels.back()->set_title("Floating Panel");
-	
-	/*for (std::size_t i = 0; i < 3; ++i)
-	{
-		auto widg = new GUI_FloatingWidget();
-		std::string tmp = "Panel " + std::to_string(i + 1);
-		widg->set_title(tmp.c_str());
-		gui_panels.push_back(widg);
-	}*/
-	
-	// ImGui Setup 
+	// Menu bar 
+	gui_panels.emplace_back(new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 5)); 
+
+	// Renderer Settings Panel 
+	GUI_RendererSettings *Panel_Renderer = new GUI_RendererSettings; 
+	// Hook Renderer State
+	Panel_Renderer->state.draw_axis = &renderer->draw_axis; 
+	Panel_Renderer->state.draw_grid = &renderer->draw_grid;
+	gui_panels.push_back(std::move(Panel_Renderer));
+		
+	// ImGui Context Setup
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	ImGui::StyleColorsDark();
-	// GL GUI Setup
+
+	// ImGui Impelementation Setup
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 450");
 }
