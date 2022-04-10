@@ -15,9 +15,8 @@
 #include "Fyredon/Extern/GLFW/glfw3.h" */
 
 // Core 
-#include "Fyredon/Core/threads.h"
-#include "Fyredon/Core/TerrainGeneration.h"
-#include "Fyredon/Core/FileSys.h"
+#include "Fyredon/Core/Threads.h"
+#include "Fyredon/Core/FileSystem.h"
 
 // Debug
 #include <Fyredon/Debug/Logger.h>
@@ -145,7 +144,6 @@ void Fyredon::EditorApplication::tick_editor()
 	paint_end();
 }
 
-
 void Fyredon::EditorApplication::tick_gui()
 {
 	viewport_gui();
@@ -164,8 +162,8 @@ void Fyredon::EditorApplication::tick_gui()
 void Fyredon::EditorApplication::paint_begin()
 {
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
-	glDisable(GL_DEPTH_TEST);
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glDisable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// GUI new frame, todo wrap im ImGui wrapper class...
 	ImGui_ImplOpenGL3_NewFrame();
@@ -207,7 +205,6 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 		std::cerr << "Error::Viewer:: GLFW failed to initalize.\n";
 		throw std::runtime_error("GLFW Init Fail"); // Need to talk about exceptions use...
 	}
-
 	// Window State
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_VERSION_MAJOR);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);

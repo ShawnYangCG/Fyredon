@@ -3,10 +3,10 @@
 /*=============================================================================
     RandomGenerator.h: Basic PRNG Generation : Zechen
 =============================================================================*/
-
 #pragma once
-#include<climits>
-#include <iostream>
+
+
+namespace Fyredon {
 
 class RandomGenerator {
 public:
@@ -22,5 +22,7 @@ private:
 
     int rand();
 };
+
+}
 
 

@@ -1,24 +1,23 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	timer.h: timer manager general
+	timer.h: timer manager general : Shawn
 =============================================================================*/
-
 #pragma once
-#ifndef TIMER_H
-#define TIMER_H
 
 #include <time.h>
 #include <thread>
 #include <vector>
 #include <string>
-#include <Fyredon/Core/clock.h>
+#include <Fyredon/Core/Clock.h>
+
+namespace Fyredon {
 
 struct timer {
-	Clock* pclock;
-	std::string type;
-	int index;
-	bool IsRunning;
+Clock* pclock;
+std::string type;
+int index;
+bool IsRunning;
 };
 
 class TimerManager
@@ -53,4 +52,6 @@ public:
 	std::string getTimerType(timer t);
 };
 
-#endif
+
+}
+

@@ -1,66 +1,73 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Timer.cpp: timer manager general : Shawn
+=============================================================================*/
 #include "Fyredon/Other/pch.h"
-#include <Fyredon/Core/timer.h>
 
-TimerManager::TimerManager()
+
+#include <Fyredon/Debug/Timer.h>
+
+Fyredon::TimerManager::TimerManager()
 {
 
 }
 
-TimerManager::~TimerManager()
+Fyredon::TimerManager::~TimerManager()
 {
 }
 
-void TimerManager::start_all_timer()
+void Fyredon::TimerManager::start_all_timer()
 {
 	start_animation_timer();
 	start_physics_timer();
 	start_logic_timer();
 }
 
-void TimerManager::start_animation_timer()
+void Fyredon::TimerManager::start_animation_timer()
 {
 	for (int i = 0; i < this->animation_timer_list.size(); i++)
 		this->timerRun(this->animation_timer_list[i]);
 }
 
-void TimerManager::start_physics_timer()
+void Fyredon::TimerManager::start_physics_timer()
 {
 	for (int i = 0; i < this->physics_timer_list.size(); i++)
 		this->timerRun(this->physics_timer_list[i]);
 }
 
-void TimerManager::start_logic_timer()
+void Fyredon::TimerManager::start_logic_timer()
 {
 	for (int i = 0; i < this->logic_timer_list.size(); i++)
 		this->timerRun(this->logic_timer_list[i]);
 }
 
-void TimerManager::stop_all_timer()
+void Fyredon::TimerManager::stop_all_timer()
 {
 	stop_animation_timer();
 	stop_physics_timer();
 	stop_logic_timer();
 }
 
-void TimerManager::stop_animation_timer()
+void Fyredon::TimerManager::stop_animation_timer()
 {
 	for (int i = 0; i < this->animation_timer_list.size(); i++)
 		this->timerStop(this->animation_timer_list[i]);
 }
 
-void TimerManager::stop_physics_timer()
+void Fyredon::TimerManager::stop_physics_timer()
 {
 	for (int i = 0; i < this->physics_timer_list.size(); i++)
 		this->timerStop(this->physics_timer_list[i]);
 }
 
-void TimerManager::stop_logic_timer()
+void Fyredon::TimerManager::stop_logic_timer()
 {
 	for (int i = 0; i < this->logic_timer_list.size(); i++)
 		this->timerStop(this->logic_timer_list[i]);
 }
 
-void TimerManager::add_timer(std::string type)
+void Fyredon::TimerManager::add_timer(std::string type)
 {
 	timer newclock = { new Clock(),type,-1,false };
 	if (type == "animation") {
@@ -79,7 +86,7 @@ void TimerManager::add_timer(std::string type)
 		std::cout << "unknown type name: " << type << std::endl;
 }
 
-void TimerManager::remove_timer(timer t)
+void Fyredon::TimerManager::remove_timer(timer t)
 {
 	if (t.type == "animation")
 		this->animation_timer_list.erase(this->animation_timer_list.begin() + t.index);
@@ -89,7 +96,7 @@ void TimerManager::remove_timer(timer t)
 		this->logic_timer_list.erase(this->animation_timer_list.begin() + t.index);
 }
 
-timer TimerManager::getTimer(int index, std::string type)
+Fyredon::timer Fyredon::TimerManager::getTimer(int index, std::string type)
 {
 	if (type == "animation")
 		return this->animation_timer_list[index];
@@ -101,19 +108,19 @@ timer TimerManager::getTimer(int index, std::string type)
 		std::cout << "unknown type name: " << type << std::endl;
 }
 
-void TimerManager::timerRun(timer& t)
+void Fyredon::TimerManager::timerRun(timer& t)
 {
 	t.pclock->run();
 	t.IsRunning = true;
 }
 
-void TimerManager::timerStop(timer& t)
+void Fyredon::TimerManager::timerStop(timer& t)
 {
 	t.pclock->stop();
 	t.IsRunning = false;
 }
 
-std::string TimerManager::getTimerType(timer t)
+std::string Fyredon::TimerManager::getTimerType(timer t)
 {
 	return t.type;
 }

@@ -1,12 +1,9 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Threads.h: Thread manager general
+	Threads.h: Thread manager general : Isiash
 =============================================================================*/
-
 #pragma once
-#ifndef THREADS_H
-#define THREADS_H
 
 #include <iostream>
 #include <thread>
@@ -20,6 +17,7 @@
 //using namespace std;
 //using namespace std::placeholders;
 
+namespace Fyredon {
 //template<typename T>
 struct job {
 	unsigned int id;
@@ -31,7 +29,6 @@ struct job {
 	//std::function<T(void())> task;
 	//[&] { some_obj.some_method(some_arg); };
 };
-
 
 //void test_job(void* data);
 
@@ -82,5 +79,5 @@ private:
 	//TODO mutex causing slient deletion of function. cannot copy class
 	//mutex mutual_exclusion;
 };
+}
 
-#endif

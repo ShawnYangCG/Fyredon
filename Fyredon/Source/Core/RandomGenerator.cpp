@@ -1,12 +1,20 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+    Fyredon::RandomGenerator::.cpp: Basic PRNG Generation : Zechen
+=============================================================================*/
 #include "Fyredon/Other/pch.h"
+// Implements
+#include "Fyredon/Core/RandomGenerator.h"
 
-#include <Fyredon/Core/RandomGenerator.h>
+#include <climits>
+#include <iostream>
 
-RandomGenerator::RandomGenerator(int seed) {
+Fyredon::RandomGenerator::RandomGenerator(int seed) {
     prngState = 100000 + seed;
 }
 
-int RandomGenerator::getInt(int min, int max) {
+int Fyredon::RandomGenerator::getInt(int min, int max) {
     if (max < min) {
         int t = min;
         min = max;
@@ -15,7 +23,7 @@ int RandomGenerator::getInt(int min, int max) {
     return rand() % (max - min + 1) + min;
 }
 
-double RandomGenerator::getDouble(double min, double max) {
+double Fyredon::RandomGenerator::getDouble(double min, double max) {
     if (max < min) {
         double t = min;
         min = max;
@@ -24,7 +32,7 @@ double RandomGenerator::getDouble(double min, double max) {
     return (rand() / (double)(INT_MAX)) * (max - min) + min;
 }
 
-void RandomGenerator::printDouble() const {
+void Fyredon::RandomGenerator::printDouble() const {
     int min = 0;
     int max = 1;
 
@@ -32,7 +40,7 @@ void RandomGenerator::printDouble() const {
     std::cout << 122345678 << std::endl;
 }
 
-int RandomGenerator::rand() {
+int Fyredon::RandomGenerator::rand() {
     int value;
 
     prngState *= 1103515245;

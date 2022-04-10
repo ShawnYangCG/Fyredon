@@ -1,10 +1,11 @@
-#pragma once
-#ifndef CLOCK_H
-#define CLOCK_H
+// Copyright Fyredon. All Rights Reserved.
 
-#include <iostream>
-#include <iomanip>
-#include <windows.h>
+/*=============================================================================
+	Clock.h: [..] : ?
+=============================================================================*/
+#pragma once
+
+namespace Fyredon {
 
 class Clock
 {
@@ -13,6 +14,7 @@ public:
 	~Clock();
 	void run();
 	void stop();
+
 private:
 	bool isRuning;
 	int hours;
@@ -22,4 +24,4 @@ private:
 	void tick();
 };
 
-#endif
+}

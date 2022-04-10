@@ -11,7 +11,7 @@ project "Fyredon"
 	files{
 		"Source/**/**.cpp",    -- Source/<dir>/*.cpp
 		"Source/**/**/**.cpp", -- Source/extern/dearimgui/*.cpp
-		"Include/Fyredon/**/**.h"
+		"Include/**/**.h"
 	}
 
 	includedirs{
