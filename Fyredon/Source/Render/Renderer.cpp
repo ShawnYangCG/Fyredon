@@ -9,6 +9,7 @@
 
 // Project Headers
 #include "Fyredon/Render/Framebuffer.h"
+#include "Fyredon/Render/Light.h"
 
 // Ext Headers
 #include "GLEW/glew.h" // GLEW
@@ -17,19 +18,17 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-// Std Headers / Use PCH
-//#include <iostream>
-//#include <vector>
-#include <thread>
-
 //#define DEBUG_RENDERER
 #define GL_ERROR() get_GLError(__FILE__, __LINE__)
 
 
-// =========================================== Viewer Class Implementation ===========================================
+// =========================================== Renderer Class Implementation ===========================================
+Fyredon::Renderer Fyredon::Renderer::renderer;
 
-Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
-	ogl_wincontext(ogl_context)
+Fyredon::Renderer& Fyredon::Renderer::get_renderer()
+{ return renderer; }
+
+Fyredon::Renderer::Renderer()
 {
 	// These will point to GUI Booleans 
 	flags.draw_grid       = nullptr;
@@ -38,22 +37,34 @@ Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
 	flags.ren_normals     = nullptr; 
 	flags.ren_wire        = nullptr; 
 
+	//for (std::size_t i = 0; i < (sizeof(flags) / sizeof(bool*)); ++i) {bool* b = ((bool*)&flags) + i; b = nullptr; }
+
 	// Replace with Light Array
 	dummy_light.strength = 2.0f;
 	dummy_light.position = glm::vec3(0.f, 5.f, 3.f);
 
+	is_init = false; 
+}
+
+// Info : Get OGL Context and do inital setup. 
+void Fyredon::Renderer::init(GLFWwindow* ogl_context)
+{
+	ogl_wincontext = ogl_context;
+
 	// Framebuffer Setup (Should not be tied to Window Size in Future)
 	GL_ERROR();
-	int w, h; 
+	int w, h;
 	glfwGetWindowSize(ogl_context, &w, &h);
 	col_tex     = new Texture("ColorAttachment", 0, w, h);
 	framebuffer = new Framebuffer(col_tex);
 	GL_ERROR();
-	render_prep();
 
+	// Test Primitives
 	create_test_prims();
 	create_test_mesh();
 	GL_ERROR();
+
+	is_init = true; 
 }
 
 // Info : Public exposed function to pass primtives to internal draw array of Primitives.
@@ -62,10 +73,18 @@ void Fyredon::Renderer::submit_primitive(Primitive* prim)
 	prims.push_back(std::move(prim));
 }
 
+void Fyredon::Renderer::submit_light(Light* light)
+{
+	lights.push_back(std::move(light));
+}
+
 // Initalize Render State (abstract these calls later)
 void Fyredon::Renderer::render_prep()
 {
-	// Multisampling 
+	// Check Renderer is ready
+	if (!is_init) throw std::runtime_error("Renderer Not Initalized");
+
+	// Multisampling (Disabled for iteration 1, needs multi-sampled texture + fbo setup)
 	//glEnable(GL_MULTISAMPLE);
 
 	// Prim Sizes
@@ -82,13 +101,11 @@ void Fyredon::Renderer::render_prep()
 void Fyredon::Renderer::render(Camera &cam_ref)
 {
 	// ==================== Render State ====================
-	// Enforce Renderer Flags
+	// Enforce base renderer flags
 	render_prep();
 
 	// Bind Renderer Framebuffer
-	framebuffer->bind(); 
-	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	framebuffer->bind_clear(); 
 	GL_ERROR();
 
 	// ==================== Render Viewer Primtivies ====================
@@ -116,7 +133,7 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		for (Primitive *p : prims)
 		{
 			// Update Uniforms
-			p->shader.setVec("camPos_world", cam_ref.position);
+			p->shader.setVec("camPos_world",   cam_ref.position);
 			p->shader.setVec("lightPos_world", dummy_light.position);
 			p->shader.setFloat("lightStr",     dummy_light.strength);
 
@@ -139,9 +156,7 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 
 Fyredon::Texture* Fyredon::Renderer::get_colour_attachment()
-{
-	return col_tex; 
-}
+{ return col_tex; }
 
 // =========================================== DEBUG CODE ===========================================
 

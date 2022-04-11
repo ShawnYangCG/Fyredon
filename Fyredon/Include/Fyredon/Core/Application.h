@@ -22,6 +22,9 @@ namespace Fyredon {
 
 class GUI_Panel;
 class Texture; 
+class GameWorld; 
+class Renderer; 
+
 /*
 *   ============ Editor Application Class ============
 *   Core class that defines an instance of the engine editor application to be created and executed
@@ -80,9 +83,6 @@ protected:
 private:
 	static EditorApplication app; // singleton
 
-	// Renderer (Render Subsys)
-	Renderer *renderer; 
-
 	const char *window_title; 
 	const char *project_filepath;
 
@@ -108,6 +108,9 @@ private:
 	// Editor State
 	float dt;
 	float cur_t, prev_t; 
+
+	// Game World
+	GameWorld* world; 
 
 }; // EditorApp
 

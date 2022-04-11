@@ -7,6 +7,7 @@
 // Implements
 #include "Fyredon/Render/Framebuffer.h"
 
+// Project 
 #include "Fyredon/Render/Texture.h"
 
 // GLEW
@@ -34,7 +35,8 @@ Fyredon::Framebuffer::Framebuffer(Texture* ColourTexture)
 
 Fyredon::Framebuffer::~Framebuffer()
 {
-	glDeleteFramebuffers(0, &FBO_ID);
+	glDeleteFramebuffers(0,  &FBO_ID);
+	glDeleteRenderbuffers(0, &RBO_ID);
 }
 
 void Fyredon::Framebuffer::bind() const 
@@ -47,10 +49,10 @@ void Fyredon::Framebuffer::unbind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Fyredon::Framebuffer::clear() const
+void Fyredon::Framebuffer::bind_clear() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

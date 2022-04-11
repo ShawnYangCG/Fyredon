@@ -19,7 +19,7 @@ public:
 
 	void bind()   const;
 	void unbind() const;
-	void clear()  const;
+	void bind_clear()  const;
 
 	Texture* colour_texture; 
 	GLuint FBO_ID, RBO_ID; 

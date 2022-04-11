@@ -22,23 +22,28 @@ struct GLFWwindow;
 namespace Fyredon {
 
 class Framebuffer;
+class Light; 
 struct GLFWState;
 
 class Renderer
 {
 public:
-	Renderer(GLFWwindow* ogl_context);
 	~Renderer() = default;
 
+	static Renderer& get_renderer();
+	void init(GLFWwindow* ogl_context);
+
 	// Rendering
-	void render_prep();
 	void render(Camera& cam_ref); // Single Tick of renderer 
+
 	Texture* get_colour_attachment();
 
-
-
 private:
+	Renderer();
+
 	void get_GLError(const char *file, int32_t line);
+
+	void render_prep();
 
 	// Debug
 	void create_test_mesh();
@@ -47,6 +52,7 @@ private:
 public:
 	// Exposed to Engine
 	void submit_primitive(Primitive* prim);
+	void submit_light(Light* light);
 
 	// Public Renderer flags (to hook from GUI) 
 	struct
@@ -55,16 +61,18 @@ public:
 		bool *ren_normals, *ren_wire;
 	} flags;
 
-
 private:
-	// Primtives for Renderer to draw per frame 
-	std::vector<Primitive*> prims;
+	static Renderer renderer; 
 
+	// Draw Lists for Renderer to draw per frame 
+	std::vector<Primitive*> prims;
+	
+	// Renderers own prims 
 	GroundPlane* ground;
 	Primitive* axis;
 
-	// Render Lights (single test) rm this later...
-	// std::vector<Light*> lights; 
+	std::vector<Light*> lights; 
+	// rm me later... need to support multiple lights first. 
 	struct
 	{
 		glm::vec3 position;
@@ -78,6 +86,7 @@ private:
 
 
 	GLFWwindow* ogl_wincontext; 
+	bool is_init; 
 };
 
 }

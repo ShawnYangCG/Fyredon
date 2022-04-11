@@ -17,6 +17,7 @@
 // Core 
 #include "Fyredon/Core/Threads.h"
 #include "Fyredon/Core/FileSystem.h"
+#include "Fyredon/Core/GameWorld.h"
 
 // Debug
 #include <Fyredon/Debug/Logger.h>
@@ -29,6 +30,7 @@
 // Render
 #include "Fyredon/Render/Camera.h"
 #include "Fyredon/Render/Texture.h"
+#include "Fyredon/Render/Renderer.h"
 
 // Extern 
 #include "dearimgui/imgui.h"
@@ -92,12 +94,13 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 
 	// We need a Susbsystem manager class, for now just create within EditorApp
 	// ---- Renderer Subsystem Setup
-	renderer = new Renderer(window);
+	Renderer& renderer = Renderer::get_renderer();
+	renderer.init(window);
 	// Hack untill i find a better solution assume RenderSettings is back of array.
 	GUI_RendererSettings* ren_set    = static_cast<GUI_RendererSettings*>(gui_panels.back());
-	renderer->flags.draw_axis        = &(ren_set->state.draw_axis);
-	renderer->flags.draw_grid        = &(ren_set->state.draw_grid);
-	renderer->flags.draw_test_prims  = &(ren_set->state.draw_testmesh);
+	renderer.flags.draw_axis        = &(ren_set->state.draw_axis);
+	renderer.flags.draw_grid        = &(ren_set->state.draw_grid);
+	renderer.flags.draw_test_prims  = &(ren_set->state.draw_testmesh);
 }
 
 // Info : Executes the Editor Application untill its window is closed
@@ -122,12 +125,11 @@ void Fyredon::EditorApplication::tick_engine()
 	get_dt();
 
 	// Tick World
-	// ...
-
+	GameWorld::get_world().tick(dt);
 	update_camera();
 
 	// Tick Renderer
-	renderer->render(camera);
+	Renderer::get_renderer().render(camera);
 }
 
 // Info : All operations done within the editor application for a single tick
@@ -177,7 +179,7 @@ void Fyredon::EditorApplication::paint_end()
 // Info : Move this into GUI Class, passing renderer texture. 
 void Fyredon::EditorApplication::viewport_gui()
 {
-	Fyredon::Texture* tex = renderer->get_colour_attachment();
+	Fyredon::Texture* tex = Renderer::get_renderer().get_colour_attachment();
 	ImGui::SetNextWindowPos(ImVec2(0, 20));
 	ImGui::SetNextWindowSize(ImVec2(1024, 1024));
 	ImGui::Begin("Game Viewport");
