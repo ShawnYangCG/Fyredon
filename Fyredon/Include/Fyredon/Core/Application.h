@@ -82,7 +82,6 @@ private:
 
 	// Renderer (Render Subsys)
 	Renderer *renderer; 
-	Texture* viewport_tex; 
 
 	const char *window_title; 
 	const char *project_filepath;

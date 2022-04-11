@@ -35,14 +35,12 @@
 #include "dearimgui/imgui_impl_glfw.h"
 #include "dearimgui/imgui_impl_opengl3.h"
 
-// Std
-#include <iostream>
-#include <stdexcept>
 
 #pragma warning( disable : 26495) 
 
 #define GL_VERSION_MAJOR 4
 #define GL_VERSION_MINOR 5
+
 //#define EDITOR_WINDOW_RESIZE
 //#define EDITOR_FULLSCREEN 
 
@@ -80,7 +78,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 {
 	// Override defaults
 	std::string title = Title; 
-	title += " Default Game Project :: ";
+	title += " :: Default Game Project";
 	width = Width, height = Height, window_title = title.c_str();
 	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 
@@ -93,9 +91,12 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	setup_gui();
 
 	// We need a Susbsystem manager class, for now just create within EditorApp
-	// ---- RendererSS Setup
+	// ---- Renderer Subsystem Setup
 	renderer = new Renderer(window);
-	viewport_tex = nullptr; // Retrive from renderer
+	// Hack untill i find a better solution
+	renderer->draw_axis       = &(static_cast<GUI_RendererSettings*>(gui_panels.back())->state.draw_axis);
+	renderer->draw_grid       = &(static_cast<GUI_RendererSettings*>(gui_panels.back())->state.draw_grid);
+	renderer->draw_test_prims = &(static_cast<GUI_RendererSettings*>(gui_panels.back())->state.draw_testmesh);
 }
 
 // Info : Executes the Editor Application untill its window is closed
@@ -308,11 +309,7 @@ void Fyredon::EditorApplication::setup_gui()
 	gui_panels.emplace_back(new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 5)); 
 
 	// Renderer Settings Panel 
-	GUI_RendererSettings *Panel_Renderer = new GUI_RendererSettings; 
-	// Hook Renderer State
-	Panel_Renderer->state.draw_axis = &renderer->draw_axis; 
-	Panel_Renderer->state.draw_grid = &renderer->draw_grid;
-	gui_panels.push_back(std::move(Panel_Renderer));
+	gui_panels.emplace_back(new GUI_RendererSettings);
 		
 	// ImGui Context Setup
 	IMGUI_CHECKVERSION();

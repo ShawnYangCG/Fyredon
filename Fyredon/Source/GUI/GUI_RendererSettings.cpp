@@ -13,8 +13,9 @@
 Fyredon::GUI_RendererSettings::GUI_RendererSettings()
 	: GUI_Panel()
 {
-	state.draw_axis = nullptr; 
-	state.draw_grid = nullptr; 
+	state.draw_axis = true; 
+	state.draw_grid = true; 
+	state.draw_testmesh = true; 
 }
 
 void Fyredon::GUI_RendererSettings::tick()
@@ -30,13 +31,16 @@ void Fyredon::GUI_RendererSettings::draw()
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-	ImGui::Text("Renderer Settings");
+	ImGui::Text("Renderer Draw Settings");
 	ImGui::PopStyleColor();
 	if (ImGui::Button("Draw Grid")) {
-		*state.draw_grid = !(*state.draw_grid);
+		state.draw_grid = !state.draw_grid;
 	}
 	if (ImGui::Button("Draw Axis")) {
-		*state.draw_axis = !(*state.draw_axis);
+		state.draw_axis = !state.draw_axis;
+	}
+	if (ImGui::Button("Draw Test Mesh")) {
+		state.draw_testmesh = !state.draw_testmesh;
 	}
 	ImGui::End();
 }

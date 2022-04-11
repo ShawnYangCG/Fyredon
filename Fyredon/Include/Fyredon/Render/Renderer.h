@@ -45,9 +45,9 @@ private:
 
 
 public:
-	// Public Renderer State 
-	bool draw_grid, draw_axis, draw_prims;
-	bool ren_normals, ren_wire;
+	// Public Renderer State (hook from GUI) 
+	bool *draw_grid, *draw_axis, *draw_test_prims;
+	bool *ren_normals, *ren_wire;
 
 private:
 	// Primtives for Renderer to draw per frame 

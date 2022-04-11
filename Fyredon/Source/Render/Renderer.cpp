@@ -31,11 +31,12 @@
 Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
 	ogl_wincontext(ogl_context)
 {
-	draw_prims = true; 
-	draw_grid = true;
-	draw_axis = true;
-	ren_normals = false; 
-	ren_wire = false; 
+	// These will point to GUI Booleans 
+	draw_grid       = nullptr;
+	draw_axis       = nullptr;
+	draw_test_prims = nullptr;
+	ren_normals     = nullptr; 
+	ren_wire        = nullptr; 
 
 	// Temp
 	light_strength = 2.0f;
@@ -86,14 +87,14 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 	// ==================== Render Viewer Primtivies ====================
 	// Draw Grid 
-	if (draw_grid)
+	if (*draw_grid)
 	{
 		ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		ground->render();
 	}
 
 	// Draw Axis
-	if (draw_axis)
+	if (*draw_axis)
 	{
 		axis->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		glLineWidth(2.5f); // Reset for axis width.
@@ -104,7 +105,7 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 	framebuffer->bind(); // Not remaining bound for some reason ...
 
-	if (prims.size() && draw_prims)
+	if (prims.size() && (*draw_test_prims))
 	{
 		for (Primitive *p : prims)
 		{

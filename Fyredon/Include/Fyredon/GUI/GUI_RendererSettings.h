@@ -22,8 +22,9 @@ public:
 	virtual void tick() override; 
 
 	struct {
-		bool *draw_grid;
-		bool *draw_axis;
+		bool draw_grid;
+		bool draw_axis;
+		bool draw_testmesh; 
 	} state;
 
 protected:
