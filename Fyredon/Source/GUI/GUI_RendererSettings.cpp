@@ -13,13 +13,16 @@
 Fyredon::GUI_RendererSettings::GUI_RendererSettings()
 	: GUI_Panel()
 {
-	state.draw_axis = true; 
-	state.draw_grid = true; 
+	state.draw_axis     = true; 
+	state.draw_grid     = true; 
 	state.draw_testmesh = true; 
 }
 
 void Fyredon::GUI_RendererSettings::tick()
 {
+	// Pre-Processing of state...
+
+	// Draw GUI
 	draw(); 
 }
 

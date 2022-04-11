@@ -32,17 +32,17 @@ Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
 	ogl_wincontext(ogl_context)
 {
 	// These will point to GUI Booleans 
-	draw_grid       = nullptr;
-	draw_axis       = nullptr;
-	draw_test_prims = nullptr;
-	ren_normals     = nullptr; 
-	ren_wire        = nullptr; 
+	flags.draw_grid       = nullptr;
+	flags.draw_axis       = nullptr;
+	flags.draw_test_prims = nullptr;
+	flags.ren_normals     = nullptr; 
+	flags.ren_wire        = nullptr; 
 
-	// Temp
-	light_strength = 2.0f;
-	light_pos = glm::vec3(0.f, 5.f, 3.f);
+	// Replace with Light Array
+	dummy_light.strength = 2.0f;
+	dummy_light.position = glm::vec3(0.f, 5.f, 3.f);
 
-	// Framebuffer Setup
+	// Framebuffer Setup (Should not be tied to Window Size in Future)
 	GL_ERROR();
 	int w, h; 
 	glfwGetWindowSize(ogl_context, &w, &h);
@@ -54,6 +54,12 @@ Fyredon::Renderer::Renderer(GLFWwindow* ogl_context) :
 	create_test_prims();
 	create_test_mesh();
 	GL_ERROR();
+}
+
+// Info : Public exposed function to pass primtives to internal draw array of Primitives.
+void Fyredon::Renderer::submit_primitive(Primitive* prim)
+{
+	prims.push_back(std::move(prim));
 }
 
 // Initalize Render State (abstract these calls later)
@@ -87,14 +93,14 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 	// ==================== Render Viewer Primtivies ====================
 	// Draw Grid 
-	if (*draw_grid)
+	if (*flags.draw_grid)
 	{
 		ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		ground->render();
 	}
 
 	// Draw Axis
-	if (*draw_axis)
+	if (*flags.draw_axis)
 	{
 		axis->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		glLineWidth(2.5f); // Reset for axis width.
@@ -105,14 +111,14 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 	framebuffer->bind(); // Not remaining bound for some reason ...
 
-	if (prims.size() && (*draw_test_prims))
+	if (prims.size() && (*flags.draw_test_prims))
 	{
 		for (Primitive *p : prims)
 		{
 			// Update Uniforms
 			p->shader.setVec("camPos_world", cam_ref.position);
-			p->shader.setVec("lightPos_world", light_pos);
-			p->shader.setFloat("lightStr",     light_strength);
+			p->shader.setVec("lightPos_world", dummy_light.position);
+			p->shader.setFloat("lightStr",     dummy_light.strength);
 
 			p->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 			p->render();

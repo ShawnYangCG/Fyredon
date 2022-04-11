@@ -93,10 +93,11 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// We need a Susbsystem manager class, for now just create within EditorApp
 	// ---- Renderer Subsystem Setup
 	renderer = new Renderer(window);
-	// Hack untill i find a better solution
-	renderer->draw_axis       = &(static_cast<GUI_RendererSettings*>(gui_panels.back())->state.draw_axis);
-	renderer->draw_grid       = &(static_cast<GUI_RendererSettings*>(gui_panels.back())->state.draw_grid);
-	renderer->draw_test_prims = &(static_cast<GUI_RendererSettings*>(gui_panels.back())->state.draw_testmesh);
+	// Hack untill i find a better solution assume RenderSettings is back of array.
+	GUI_RendererSettings* ren_set    = static_cast<GUI_RendererSettings*>(gui_panels.back());
+	renderer->flags.draw_axis        = &(ren_set->state.draw_axis);
+	renderer->flags.draw_grid        = &(ren_set->state.draw_grid);
+	renderer->flags.draw_test_prims  = &(ren_set->state.draw_testmesh);
 }
 
 // Info : Executes the Editor Application untill its window is closed

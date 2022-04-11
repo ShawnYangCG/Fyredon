@@ -35,43 +35,48 @@ public:
 	void render(Camera& cam_ref); // Single Tick of renderer 
 	Texture* get_colour_attachment();
 
-	// Debug
-	void create_test_mesh();
-	void create_test_prims();
-	void dbg_set_tex_id(GLuint id) { col_tex->ID = id; }
+
 
 private:
 	void get_GLError(const char *file, int32_t line);
 
+	// Debug
+	void create_test_mesh();
+	void create_test_prims();
 
 public:
-	// Public Renderer State (hook from GUI) 
-	bool *draw_grid, *draw_axis, *draw_test_prims;
-	bool *ren_normals, *ren_wire;
+	// Exposed to Engine
+	void submit_primitive(Primitive* prim);
+
+	// Public Renderer flags (to hook from GUI) 
+	struct
+	{
+		bool *draw_grid, *draw_axis, *draw_test_prims;
+		bool *ren_normals, *ren_wire;
+	} flags;
+
 
 private:
 	// Primtives for Renderer to draw per frame 
 	std::vector<Primitive*> prims;
+
 	GroundPlane* ground;
 	Primitive* axis;
 
 	// Render Lights (single test) rm this later...
-	glm::vec3 light_pos;
-	float light_strength;
+	// std::vector<Light*> lights; 
+	struct
+	{
+		glm::vec3 position;
+		float     strength;
+
+	} dummy_light;
 
 	// Framebuffer
 	Texture* col_tex; 
 	Framebuffer* framebuffer; 
 
 
-	/* More optimal flags
-	struct 
-	{
-		uint8_t draw_grid : 1, draw_axis : 1, draw_prims : 1;
-		uint8_t ren_normals : 1, ren_wire : 1;
-	} draw_state; */
-
-	// Passed from editor. 
 	GLFWwindow* ogl_wincontext; 
 };
 
