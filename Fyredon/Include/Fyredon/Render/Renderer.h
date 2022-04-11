@@ -17,6 +17,10 @@
 // Ext Headers
 #include "glm/glm.hpp"
 
+#define RENDER_RES_X 768
+#define RENDER_RES_Y 512
+
+
 struct GLFWwindow;
 
 namespace Fyredon {
@@ -59,6 +63,8 @@ public:
 	{
 		bool *draw_grid, *draw_axis, *draw_test_prims;
 		bool *ren_normals, *ren_wire;
+		glm::vec3* light_pos, *test_pos; 
+		float* light_str; 
 	} flags;
 
 private:
@@ -69,16 +75,11 @@ private:
 	
 	// Renderers own prims 
 	GroundPlane* ground;
+	Mesh* test_mesh;
 	Primitive* axis;
 
-	std::vector<Light*> lights; 
 	// rm me later... need to support multiple lights first. 
-	struct
-	{
-		glm::vec3 position;
-		float     strength;
-
-	} dummy_light;
+	std::vector<Light*> lights; 
 
 	// Framebuffer
 	Texture* col_tex; 

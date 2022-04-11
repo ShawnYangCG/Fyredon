@@ -17,7 +17,7 @@ namespace Fyredon
 class GUI_FloatingWidget : public GUI_Panel
 {
 public:
-	GUI_FloatingWidget();
+	GUI_FloatingWidget(const char *Title);
 
 	virtual void tick() override; 
 
@@ -31,5 +31,6 @@ protected:
 	} state;
 
 	ImVec2 slider_range;
+	const char* title; 
 };
 }

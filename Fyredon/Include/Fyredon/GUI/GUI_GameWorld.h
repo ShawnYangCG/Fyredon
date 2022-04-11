@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_FloatingWidget.h: Floating Dialog/Widget
+	GUI_GameWorld.h: Floating Dialog/Widget
 =============================================================================*/
 #pragma once
 
@@ -14,22 +14,15 @@
 
 namespace Fyredon
 { 
-class GUI_FloatingWidget : public GUI_Panel
+class GUI_GameWorld : public GUI_Panel
 {
 public:
-	GUI_FloatingWidget();
+	GUI_GameWorld();
 
 	virtual void tick() override; 
 
 protected:
 	virtual void draw() override; 
-
-	struct 
-	{
-		float slider_val; 
-		bool button_state; 
-	} state;
-
-	ImVec2 slider_range;
 };
+
 }

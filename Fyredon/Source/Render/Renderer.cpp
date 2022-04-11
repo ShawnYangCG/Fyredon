@@ -21,7 +21,6 @@
 //#define DEBUG_RENDERER
 #define GL_ERROR() get_GLError(__FILE__, __LINE__)
 
-
 // =========================================== Renderer Class Implementation ===========================================
 Fyredon::Renderer Fyredon::Renderer::renderer;
 
@@ -40,8 +39,9 @@ Fyredon::Renderer::Renderer()
 	//for (std::size_t i = 0; i < (sizeof(flags) / sizeof(bool*)); ++i) {bool* b = ((bool*)&flags) + i; b = nullptr; }
 
 	// Replace with Light Array
-	dummy_light.strength = 2.0f;
-	dummy_light.position = glm::vec3(0.f, 5.f, 3.f);
+	flags.light_str = nullptr; 
+	flags.light_pos = nullptr; 
+	flags.test_pos  = nullptr;
 
 	is_init = false; 
 }
@@ -49,13 +49,14 @@ Fyredon::Renderer::Renderer()
 // Info : Get OGL Context and do inital setup. 
 void Fyredon::Renderer::init(GLFWwindow* ogl_context)
 {
+	// Assume we are on the same thread
 	ogl_wincontext = ogl_context;
 
 	// Framebuffer Setup (Should not be tied to Window Size in Future)
 	GL_ERROR();
-	int w, h;
-	glfwGetWindowSize(ogl_context, &w, &h);
-	col_tex     = new Texture("ColorAttachment", 0, w, h);
+	//int w, h;
+	//glfwGetWindowSize(ogl_context, &w, &h);
+	col_tex     = new Texture("ColorAttachment", 0, RENDER_RES_X, RENDER_RES_Y);
 	framebuffer = new Framebuffer(col_tex);
 	GL_ERROR();
 
@@ -81,7 +82,6 @@ void Fyredon::Renderer::submit_light(Light* light)
 // Initalize Render State (abstract these calls later)
 void Fyredon::Renderer::render_prep()
 {
-	// Check Renderer is ready
 	if (!is_init) throw std::runtime_error("Renderer Not Initalized");
 
 	// Multisampling (Disabled for iteration 1, needs multi-sampled texture + fbo setup)
@@ -104,6 +104,15 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	// Enforce base renderer flags
 	render_prep();
 
+	// Update Test Mesh
+	{
+		//glm::vec3 old = test_mesh->model[3];
+		//test_mesh->translate(*flags.test_pos - old);
+		test_mesh->shader.setVec("camPos_world", cam_ref.position);
+		test_mesh->shader.setVec("lightPos_world", *flags.light_pos);
+		test_mesh->shader.setFloat("lightStr", *flags.light_str);
+	} 
+
 	// Bind Renderer Framebuffer
 	framebuffer->bind_clear(); 
 	GL_ERROR();
@@ -123,19 +132,26 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		glLineWidth(2.5f); // Reset for axis width.
 		axis->render();
 	}
+
+	if (*flags.draw_test_prims)
+	{
+		test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
+		test_mesh->render();
+	}
+
 	// Draw Primtivies
 	GL_ERROR();
 
 	framebuffer->bind(); // Not remaining bound for some reason ...
 
-	if (prims.size() && (*flags.draw_test_prims))
+	if (prims.size())
 	{
 		for (Primitive *p : prims)
 		{
 			// Update Uniforms
 			p->shader.setVec("camPos_world",   cam_ref.position);
-			p->shader.setVec("lightPos_world", dummy_light.position);
-			p->shader.setFloat("lightStr",     dummy_light.strength);
+			p->shader.setVec("lightPos_world", *flags.light_pos);
+			p->shader.setFloat("lightStr",     *flags.light_str);
 
 			p->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 			p->render();
@@ -154,7 +170,6 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 #endif
 }
 
-
 Fyredon::Texture* Fyredon::Renderer::get_colour_attachment()
 { return col_tex; }
 
@@ -170,14 +185,13 @@ void Fyredon::Renderer::get_GLError(const char* file, int32_t line)
 
 void Fyredon::Renderer::create_test_mesh()
 {
-	Mesh *pig = new Mesh("test_pig", "..//Assets//Mesh//pighead.obj");
-	pig->load_obj(false);
-	pig->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
-	pig->set_colour(glm::vec3(1.f, 0.f, 0.f));
-	pig->translate(glm::vec3(0.f, 0.2f, 2.f));
-	pig->scale(glm::vec3(2.f));
-	pig->mode = Render_Mode::RENDER_MESH;
-	prims.push_back(pig);
+	test_mesh = new Mesh("test_pig", "..//Assets//Mesh//pighead.obj");
+	test_mesh->load_obj(false);
+	test_mesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	test_mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	test_mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
+	test_mesh->scale(glm::vec3(2.f));
+	test_mesh->mode = Render_Mode::RENDER_MESH;
 }
 
 // Info : Contain these test render prims here for now.

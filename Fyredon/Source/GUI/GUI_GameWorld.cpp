@@ -1,42 +1,59 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_FloatingWidget.cpp: Floating Dialog/Widget
+	GUI_GameWorld.cpp: Floating Dialog/Widget
 =============================================================================*/
 #include "Fyredon/Other/pch.h"
 // Implements 
-#include "Fyredon/GUI/GUI_FloatingWidget.h"
+#include "Fyredon/GUI/GUI_GameWorld.h"
 
 // Extern Includes
 #include "dearimgui/imgui.h"
 
-Fyredon::GUI_FloatingWidget::GUI_FloatingWidget()
+#include "Fyredon/Core/GameWorld.h"
+
+Fyredon::GUI_GameWorld::GUI_GameWorld()
 	: GUI_Panel()
 {
-	state.slider_val = 0.f; 
-	slider_range.x = 0.f, slider_range.y = 10.f; 
-	state.button_state = false; 
 }
 
-void Fyredon::GUI_FloatingWidget::tick()
+void Fyredon::GUI_GameWorld::tick()
 {
 	draw(); 
 }
 
-void Fyredon::GUI_FloatingWidget::draw()
+void Fyredon::GUI_GameWorld::draw()
 {
-	const char* t_title = title.c_str(); 
-	if (t_title[0] == 0) t_title = "test";
-	ImGui::Begin(t_title);
+	GameWorld world = GameWorld::get_world();
+	
+	ImGui::Begin("Gane World");
+
+	// State Creation
+	if (ImGui::Button("Create Sphere"))
+	{
+		auto s = world.prims.size();
+		world.create_mesh((std::string("Sphere_") + std::to_string(s)).c_str(), "..//Assets//Mesh//sphere.obj");
+	}
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-	ImGui::Text("Floating Panel");
+	ImGui::Text("Primitives");
 	ImGui::PopStyleColor();
 
-	ImGui::Text("Sliders");
-	ImGui::SliderFloat("Slider", &state.slider_val, slider_range.x, slider_range.y);
+	// List Prims
+	for ( const auto& [key, value] : world.prims_map)
+	{
+		ImGui::Text(key.c_str());
+	}
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
+	ImGui::Text("Lights");
+	ImGui::PopStyleColor();
 
-	if (ImGui::Button("Button")) state.button_state = !state.button_state;
+	// List Lights
+	for (const auto& [key, value] : world.lights_map)
+	{
+		ImGui::Text(key.c_str());
+	}
 	ImGui::End();
 }

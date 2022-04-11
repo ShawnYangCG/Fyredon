@@ -47,6 +47,8 @@ private:
 	double total_game_time;
 
 	static GameWorld world;
+
+	friend class GUI_GameWorld;
 };
 
 

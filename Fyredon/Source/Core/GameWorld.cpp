@@ -11,6 +11,7 @@
 #include "Fyredon/Render/Mesh.h"
 
 #include "Fyredon/Debug/Logger.h"
+#include "Fyredon/Core/RandomGenerator.h"
 
 Fyredon::GameWorld Fyredon::GameWorld::world; 
 
@@ -42,13 +43,22 @@ void Fyredon::GameWorld::tick(float delta_time)
 // Info : Handles creation of meshes, this format should be extended for creation of other game entitiy/components.
 void Fyredon::GameWorld::create_mesh(const char* name, const char* file_path)
 {
+	auto rng = Fyredon::RandomGenerator(1234);
+	float x = rng.getDouble();
+	rng = Fyredon::RandomGenerator(1324);
+	float y = rng.getDouble();
+	rng = Fyredon::RandomGenerator(4321);
+	float z = rng.getDouble();
+
 	Mesh mesh(name, file_path);
+	mesh.load_obj();
+	mesh.set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	mesh.translate(glm::vec3(x, y, z));
+
+	// Setup
 	prims.push_back(std::move(mesh));
 	Primitive* mesh_p = &prims.back();
 	prims_map[std::string(name)] = mesh_p;
-
-	// Default Shader Set
-	mesh_p->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 
 	// Submit to renderer
 	Renderer::get_renderer().submit_primitive(mesh_p);
@@ -63,6 +73,9 @@ void Fyredon::GameWorld::create_mesh(const char* name, const char* file_path, co
 
 	// Set Shader
 	mesh_p->set_shader(vert_shader, frag_shader);
+
+	// Call load
+	static_cast<Mesh*>(mesh_p)->load_obj();
 
 	// Submit to renderer
 	Renderer::get_renderer().submit_primitive(mesh_p);

@@ -26,6 +26,7 @@
 #include "Fyredon/GUI/GUI_Menu.h"
 #include "Fyredon/GUI/GUI_FloatingWidget.h"
 #include "Fyredon/GUI/GUI_RendererSettings.h"
+#include "Fyredon/GUI/GUI_GameWorld.h"
 
 // Render
 #include "Fyredon/Render/Camera.h"
@@ -36,7 +37,6 @@
 #include "dearimgui/imgui.h"
 #include "dearimgui/imgui_impl_glfw.h"
 #include "dearimgui/imgui_impl_opengl3.h"
-
 
 #pragma warning( disable : 26495) 
 
@@ -58,7 +58,7 @@ Fyredon::EditorApplication& Fyredon::EditorApplication::get_instance()
 // ================ Editor Application Class Implementation ================
 
 Fyredon::EditorApplication::EditorApplication() 
-	: dt(0.f), cur_t(0.f), prev_t(0.f), width(512), height(512), last_yawoffs(0.f),
+	: dt(0.f), cur_t(0.f), prev_t(0.f), width(1024), height(1024), last_yawoffs(0.f),
 	last_pitchoffs(0.f), last_zoom(0.f), window_title("null")
 {
 	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, width / height, true);
@@ -97,10 +97,13 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	Renderer& renderer = Renderer::get_renderer();
 	renderer.init(window);
 	// Hack untill i find a better solution assume RenderSettings is back of array.
-	GUI_RendererSettings* ren_set    = static_cast<GUI_RendererSettings*>(gui_panels.back());
+	GUI_RendererSettings* ren_set   = static_cast<GUI_RendererSettings*>(gui_panels.back());
 	renderer.flags.draw_axis        = &(ren_set->state.draw_axis);
 	renderer.flags.draw_grid        = &(ren_set->state.draw_grid);
 	renderer.flags.draw_test_prims  = &(ren_set->state.draw_testmesh);
+	renderer.flags.light_pos        = &(ren_set->state.light_pos);
+	renderer.flags.light_str        = &(ren_set->state.light_strength);
+	renderer.flags.test_pos         = &(ren_set->state.test_mesh_pos);
 }
 
 // Info : Executes the Editor Application untill its window is closed
@@ -180,8 +183,8 @@ void Fyredon::EditorApplication::paint_end()
 void Fyredon::EditorApplication::viewport_gui()
 {
 	Fyredon::Texture* tex = Renderer::get_renderer().get_colour_attachment();
-	ImGui::SetNextWindowPos(ImVec2(0, 20));
-	ImGui::SetNextWindowSize(ImVec2(1024, 1024));
+	//ImGui::SetNextWindowPos(ImVec2(150, 20));
+	//ImGui::SetNextWindowSize(ImVec2(RENDER_RES_X, RENDER_RES_Y));
 	ImGui::Begin("Game Viewport");
 	// Flip V Min. 
 	ImVec2 uv_min = ImVec2(0.0f, 1.0f);                 
@@ -296,7 +299,7 @@ void Fyredon::EditorApplication::update_camera()
 	camera.update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
 
 	// Update Aspect Ratio if changed
-	if (GLFWState.width != 0 && GLFWState.height != 0)
+	if (GLFWState.width && GLFWState.height)
 	{
 		float ar = width / height;
 		camera.aspect_ratio = ar;
@@ -311,9 +314,15 @@ void Fyredon::EditorApplication::setup_gui()
 	// Menu bar 
 	gui_panels.emplace_back(new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 5)); 
 
+	// Standins
+	gui_panels.emplace_back(new GUI_FloatingWidget("Asset Browser"));
+
+	// Testing only
+	//gui_panels.emplace_back(new GUI_GameWorld);
+
 	// Renderer Settings Panel 
 	gui_panels.emplace_back(new GUI_RendererSettings);
-		
+	
 	// ImGui Context Setup
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

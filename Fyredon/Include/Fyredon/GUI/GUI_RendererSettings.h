@@ -12,6 +12,8 @@
 // Extern Includes
 #include "dearimgui/imgui.h"
 
+#include "glm/glm.hpp"
+
 namespace Fyredon
 { 
 class GUI_RendererSettings : public GUI_Panel
@@ -25,6 +27,8 @@ public:
 		bool draw_grid;
 		bool draw_axis;
 		bool draw_testmesh; 
+		glm::vec3 light_pos, test_mesh_pos;
+		float     light_strength; 
 	} state;
 
 protected:
