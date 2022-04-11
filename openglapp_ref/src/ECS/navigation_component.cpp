@@ -112,17 +112,21 @@ void navigation_component::refreshDetail()
 
 list<glm::vec2> navigation_component::findPath(glm::vec2 src, glm::vec2 dest)
 {
-	Pos srcIndex = pos2index(src[0], src[1], this->width_grid, this->widthCount, this->length_grid, this->lengthCount);
-	Pos destIndex = pos2index(dest[0], dest[1], this->width_grid, this->widthCount, this->length_grid, this->lengthCount);
-	list<Pos>* poslist = this->map->find(srcIndex, destIndex);
+	glm::vec2 srcIndex = pos2index(src[0], src[1]);
+	glm::vec2 destIndex = pos2index(dest[0], dest[1]);
+	list<Pos>* poslist = this->map->find(Pos(srcIndex[0], srcIndex[1]), Pos(destIndex[0], destIndex[1]));
 	this->posList = poslist;
 	list<glm::vec2> position = Pos2Position(poslist);
 	return position;
 }
 
-Pos navigation_component::pos2index(float x, float y, float width, int xCount, float length, int yCount)
+glm::vec2 navigation_component::pos2index(float x, float y)
 {
 	int xIndex, yIndex;
+	float width = this->width_grid;
+	int xCount = this->widthCount;
+	float length = this->length_grid;
+	int yCount = this->lengthCount;
 	if (x < this->min_X_grid || x > this->max_X_grid) {
 		xIndex = 0;
 	}
@@ -135,7 +139,7 @@ Pos navigation_component::pos2index(float x, float y, float width, int xCount, f
 	else {
 		yIndex = (y - this->min_Z_grid) / (length / yCount);
 	}
-	Pos index(xIndex, yIndex);
+	glm::vec2 index(xIndex, yIndex);
 	return index;
 }
 

@@ -25,22 +25,47 @@ void NavigationSystem::tick()
 				glm::vec2 src2D(srcPosition[0], srcPosition[2]);
 
 				// get destination position
-				transform_component* transf = (transform_component*)this->destPoint->getComponentByName("Transform");
-				glm::vec3 destPosition(transf->matrixTranslation[0], transf->matrixTranslation[1], transf->matrixTranslation[2]);
+				glm::vec3 destPosition = getTargetPosition();
 				glm::vec2 dest2D(destPosition[0], destPosition[2]);
-				
-				// find path
-				if (glm::length(dest2D - src2D) != 0) {
-					navigation_component* navCom = (navigation_component*)this->map->getComponentByName("Navigation");
-					list<glm::vec2> path = navCom->findPath(src2D, dest2D);
-					//printMap(path);
-					if (path.size() != 0) path.pop_back();
-					if (path.size() != 0) path.pop_front();
-					
-					path.push_back(dest2D);
-					glm::vec2 nextDest = path.front();
-					glm::vec3 dest3D(nextDest[0], srcPosition[1], nextDest[1]);
-					((test_move_component*)entity->getComponentByName("Move test"))->moveOneStep(dest3D, this->deltaTime);
+
+				navigation_component* navCom = (navigation_component*)this->map->getComponentByName("Navigation");
+				if (glm::length(dest2D - src2D) != 0) {	// if not arrive the destination
+					// if destination change, find path. else goto destnation
+					if (isDestinationChange(destPosition)) {
+						navCom->path = navCom->findPath(src2D, dest2D);
+					}
+					else {
+						// check whether arrive the finall grid with destination in it
+						// if yes, go to destination
+						// if no, go to finall grid
+						if (navCom->path.size() != 0) {	// no 
+							glm::vec2 nextPoint = navCom->path.front();
+							// check whether step into next grid
+							// if yes, pop the next point from the path list
+							// if no, goto next point
+							if (isStepIntoGrid(src2D, nextPoint)) { // yes
+								navCom->path.pop_front();
+								// after we pop the front grid we directly move to the next grid
+								// so that to make the movement smoother or it will seems like drop frame
+								if (navCom->path.size() != 0) {	
+									nextPoint = navCom->path.front();
+									glm::vec3 dest3D(nextPoint[0], srcPosition[1], nextPoint[1]);
+									((test_move_component*)entity->getComponentByName("Move test"))->moveOneStep(dest3D, this->deltaTime);
+								}
+								else {
+									glm::vec3 dest3D(dest2D[0], srcPosition[1], dest2D[1]);
+									((test_move_component*)entity->getComponentByName("Move test"))->moveOneStep(dest3D, this->deltaTime);
+								}
+							}
+							else { // no
+								glm::vec3 dest3D(nextPoint[0], srcPosition[1], nextPoint[1]);
+								((test_move_component*)entity->getComponentByName("Move test"))->moveOneStep(dest3D, this->deltaTime);
+							}
+						}else {	// yes
+							glm::vec3 dest3D(dest2D[0], srcPosition[1], dest2D[1]);
+							((test_move_component*)entity->getComponentByName("Move test"))->moveOneStep(dest3D, this->deltaTime);
+						}
+					}
 				}
 			}	
 		}
@@ -50,6 +75,35 @@ void NavigationSystem::tick()
 void NavigationSystem::addEntity(Entity* entity)
 {
 	this->entities.push_back(entity);
+}
+
+glm::vec3 NavigationSystem::getTargetPosition()
+{
+	transform_component* transf = (transform_component*)this->destPoint->getComponentByName("Transform");
+	glm::vec3 destPosition(transf->matrixTranslation[0], transf->matrixTranslation[1], transf->matrixTranslation[2]);
+	return destPosition;
+}
+
+bool NavigationSystem::isDestinationChange(glm::vec3 destPosition)
+{
+	if (this->targetPosition == destPosition)
+		return false;
+	else {
+		this->targetPosition = destPosition;
+		return true;
+	}
+		
+}
+
+bool NavigationSystem::isStepIntoGrid(glm::vec2 src, glm::vec2 grid)
+{
+	navigation_component* navCom = (navigation_component*)this->map->getComponentByName("Navigation");
+	glm::vec2 source = navCom->pos2index(src[0], src[1]);
+	glm::vec2 gridPos = navCom->pos2index(grid[0], grid[1]);
+	if (source[0] == gridPos[0] && source[1] == gridPos[1]) {
+		return true;
+	}
+	return false;
 }
 
 void NavigationSystem::printMap(list<glm::vec2> path) {
@@ -62,8 +116,8 @@ void NavigationSystem::printMap(list<glm::vec2> path) {
 		}
 	}
 	for (glm::vec2 node : path) {
-		int x = navCom->pos2index(node[0], node[1], navCom->width_grid, navCom->widthCount, navCom->length_grid, navCom->lengthCount).x;
-		int y = navCom->pos2index(node[0], node[1], navCom->width_grid, navCom->widthCount, navCom->length_grid, navCom->lengthCount).y;
+		int x = navCom->pos2index(node[0], node[1]).x;
+		int y = navCom->pos2index(node[0], node[1]).y;
 		charmap[y * navCom->widthCount + x] = '#';
 	}
 	gotoxy(0, 127);

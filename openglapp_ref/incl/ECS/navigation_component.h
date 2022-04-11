@@ -21,6 +21,7 @@ public:
 	std::vector<Pos> walls;
 	float min_width = 0.5;
 	list<Pos>* posList;
+	list<glm::vec2> path;
 	
 	float grid_width;
 	float min_X_tran, max_X_tran, min_Z_tran, max_Z_tran;
@@ -44,7 +45,7 @@ public:
 	void getMeshDetail();
 	void refreshDetail();
 	list<glm::vec2> findPath(glm::vec2 src, glm::vec2 dest);
-	Pos pos2index(float x, float y, float width, int xCount, float length, int yCount);
+	glm::vec2 pos2index(float x, float y);
 	list<glm::vec2> Pos2Position(list<Pos>* pos);
 	glm::vec2 Pos2Position(Pos pos);
 	void addWall(int x, int y);

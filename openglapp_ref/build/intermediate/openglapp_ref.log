@@ -1,18 +1,19 @@
-﻿  viewer.cpp
+﻿  NavigationSystem.cpp
 D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\incl\Navigation\AStarFindPath.hpp(22,27): warning C4804: “>”: 在操作中使用类型“bool”不安全
 D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\incl\Navigation\AStarFindPath.hpp(22,76): warning C4804: “>”: 在操作中使用类型“bool”不安全
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\incl\ECS\System\NavigationSystem.h(17,18): warning C4305: “初始化”: 从“double”到“float”截断
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(65,61): warning C4244: “参数”: 从“size_t”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(175,68): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(192,32): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(366,21): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(601,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(602,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(603,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(605,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(606,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(607,23): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(615,12): warning C4244: “初始化”: 从“size_t”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\incl\ECS\System\NavigationSystem.h(18,18): warning C4305: “初始化”: 从“double”到“float”截断
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\ECS\System\NavigationSystem.cpp(117,9): warning C4244: “初始化”: 从“T”转换到“int”，可能丢失数据
+          with
+          [
+              T=float
+          ]
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\ECS\System\NavigationSystem.cpp(118,9): warning C4244: “初始化”: 从“T”转换到“int”，可能丢失数据
+          with
+          [
+              T=float
+          ]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: “APIENTRY”: 宏重定义
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\incl\ext\GLFW\glfw3.h(123): message : 参见“APIENTRY”的前一个定义
   openglapp_ref.vcxproj -> D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\build\bin\openglapp_ref.exe
   D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\lib\GLEW\glew32.dll
   复制了 1 个文件
