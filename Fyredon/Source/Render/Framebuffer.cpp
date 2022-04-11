@@ -54,5 +54,4 @@ void Fyredon::Framebuffer::bind_clear() const
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO_ID);
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
