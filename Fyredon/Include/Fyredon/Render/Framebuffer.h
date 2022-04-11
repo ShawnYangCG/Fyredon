@@ -17,11 +17,12 @@ public:
 	Framebuffer(Texture * ColourTexture);
 	~Framebuffer(); 
 
-	void bind();
-	void clear();
+	void bind()   const;
+	void unbind() const;
+	void clear()  const;
 
 	Texture* colour_texture; 
-	GLuint ID; 
+	GLuint FBO_ID, RBO_ID; 
 };
 
 }
