@@ -45,9 +45,9 @@ Viewer::Viewer(std::size_t W, std::size_t H, const char *Title)
 	last_pitchoffs = 0.f;
 	last_zoom = 0.f;
 	draw_prims = true; 
-	draw_grid = true;
-	draw_axis = true;
-	light_strength = 2.0f; 
+	draw_grid = false;
+	draw_axis = false;
+	light_strength = 0.8f; 
 	light_pos = glm::vec3(0.f, 5.f, 3.f);
 	ren_normals = false; 
 	ren_wire = false; 
@@ -62,7 +62,7 @@ Viewer::Viewer(std::size_t W, std::size_t H, const char *Title)
 	#if USE_FREE_CAMERA == 0
 	//camera = Camera(glm::vec3(0.f, 0.25f, 1.f), 1.f, 80.f, width / height, false); // Fixed
 	#else
-	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 1.f, 80.f, width / height, true);    // Free
+	camera = Camera(glm::vec3(5.f, 8.f, 0.f), 1.f, 80.f, width / height, true);    // Free
 	#endif
 
 
@@ -70,6 +70,8 @@ Viewer::Viewer(std::size_t W, std::size_t H, const char *Title)
 	this->ECS_world = new World();
 	this->aniSys = new AnimationSystem();
 	this->egnRenSys = new EngineRenderSystem(this->ECS_world);
+	this->navSys = new NavigationSystem(this->ECS_world);
+	this->navSys->enrenSys = this->egnRenSys;
 
 	Entity* entity0 = new Entity("entity 0");
 	entity0->addTransformComponent();
@@ -291,6 +293,7 @@ void Viewer::render()
 		init();
 
 		this->timerIsRun = true;
+		this->navSys->tick();
 		this->aniSys->run();
 	}
 	else {
@@ -301,7 +304,7 @@ void Viewer::render()
 	get_GLError();
 
 	this->egnRenSys->tick();
-
+	this->navSys->randerWalls();
 	/*
 	if (prims.size() && draw_prims)
 	{
@@ -376,7 +379,7 @@ bool Viewer::esc_pressed()
 void Viewer::test_mesh()
 {
 	// fbx test
-	fbx_entity* fbxObject1 = new fbx_entity("human_walk", "./walking_2.fbx", 0.0, 1.0, 1.0);
+	fbx_entity* fbxObject1 = new fbx_entity("human_walk", "./walking_2.fbx", 0.0, 1.0, 3.0);
 	
 	// these need to be done in render system
 	
@@ -387,10 +390,26 @@ void Viewer::test_mesh()
 	mesh->rotate(0.0f, glm::vec3(1.f, 0.f, 0.f));
 	mesh->scale(glm::vec3(1.f, 1.f, 1.f));
 	mesh->mode = Render_Mode::RENDER_MESH;
+	Component* navigation = new test_move_component();
+	fbxObject1->addComponent(navigation);
 	this->ECS_world->addEntity(fbxObject1);
 	this->aniSys->addFbxEntity(fbxObject1);
-	prims.push_back(mesh);
+	this->navSys->addEntity(fbxObject1);
 	
+	Entity* target = new Entity("target");
+	Mesh* mesh3 = new Mesh("target", "./target.obj");
+	mesh3->load_obj(false);
+	mesh3->set_shader("../../shaders/mesh3.vert", "../../shaders/mesh3.frag");
+	mesh3->set_colour(glm::vec3(1.f, 1.f, 1.f));
+	mesh3->translate(glm::vec3(0.0f, 0.8f, -0.1f));
+	mesh3->mode = Render_Mode::RENDER_MESH;
+	target->addTransformComponent();
+	mesh_component* mshCop1 = new mesh_component(mesh3);
+	target->addComponent(mshCop1);
+	this->ECS_world->addEntity(target);
+	this->navSys->destPoint = target;
+
+	/*
 	// fbx test
 	fbx_entity* fbxObject2 = new fbx_entity("human_walk2", "./walking_2.fbx", 0.0, 1.0, 1.0);
 
@@ -404,7 +423,6 @@ void Viewer::test_mesh()
 	mesh->mode = Render_Mode::RENDER_MESH;
 	this->ECS_world->addEntity(fbxObject2);
 	this->aniSys->addFbxEntity(fbxObject2);
-	prims.push_back(mesh);
 
 	// fbx test
 	fbx_entity* fbxObject3 = new fbx_entity("rotateBOX", "./box2.fbx", 0.0, 1.0, 1.0);
@@ -419,7 +437,20 @@ void Viewer::test_mesh()
 	mesh->mode = Render_Mode::RENDER_MESH;
 	this->ECS_world->addEntity(fbxObject3);
 	this->aniSys->addFbxEntity(fbxObject3);
-	prims.push_back(mesh);
+	*/
+	Entity* plane = new Entity("plane5x5");
+	Mesh* mesh2 = new Mesh("plane5x5", "./plane5x5.obj");
+	mesh2->load_obj(false);
+	mesh2->set_shader("../../shaders/mesh2.vert", "../../shaders/mesh2.frag");
+	mesh2->set_colour(glm::vec3(0.2f, 0.2f, 0.2f));
+	mesh2->mode = Render_Mode::RENDER_MESH;
+	plane->addTransformComponent();
+	mesh_component* mshCop = new mesh_component(mesh2);
+	plane->addComponent(mshCop);
+	navigation_component* navCop = new navigation_component(plane);
+	plane->addComponent(navCop);
+	this->ECS_world->addEntity(plane);
+	this->navSys->map = plane;
 }
 
 //#############################################################

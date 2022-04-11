@@ -6,7 +6,7 @@ AnimationSystem::AnimationSystem()
 
 void AnimationSystem::addFbxEntity(fbx_entity* entity)
 {
-	if (this->entityList[entity->getName()] == NULL) {
+	if (this->entityList.count(entity->getName()) == 0) {
 		this->entityList[entity->getName()] = this->entityList.size();
 		this->entities.push_back(entity);
 	}
@@ -26,7 +26,7 @@ fbx_entity* AnimationSystem::getEntityByIndex(int index)
 
 fbx_entity* AnimationSystem::getEntityByName(std::string EntityName)
 {
-	if (this->entityList[EntityName] == NULL) {
+	if (this->entityList.count(EntityName) == 0) {
 		std::cout << "Error: World do not contain entity [" << EntityName << "]" << std::endl;
 		return nullptr;
 	}

@@ -30,6 +30,7 @@ Mesh::~Mesh()
 // Very basic, assumes obj file has tris. 
 void Mesh::load_obj(bool has_tex)
 {
+	
 	// Check file exists
 	std::ifstream in(file_path);
 	if (!in.is_open())
@@ -37,18 +38,16 @@ void Mesh::load_obj(bool has_tex)
 		std::cerr << "ERROR::Mesh::" << name << ":: Invalid .obj file passed" << std::endl;
 		return;
 	}
-
 	// Debug Stream
 	std::ostringstream dbg; 
-
 	std::string line;
 	while (std::getline(in, line))
 	{
+		
 		// Extract first block as str. 
 		std::string str;
 		std::istringstream ss(line);
 		ss >> str;
-
 		dbg << "DEBUG " << str << "\n";
 
 		if (str == "#" || str == "g" || str == "s") continue;
@@ -149,7 +148,6 @@ void Mesh::load_obj(bool has_tex)
 	} // End file read loop. 
 	// Close 
 	in.close();
-
 	dbg << "Vert Count = " << obj_data.verts.size() << "\n";
 
 	// Pass verts to primitive::mesh_data

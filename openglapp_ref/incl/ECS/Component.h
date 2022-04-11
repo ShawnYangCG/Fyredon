@@ -1,16 +1,19 @@
 #pragma once
 #include "ext/dearimgui/imgui.h"
+#include "ECS/Entity.h"
 #include <string>
 class Component_GUI;
+class Entity;
 class Component
 {
 public:
 	std::string componentName;
 	// when you create your own component you need to inherit this class
-	
+	Entity* parent;
+	bool isActive = true;
 	// add your own variable here
 	// == variable ==
-	bool isActive = true;
+	
 	// ==============
 private:
 	// you need to put value into this truct when initialize

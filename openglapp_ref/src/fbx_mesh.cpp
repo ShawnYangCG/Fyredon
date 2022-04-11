@@ -17,9 +17,9 @@ void fbx_mesh::load_obj(bool has_tex)
 	FbxScene* lScene = this->fbxloader->Scene;
 	FbxNode* lRootNode = lScene->GetRootNode();
 	if (lRootNode) {
-		std::cout << "Child node count: " << lRootNode->GetChildCount() << std::endl;
-		for (int i = 0; i < lRootNode->GetChildCount(); i++)
-			this->fbxloader->PrintNode(lRootNode->GetChild(i));
+		//std::cout << "Child node count: " << lRootNode->GetChildCount() << std::endl;
+		//for (int i = 0; i < lRootNode->GetChildCount(); i++)
+			//this->fbxloader->PrintNode(lRootNode->GetChild(i));
 	}
 
 	// get fbxmesh from one node
@@ -36,9 +36,9 @@ void fbx_mesh::load_obj(bool has_tex)
 					FbxMesh *nMesh = pNode->GetMesh();
 					VBOMesh vboMesh = VBOMesh();
 					vboMesh.Initialize(nMesh);
-					std::cout << "Vertices count: " << vboMesh.lVerticesLength;
-					std::cout << " Normals count:" << vboMesh.lNormalsLength;
-					std::cout << " UV count:" << vboMesh.lUVsLength << std::endl;
+					//std::cout << "Vertices count: " << vboMesh.lVerticesLength;
+					//std::cout << " Normals count:" << vboMesh.lNormalsLength;
+					//std::cout << " UV count:" << vboMesh.lUVsLength << std::endl;
 					// add position
 					for (int vertice = 0; vertice < vboMesh.lVerticesLength; vertice+=4) {
 						fbxData.fbx_obj_data.v_p.emplace_back(

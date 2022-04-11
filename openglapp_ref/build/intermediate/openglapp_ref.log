@@ -1,95 +1,18 @@
-﻿  Entity.cpp
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\ECS\Entity.cpp(18,63): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\ECS\Entity.cpp(37,63): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\ECS\Entity.cpp(50,63): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\ECS\Entity.cpp(128,81): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-  AnimationSystem.cpp
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\ECS\System\AnimationSystem.cpp(10,64): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\ECS\System\AnimationSystem.cpp(48,39): warning C4244: “=”: 从“unsigned __int64”转换到“float”，可能丢失数据
-  EngineRenderSystem.cpp
-  camera_entity.cpp
-  fbx_entity.cpp
-  fbx_property_component.cpp
-  mesh_component.cpp
-  transform_component.cpp
-  fbx_mesh.cpp
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\fbx_mesh.cpp(128,65): warning C4244: “=”: 从“T”转换到“T”，可能丢失数据
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\fbx_mesh.cpp(129,65): warning C4244: “=”: 从“T”转换到“T”，可能丢失数据
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\fbx_mesh.cpp(130,65): warning C4244: “=”: 从“T”转换到“T”，可能丢失数据
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\fbx_mesh.cpp(139,68): warning C4244: “=”: 从“T”转换到“T”，可能丢失数据
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\fbx_mesh.cpp(140,68): warning C4244: “=”: 从“T”转换到“T”，可能丢失数据
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\fbx_mesh.cpp(141,68): warning C4244: “=”: 从“T”转换到“T”，可能丢失数据
-          with
-          [
-              T=fbxsdk::FbxDouble
-          ]
-          and
-          [
-              T=float
-          ]
-  ground.cpp
-  main.cpp
-  mesh.cpp
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\mesh.cpp(216,44): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\mesh.cpp(222,44): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\mesh.cpp(228,44): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
-  primitive.cpp
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\primitive.cpp(63,41): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\primitive.cpp(68,40): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\primitive.cpp(74,44): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
-  viewer.cpp
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(65,62): warning C4244: “参数”: 从“size_t”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(173,68): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(190,32): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(363,21): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(570,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(571,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(572,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(574,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(575,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(576,23): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(584,12): warning C4244: “初始化”: 从“size_t”转换到“float”，可能丢失数据
-  正在生成代码...
+﻿  viewer.cpp
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\incl\Navigation\AStarFindPath.hpp(22,27): warning C4804: “>”: 在操作中使用类型“bool”不安全
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\incl\Navigation\AStarFindPath.hpp(22,76): warning C4804: “>”: 在操作中使用类型“bool”不安全
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\incl\ECS\System\NavigationSystem.h(17,18): warning C4305: “初始化”: 从“double”到“float”截断
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(65,61): warning C4244: “参数”: 从“size_t”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(175,68): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(192,32): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(366,21): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(601,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(602,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(603,20): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(605,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(606,28): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(607,23): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\src\viewer.cpp(615,12): warning C4244: “初始化”: 从“size_t”转换到“float”，可能丢失数据
   openglapp_ref.vcxproj -> D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\build\bin\openglapp_ref.exe
   D:\Z_STUDY\GroupProject\ECS-branch\openglapp_ref\lib\GLEW\glew32.dll
   复制了 1 个文件

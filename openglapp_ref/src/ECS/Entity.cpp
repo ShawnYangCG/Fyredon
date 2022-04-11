@@ -17,6 +17,7 @@ void Entity::addComponent()
     if (this->componentList.count(newName) == 0) {
         this->componentList[newName] = this->components.size();
         Component* newComponent = new Component(newName);
+        newComponent->parent = this;
         this->components.push_back(newComponent);
     }
     else {
@@ -36,6 +37,7 @@ void Entity::addComponent(std::string componentName)
     if (this->componentList.count(newName) == 0) {
         this->componentList[newName] = this->components.size();
         Component* newComponent = new Component(componentName);
+        newComponent->parent = this;
         this->components.push_back(newComponent);
     }
     else {
@@ -48,6 +50,7 @@ void Entity::addComponent(Component* component)
     std::string newName = component->componentName;
     if (this->componentList.count(newName) == 0) {
         this->componentList[newName] = this->components.size();
+        component->parent = this;
         this->components.push_back(component);
     }
     else {
@@ -124,8 +127,9 @@ void Entity::reset()
 void Entity::addTransformComponent()
 {
     Component* Tcomponent = new transform_component();
-    if (this->componentList[Tcomponent->componentName] == NULL) {
+    if (this->componentList.count(Tcomponent->componentName) == 0) {
         this->componentList[Tcomponent->componentName] = this->components.size();
+        Tcomponent->parent = this;
         this->components.push_back(Tcomponent);
     }
 }

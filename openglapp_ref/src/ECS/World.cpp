@@ -7,8 +7,8 @@ World::World()
 
 void World::addEntity(Entity* entity)
 {
-    if (this->entityList[entity->getName()] == NULL) {
-        this->entityList[entity->getName()] = this->entityList.size();
+    if (this->entityList.count(entity->getName()) == 0) {
+        this->entityList[entity->getName()] = this->entities.size();
         this->entities.push_back(entity);
     }
     else {
@@ -55,7 +55,7 @@ Entity* World::getEntityByIndex(int index)
 
 Entity* World::getEntityByName(std::string EntityName)
 {
-    if (this->entityList[EntityName] == NULL) {
+    if (this->entityList.count(EntityName) == 0) {
         std::cout << "Error: World do not contain entity [" << EntityName << "]" << std::endl;
         return nullptr;
     }

@@ -12,7 +12,6 @@ void EngineRenderSystem::tick()
 			mesh_component* meCom = (mesh_component*)entity->getComponentByName("Mesh");
 			Mesh* mesh = (Mesh*)malloc(sizeof(Mesh));
 			memcpy((void*)mesh, (void*)meCom->mesh, sizeof(Mesh));
-
 			float TranslationX, TranslationY, TranslationZ;
 			float ScaleX, ScaleY, ScaleZ;
 			float RotationX, RotationY, RotationZ;
@@ -51,4 +50,13 @@ void EngineRenderSystem::setLight(glm::vec3* light_pos, float* light_strength)
 {
 	this->light_pos = light_pos;
 	this->light_strength = light_strength;
+}
+
+void EngineRenderSystem::renderMesh(Mesh* mesh)
+{
+	mesh->shader.setVec("camPos_world", camera->Cam_Pos);
+	mesh->shader.setVec("lightPos_world", *light_pos);
+	mesh->shader.setFloat("lightStr", *light_strength);
+	mesh->set_cameraTransform(camera->get_ViewMatrix(), camera->get_PerspMatrix());
+	mesh->render();
 }

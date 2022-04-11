@@ -95,7 +95,6 @@ private:
 	bool ren_wire; 
 
 	// Primtivies
-	std::vector<Primitive*> prims;
 	Ground *ground;
 	Primitive *axis;
 
@@ -108,6 +107,7 @@ private:
 	World* ECS_world;
 	AnimationSystem* aniSys;
 	EngineRenderSystem* egnRenSys;
+	NavigationSystem* navSys;
 };
 
 // GLFW Input Callbacks 

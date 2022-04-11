@@ -19,5 +19,6 @@ public:
 	void tick();
 	void setCamera(Camera* camera);
 	void setLight(glm::vec3* light_pos, float* light_strength);
+	void renderMesh(Mesh* mesh);
 };
 
