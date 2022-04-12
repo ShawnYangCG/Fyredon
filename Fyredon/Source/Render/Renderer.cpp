@@ -36,8 +36,6 @@ Fyredon::Renderer::Renderer()
 	flags.ren_normals     = nullptr; 
 	flags.ren_wire        = nullptr; 
 
-	//for (std::size_t i = 0; i < (sizeof(flags) / sizeof(bool*)); ++i) {bool* b = ((bool*)&flags) + i; b = nullptr; }
-
 	// Replace with Light Array
 	flags.light_str = nullptr; 
 	flags.light_pos = nullptr; 

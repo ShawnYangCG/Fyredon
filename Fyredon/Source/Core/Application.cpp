@@ -318,7 +318,7 @@ void Fyredon::EditorApplication::setup_gui()
 	gui_panels.emplace_back(new GUI_FloatingWidget("Asset Browser"));
 
 	// Testing only
-	//gui_panels.emplace_back(new GUI_GameWorld);
+	gui_panels.emplace_back(new GUI_GameWorld);
 
 	// Renderer Settings Panel 
 	gui_panels.emplace_back(new GUI_RendererSettings);
