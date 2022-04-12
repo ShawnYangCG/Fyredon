@@ -63,6 +63,7 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context)
 	// Test Primitives
 	create_test_prims();
 	create_test_mesh();
+	create_terrain();
 	GL_ERROR();
 
 	is_init = true; 
@@ -137,6 +138,12 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	{
 		test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		test_mesh->render();
+	}
+
+	if (terrain_loaded) {
+		terrain_generator->TerrainMesh.set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
+		//terrain_generator->TerrainMesh.debug();
+		terrain_generator->TerrainMesh.render();
 	}
 
 	// Draw Primtivies
@@ -220,3 +227,15 @@ void Fyredon::Renderer::create_test_prims()
 	axis->mode = Render_Mode::RENDER_LINES; 
 }
 
+void Fyredon::Renderer::create_terrain() {
+	terrain_generator = new TerrainGenerator("heightmap1", "./assets/heightmap/Heightmap.png");
+	terrain_generator->read_height_map("heightmap2.png");
+	terrain_generator->TerrainMesh.use_tex = false;
+	terrain_generator->TerrainMesh.create_buffers();
+	terrain_generator->TerrainMesh.set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	terrain_generator->TerrainMesh.set_colour(glm::vec3(1.f, 0.f, 0.f));
+	terrain_generator->TerrainMesh.translate(glm::vec3(0.f, 0.f, 0.f));
+	terrain_generator->TerrainMesh.scale(glm::vec3(0.2f));
+	terrain_generator->TerrainMesh.mode = Render_Mode::RENDER_MESH;
+	terrain_loaded = true;
+}
