@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Logger.h: Singleton to delegate debug info on debug thread via winAPI console
+	Logger.h: Singleton to delegate debug info on debug thread via winAPI console : Sharjeel
 
 	Formatting adapted from:
 	https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences

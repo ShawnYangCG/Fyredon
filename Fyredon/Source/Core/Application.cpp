@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Application.h: Base Engine Editor Application
+	Application.h: Base Engine Editor Application : Niall, [..]
 =============================================================================*/
 // Project Includes
 #include "Fyredon/Other/pch.h"
@@ -9,51 +9,60 @@
 // Implements 
 #include "Fyredon/Core/Application.h"
 
-// GL
-//#define GLEW_STATIC // Fyredon DLL --> GLEW (static linking)
-//#include "Fyredon/Extern/GLEW/glew.h"
-//#include "Fyredon/Extern/GLFW/glfw3.h"
+/* GL, TBD : Move GLEW impland incl to here.
+#define GLEW_STATIC 
+#include "Fyredon/Extern/GLEW/glew.h"
+#include "Fyredon/Extern/GLFW/glfw3.h" */
 
-#include "Fyredon/Core/threads.h"
-#include "Fyredon/Core/TerrainGeneration.h"
-#include "Fyredon/Core/FileSys.h"
+// Core 
+#include "Fyredon/Core/Threads.h"
+#include "Fyredon/Core/FileSystem.h"
+#include "Fyredon/Core/GameWorld.h"
+
+// Debug
+#include <Fyredon/Debug/Logger.h>
 
 // GUI
-#include "Fyredon/Core/GUI_Menu.h"
+#include "Fyredon/GUI/GUI_Menu.h"
+#include "Fyredon/GUI/GUI_FloatingWidget.h"
+#include "Fyredon/GUI/GUI_RendererSettings.h"
+#include "Fyredon/GUI/GUI_GameWorld.h"
 
-// Extern Includes
-#include "Fyredon/Extern/dearimgui/imgui.h"
-#include "Fyredon/Extern/dearimgui/imgui_impl_glfw.h"
-#include "Fyredon/Extern/dearimgui/imgui_impl_opengl3.h"
+// Render
+#include "Fyredon/Render/Camera.h"
+#include "Fyredon/Render/Texture.h"
+#include "Fyredon/Render/Renderer.h"
 
-// Std Includes
-#include <iostream>
-#include <stdexcept>
+// Extern 
+#include "dearimgui/imgui.h"
+#include "dearimgui/imgui_impl_glfw.h"
+#include "dearimgui/imgui_impl_opengl3.h"
+
+#pragma warning( disable : 26495) 
 
 #define GL_VERSION_MAJOR 4
 #define GL_VERSION_MINOR 5
 
-#define EDITOR_WINDOW_RESIZE
-// #define EDITOR_FULLSCREEN 
+//#define EDITOR_WINDOW_RESIZE
+//#define EDITOR_FULLSCREEN 
 
-namespace
+// ================ Init Singleton Instance + Static Data ================
+Fyredon::EditorApplication Fyredon::EditorApplication::app;
+decltype(Fyredon::EditorApplication::GLFWState) Fyredon::EditorApplication::GLFWState;
+
+Fyredon::EditorApplication& Fyredon::EditorApplication::get_instance()
 {
-	// Global GLFW State
-	struct
-	{
-		int    width, height;
-		double mouse_offset_x = 0.f, mouse_offset_y = 0.f;
-		double mousepos_x = 0.f, mousepos_y = 0.f;
-		double mousepos_prev_x = 0.f, mousepos_prev_y = 0.f;
-		double scroll_y = 0.f;
-		bool is_init = false;
-
-	}GLFWState;
+	return app;
 }
 
-Fyredon::EditorApplication::EditorApplication(std::size_t Width, std::size_t Height, const char* FilePath)
-	: window_title("Fyredon Game Engine : Editor Application"), width(Width), height(Height), project_filepath(FilePath)
-{}
+// ================ Editor Application Class Implementation ================
+
+Fyredon::EditorApplication::EditorApplication() 
+	: dt(0.f), cur_t(0.f), prev_t(0.f), width(1024), height(1024), last_yawoffs(0.f),
+	last_pitchoffs(0.f), last_zoom(0.f), window_title("null")
+{
+	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, width / height, true);
+}
 
 Fyredon::EditorApplication::~EditorApplication()
 {
@@ -61,31 +70,43 @@ Fyredon::EditorApplication::~EditorApplication()
 	{
 		for (GUI_Panel* panel : gui_panels) delete panel; 
 	}
+
+	glfwDestroyWindow(window); window = nullptr;
+	glfwTerminate();
 }
 
 // Info : Called before application loop is ran, to do inital application setup. 
-void Fyredon::EditorApplication::init()
+void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, const char* Title)
 {
+	// Override defaults
+	std::string title = Title; 
+	title += " :: Default Game Project";
+	width = Width, height = Height, window_title = title.c_str();
 	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 
 	setup_ogl_window_contex();
+
 	// ---- GLEW, GL Function Loading 
 	setup_ogl_loading();
 
-	// Do Debug setup ...
-	FD_DEBUG_INFO("s", "This is an info log");
-	FD_DEBUG_ERROR("sd", "This is an error log", 123);
-	FD_DEBUG_WARN("sf", "This is a warning log", 123.456);
+	// ---- Editor GUI Setup 
+	setup_gui();
 
-	// Do FileSystem setup ...
-
-	// Do Threading setup ...
-	//ThreadManager tm = ThreadManager();
-	//TerrainGenerator tg = TerrainGenerator();
-
-	// Do GUI Setup ....
+	// We need a Susbsystem manager class, for now just create within EditorApp
+	// ---- Renderer Subsystem Setup
+	Renderer& renderer = Renderer::get_renderer();
+	renderer.init(window);
+	// Hack untill i find a better solution assume RenderSettings is back of array.
+	GUI_RendererSettings* ren_set   = static_cast<GUI_RendererSettings*>(gui_panels.back());
+	renderer.flags.draw_axis        = &(ren_set->state.draw_axis);
+	renderer.flags.draw_grid        = &(ren_set->state.draw_grid);
+	renderer.flags.draw_test_prims  = &(ren_set->state.draw_testmesh);
+	renderer.flags.light_pos        = &(ren_set->state.light_pos);
+	renderer.flags.light_str        = &(ren_set->state.light_strength);
+	renderer.flags.test_pos         = &(ren_set->state.test_mesh_pos);
 }
 
+// Info : Executes the Editor Application untill its window is closed
 void Fyredon::EditorApplication::exec()
 {
 	// Pre Exec Setup
@@ -93,47 +114,57 @@ void Fyredon::EditorApplication::exec()
 	// Edtior Loop (Game loop nested in here)
 	while (!glfwWindowShouldClose(window))
 	{
-		// Do awesome stuff
-		tick(); 
+		tick_engine();
+		tick_editor();
 	}
 
-	// Gui Shutdown
+	// Post Exec Shutdown
 	shutdown_gui();
 }
 
+// Info : This should be encapsulated into its own class later for game + engine state
+void Fyredon::EditorApplication::tick_engine()
+{
+	get_dt();
+
+	// Tick World
+	GameWorld::get_world().tick(dt);
+	update_camera();
+
+	// Tick Renderer
+	Renderer::get_renderer().render(camera);
+}
+
 // Info : All operations done within the editor application for a single tick
-void Fyredon::EditorApplication::tick()
+void Fyredon::EditorApplication::tick_editor()
 {
 	paint_begin();
 
-	// Cool stuff going on here ...
-	// tick engine...
-
 	tick_gui();
-
-	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	
 	paint_end();
 }
 
-
 void Fyredon::EditorApplication::tick_gui()
 {
+	viewport_gui();
+	
 	for (GUI_Panel* panel : gui_panels)
 	{
-		// If panel active...
-		panel->tick();
+		if (panel) panel->tick();
 	}
-}
 
+	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
 
 // Start of Application paint operations (within Tick())
 void Fyredon::EditorApplication::paint_begin()
 {
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	// GUI new frame, todo wrap im ImGui wrapper class...
 	ImGui_ImplOpenGL3_NewFrame();
@@ -148,6 +179,22 @@ void Fyredon::EditorApplication::paint_end()
 	glfwPollEvents();
 }
 
+// Info : Move this into GUI Class, passing renderer texture. 
+void Fyredon::EditorApplication::viewport_gui()
+{
+	Fyredon::Texture* tex = Renderer::get_renderer().get_colour_attachment();
+	//ImGui::SetNextWindowPos(ImVec2(150, 20));
+	//ImGui::SetNextWindowSize(ImVec2(RENDER_RES_X, RENDER_RES_Y));
+	ImGui::Begin("Game Viewport");
+	// Flip V Min. 
+	ImVec2 uv_min = ImVec2(0.0f, 1.0f);                 
+	ImVec2 uv_max = ImVec2(1.0f, 0.0f);                 
+	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);   
+	ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); 
+	ImGui::Image((ImTextureID)tex->ID, ImVec2(tex->width, tex->height), uv_min, uv_max, tint_col, border_col);
+	ImGui::End();
+}
+
 // ============= Editor Application OpenGL Setup =============
 
 // Info : Setup OpenGL Context via GLFW, setup Window and callbacks. 
@@ -157,22 +204,24 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	{
 		// Logger class repalce this :)
 		std::cerr << "Error::Viewer:: GLFW failed to initalize.\n";
-		throw std::runtime_error("GLFW Fail"); // Need to talk about exceptions use...
+		throw std::runtime_error("GLFW Init Fail"); // Need to talk about exceptions use...
 	}
-
 	// Window State
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_VERSION_MAJOR);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifndef EDITOR_WINDOW_RESIZE
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // Fixed Window Size. 
-#endif
-	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
+//	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
+	#ifdef EDITOR_WINDOW_RESIZE
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); 
+	#else
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	#endif
+
 	// Create Window
 	const GLFWvidmode *monitor = glfwGetVideoMode(glfwGetPrimaryMonitor());
-#ifdef EDITOR_FULLSCREEN
+	#ifdef EDITOR_FULLSCREEN
 	width = monitor->width, height = monitor->height;
-#endif
+	#endif
 	window = glfwCreateWindow(width, height, window_title, NULL, NULL);
 	if (window == NULL)
 	{
@@ -191,9 +240,6 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	// ============= Set Context and Viewport =============
 	glfwMakeContextCurrent(window);
 	glViewport(0, 0, width, height);
-
-	// ============= Setup GUI =============
-	setup_gui();
 }
 
 // Info : Setup OpenGL function loading via GLEW 
@@ -213,6 +259,7 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	render_device.name        = glGetString(GL_RENDERER);
 	render_device.version     = glGetString(GL_VERSION);
 	render_device.sl_version  = glGetString(GL_SHADING_LANGUAGE_VERSION);
+
 	// Cleanup Debug Output
 	FD_DEBUG_BLOCK_BEGIN("DEBUG::OPENGL::DEVICE_INFO");
 	FD_DEBUG_BLOCK_MSG("DEVICE VENDOR", "s", render_device.vendor);
@@ -222,26 +269,72 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	FD_DEBUG_BLOCK_END();
 }
 
+GLFWwindow* Fyredon::EditorApplication::get_ogl_context()
+{
+	return window; 
+}
+ 
+void Fyredon::EditorApplication::get_dt()
+{
+	prev_t = cur_t;
+	cur_t  = glfwGetTime();
+	dt = cur_t - prev_t;
+}
 
-// ============= GUI  =============
+void Fyredon::EditorApplication::update_camera()
+{
+	// Fetch global GLFW State
+	width = GLFWState.width, height = GLFWState.height;
+
+	// Only set yaw,pitch if delta from last tick (update_camera() call). 
+	float delta_yaw   = GLFWState.mouse_offset_x != last_yawoffs   ? GLFWState.mouse_offset_x : 0.f;
+	float delta_pitch = GLFWState.mouse_offset_y != last_pitchoffs ? GLFWState.mouse_offset_y : 0.f;
+	float delta_zoom  = GLFWState.scroll_y       != last_zoom      ? GLFWState.scroll_y       : 0.f;
+	// Set last offsets
+	last_yawoffs   = GLFWState.mouse_offset_x;
+	last_pitchoffs = GLFWState.mouse_offset_y;
+	last_zoom      = GLFWState.scroll_y;
+
+	// Update Camera State
+	camera.update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
+
+	// Update Aspect Ratio if changed
+	if (GLFWState.width && GLFWState.height)
+	{
+		float ar = width / height;
+		camera.aspect_ratio = ar;
+	}
+}
+
+// ============= ImGui GUI Setup =============
 // 
 // Info : DearImGui Setup operations
 void Fyredon::EditorApplication::setup_gui()
 {
-	// Inital Panel Layout
-	gui_panels.emplace_back(new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 5)); // Menu bar. 
+	// Menu bar 
+	gui_panels.emplace_back(new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 5)); 
+
+	// Standins
+	gui_panels.emplace_back(new GUI_FloatingWidget("Asset Browser"));
+
+	// Testing only
+	//gui_panels.emplace_back(new GUI_GameWorld);
+
+	// Renderer Settings Panel 
+	gui_panels.emplace_back(new GUI_RendererSettings);
 	
-	// ImGui Setup 
+	// ImGui Context Setup
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	ImGui::StyleColorsDark();
-	// GL GUI Setup
+
+	// ImGui Impelementation Setup
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 450");
 }
 
-// Info : DearImGui Shutdown operations
+// Info : DearImGui Shutdown operations (move to imgui wrapper class)
 void Fyredon::EditorApplication::shutdown_gui()
 {
 	ImGui_ImplOpenGL3_Shutdown();
@@ -249,130 +342,45 @@ void Fyredon::EditorApplication::shutdown_gui()
 	ImGui::DestroyContext();
 }
 
-/*
-void Fyredon::EditorApplication::gui_menu()
-{
-	// tmp state vars
-	static bool about = false;
-
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 5));
-	if (ImGui::BeginMainMenuBar())
-	{
-		if (ImGui::BeginMenu("Fyredon"))
-		{
-			ImGui::MenuItem("Fyredon Engine Version xx.xx.xx", NULL, false, false);
-			if (ImGui::MenuItem("New")) {}
-			if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-			if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-			if (ImGui::MenuItem("Save Project As", "Ctrl+Shift+S")) {}
-			ImGui::EndMenu(); // End Fyredon Menu
-		}
-		if (ImGui::BeginMenu("Edit"))
-		{
-			if (ImGui::MenuItem("PlaceHolder 1")) {}
-			if (ImGui::MenuItem("PlaceHolder 2")) {}
-			ImGui::EndMenu(); // End Edit Menu
-		}
-		if (ImGui::BeginMenu("View"))
-		{
-			if (ImGui::MenuItem("PlaceHolder 1")) {}
-			if (ImGui::MenuItem("PlaceHolder 2")) {}
-			ImGui::EndMenu(); // End View Menu
-		}
-		if (ImGui::BeginMenu("Help"))
-		{
-			if (ImGui::MenuItem("About")) about = true;
-			ImGui::EndMenu(); // End Help Menu
-		}
-		ImGui::EndMainMenuBar();
-	}
-	ImGui::PopStyleVar();
-
-	// Window Actions
-	if (about)
-	{
-		ImGui::Begin("About", &about);
-		ImGui::Text("Fyredon Engine\nDoes absolutely nothing currently");
-		ImGui::NewLine();
-		if (ImGui::Button("close"))
-		{
-			about = false; 
-		}
-		ImGui::End();
-	}
-}
-
-void Fyredon::EditorApplication::gui_panel_test()
-{
-	// Test state
-	static float slider;
-	static bool button;
-
-	{
-		ImGui::Begin("Panel Test");
-
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Floating Panel");
-		ImGui::PopStyleColor();
-
-		ImGui::Text("Sliders");
-		ImGui::SliderFloat("Slider", &slider, 0.f, 10.f);
-
-		ImGui::Dummy(ImVec2(0.0f, 10.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-		ImGui::Text("Viewport Controls");
-		ImGui::PopStyleColor();
-
-		if (ImGui::Button("Button"))
-		{
-			button = !button;
-		}
-
-		ImGui::End();
-	}
-}
-*/
-
-
 // ============= GLFW Callbacks Implementation =============
 // 
 // GLFW Callbacks 
+static auto EditorApp = Fyredon::EditorApplication::get_instance();
 
-// Info : Called when window (thus window framebuffer) is resized, width, height are in pixels. 
+// Info : Called when window (thus window framebuffer) is resized. (width, height is in pixels) 
+// ToDo : Link with GUI Viewport size. 
 void Fyredon::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	//std::cout << "FB Size = [" << width << "," << height << "]" << std::endl;
-	GLFWState.width = width, GLFWState.height = height;
-	glViewport(0, 0, GLFWState.width, GLFWState.height);
+	EditorApp.GLFWState.width = width, EditorApp.GLFWState.height = height;
+	glViewport(0, 0, width, height);
 }
 
 // Info : Called on mouse input event.
 void Fyredon::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	// Set init mouse
-	if (!GLFWState.is_init)
+	if (!EditorApp.GLFWState.is_init)
 	{
-		GLFWState.mousepos_prev_x = xpos;
-		GLFWState.mousepos_prev_y = ypos;
-		GLFWState.is_init = true;
+		EditorApp.GLFWState.mousepos_prev_x = xpos;
+		EditorApp.GLFWState.mousepos_prev_y = ypos;
+		EditorApp.GLFWState.is_init = true;
 	}
 	// Mouse Offset
-	GLFWState.mouse_offset_x = (xpos - GLFWState.mousepos_prev_x);
-	GLFWState.mouse_offset_y = (ypos - GLFWState.mousepos_prev_y);
+	EditorApp.GLFWState.mouse_offset_x = (xpos - EditorApp.GLFWState.mousepos_prev_x);
+	EditorApp.GLFWState.mouse_offset_y = (ypos - EditorApp.GLFWState.mousepos_prev_y);
 
 	// Pos
-	GLFWState.mousepos_x = xpos;
-	GLFWState.mousepos_y = ypos;
+	EditorApp.GLFWState.mousepos_x = xpos;
+	EditorApp.GLFWState.mousepos_y = ypos;
 
 	// Prev Pos
-	GLFWState.mousepos_prev_x = xpos;
-	GLFWState.mousepos_prev_y = ypos;
+	EditorApp.GLFWState.mousepos_prev_x = xpos;
+	EditorApp.GLFWState.mousepos_prev_y = ypos;
 }
 
 // Info : Called on mouse scroll event. 
 void Fyredon::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	GLFWState.scroll_y = yoffset;
+	EditorApp.GLFWState.scroll_y = yoffset;
 }
 

@@ -1,5 +1,12 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Threads.cpp: Thread manager general : Isiash
+=============================================================================*/
 #include "Fyredon/Other/pch.h"
-#include "Fyredon/Core/threads.h"
+// Implements
+#include "Fyredon/Core/Threads.h"
+
 #include "Fyredon/Core/RandomGenerator.h"
 
 void nonmembertest() {
@@ -9,7 +16,7 @@ void nonmembertest() {
 	}
 }
 
-ThreadManager::ThreadManager() {
+Fyredon::ThreadManager::ThreadManager() {
 	// Create Job
 	job j1;
 	j1.id = 0;
@@ -25,12 +32,12 @@ ThreadManager::ThreadManager() {
 	start_all_threads();
 };
 
-ThreadManager::~ThreadManager() {
+Fyredon::ThreadManager::~ThreadManager() {
 	kill_all_threads();
 };
 
 
-void ThreadManager::start_all_threads() {
+void Fyredon::ThreadManager::start_all_threads() {
 	//TODO implement mutex (more information about data used by separate threads is needed)
 	start_debug_thread();
 	start_game_thread();
@@ -38,71 +45,71 @@ void ThreadManager::start_all_threads() {
 	start_physics_thread();
 }
 
-void ThreadManager::start_debug_thread() {
-	debug_thread = std::thread(&ThreadManager::dummy_debug_loop, this);
+void Fyredon::ThreadManager::start_debug_thread() {
+	debug_thread = std::thread(&Fyredon::ThreadManager::dummy_debug_loop, this);
 	debug_thread.join();
 }
 
-void ThreadManager::start_game_thread() {
-	game_thread = std::thread(&ThreadManager::dummy_game_loop, this);
+void Fyredon::ThreadManager::start_game_thread() {
+	game_thread = std::thread(&Fyredon::ThreadManager::dummy_game_loop, this);
 	game_thread.join();
 
 
 }
 
-void ThreadManager::start_render_thread() {
-	render_thread = std::thread(&ThreadManager::dummy_render_loop, this);
+void Fyredon::ThreadManager::start_render_thread() {
+	render_thread = std::thread(&Fyredon::ThreadManager::dummy_render_loop, this);
 	render_thread.join();
 }
 
-void ThreadManager::start_physics_thread() {
-	physics_thread = std::thread(&ThreadManager::dummy_physics_loop, this);
+void Fyredon::ThreadManager::start_physics_thread() {
+	physics_thread = std::thread(&Fyredon::ThreadManager::dummy_physics_loop, this);
 	physics_thread.join();
 }
 
 
-void ThreadManager::kill_all_threads() {
+void Fyredon::ThreadManager::kill_all_threads() {
 	kill_debug_thread();
 	kill_game_thread();
 	kill_render_thread();
 	kill_physics_thread();
 }
 
-void ThreadManager::kill_debug_thread() {
+void Fyredon::ThreadManager::kill_debug_thread() {
 	debug_job_list.clear();
 	//TODO terminate thread
 }
 
-void ThreadManager::kill_game_thread() {
+void Fyredon::ThreadManager::kill_game_thread() {
 	game_job_list.clear();
 	//TODO terminate thread
 }
 
-void ThreadManager::kill_render_thread() {
+void Fyredon::ThreadManager::kill_render_thread() {
 	render_job_list.clear();
 	//TODO terminate thread
 }
 
-void ThreadManager::kill_physics_thread() {
+void Fyredon::ThreadManager::kill_physics_thread() {
 	physics_job_list.clear();
 	//TODO terminate thread
 }
 
 
-void ThreadManager::test_job() {
+void Fyredon::ThreadManager::test_job() {
 	for (size_t i = 0; i < 10; i++)
 	{
 		std::cout << "test" << std::endl;
 	}
 }
 
-void ThreadManager::dummy_debug_loop() {
+void Fyredon::ThreadManager::dummy_debug_loop() {
 	for (int i = 0; i < 5; i++)
 		std::cout << "debug " << std::endl;
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
-void ThreadManager::dummy_game_loop() {
+void Fyredon::ThreadManager::dummy_game_loop() {
 	for (int i = 0; i < 5; i++)
 		std::cout << "game " << std::endl;
 
@@ -126,24 +133,24 @@ void ThreadManager::dummy_game_loop() {
 	//}
 }
 
-void ThreadManager::dummy_render_loop() {
+void Fyredon::ThreadManager::dummy_render_loop() {
 	for (int i = 0; i < 5; i++)
 		std::cout << "render " << std::endl;
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
-void ThreadManager::dummy_physics_loop() {
+void Fyredon::ThreadManager::dummy_physics_loop() {
 	for (int i = 0; i < 5; i++)
 		std::cout << "physics " << std::endl;
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
-unsigned int ThreadManager::getJobID(job j) {
+unsigned int Fyredon::ThreadManager::getJobID(job j) {
 	return j.id;
 
 }
 
-void ThreadManager::add_job(job j, std::vector<job>& list) {
+void Fyredon::ThreadManager::add_job(job j, std::vector<job>& list) {
 	// Get a sorted list of all ids
 	std::vector<unsigned int> all_ids;
 	for (size_t i = 0; i < list.size(); i++) {
@@ -175,6 +182,6 @@ void ThreadManager::add_job(job j, std::vector<job>& list) {
 	std::cout << "List size is now " << list.size() << std::endl;
 }
 
-void ThreadManager::remove_first_job(std::vector<job>& list) {
+void Fyredon::ThreadManager::remove_first_job(std::vector<job>& list) {
 	list.erase(list.begin());
 }

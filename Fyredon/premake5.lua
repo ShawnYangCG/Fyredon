@@ -9,15 +9,16 @@ project "Fyredon"
 	objdir("%{wks.location}/bin-obj/" .. outdir .. "/%{prj.name}")
 	
 	files{
-		"Source/**/**.cpp",
-		"Source/**/**/**.cpp", -- extern/dearimgui/
-		"Include/Fyredon/**/**.h"
+		"Source/**/**.cpp",    -- Source/<dir>/*.cpp
+		"Source/**/**/**.cpp", -- Source/extern/dearimgui/*.cpp
+		"Include/**/**.h"
 	}
 
 	includedirs{
 		"%{wks.location}/Fyredon/Include/",
-		"%{wks.location}/Fyredon/Include/Fyredon/Extern/dearimgui/", -- need dearimgui dir, for its own includes #include "imgui.h" etc.
-		"%{wks.location}/Fyredon/Include/Fyredon/Extern/FBX"
+		"%{wks.location}/Extern/Include/",
+		"%{wks.location}/Extern/Include/dearimgui/", -- need abs dearimgui dir, for cases of : #include "imgui.h" etc.
+		"%{wks.location}/Extern/Include/FBX/"        -- need abs fbx dir, for cases of : #include "fbxsdk/fbxsdk/fbxsdk_version.h"
 	}
 
 	-- precompiled headers
@@ -26,9 +27,9 @@ project "Fyredon"
 	
 	-- Linking to static libaries of GLEW and GLFW for now. Sharjeel, you can look into submodules or something better :) 
 	libdirs { 
-		"%{wks.location}/Extern/GLEW",
-		"%{wks.location}/Extern/GLFW",
-		"%{wks.location}/Extern/FBX"
+		"%{wks.location}/Extern/Binary/GLEW/",
+		"%{wks.location}/Extern/Binary/GLFW/",
+		"%{wks.location}/Extern/Binary/FBX/"
 	}
 	
 	links{
@@ -50,7 +51,8 @@ project "Fyredon"
 	-- Debug configuration
 	filter "configurations:Debug"
 		defines{
-			"FD_DEBUG"
+			"FD_DEBUG",
+			"GLEW_STATIC"
 		}
 		runtime "Debug"
 		symbols "on"
@@ -59,7 +61,8 @@ project "Fyredon"
 	-- Release configuration
 	filter "configurations:Release"
 		defines{
-			"FD_RELEASE"
+			"FD_RELEASE",
+			"GLEW_STATIC"
 		}
 
 		runtime "Release"

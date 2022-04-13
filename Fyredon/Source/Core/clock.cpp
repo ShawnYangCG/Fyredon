@@ -1,7 +1,18 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Clock.h: [..] : ?
+=============================================================================*/
 #include "Fyredon/Other/pch.h"
+// Implements 
 #include <Fyredon/Core/clock.h>
 
-Clock::Clock()
+// Replace with PCH...
+#include <iostream>
+#include <iomanip>
+#include <windows.h>
+
+Fyredon::Clock::Clock()
 {
 	time_t t = time(NULL);
 	tm ti;
@@ -12,7 +23,7 @@ Clock::Clock()
 	sec = ti.tm_sec;
 }
 
-void Clock::run()
+void Fyredon::Clock::run()
 {
 	this->isRuning = true;
 	while (1)
@@ -24,12 +35,12 @@ void Clock::run()
 	}
 }
 
-void Clock::stop()
+void Fyredon::Clock::stop()
 {
 	this->isRuning = false;
 }
 
-void Clock::show()
+void Fyredon::Clock::show()
 {
 	using namespace std;
 	system("cls");
@@ -37,7 +48,7 @@ void Clock::show()
 	cout << setw(2) << setfill('0') << min << ": ";
 	cout << setw(2) << setfill('0') << sec;
 }
-void Clock::tick()
+void Fyredon::Clock::tick()
 {
 	Sleep(1000);
 	if (++sec == 60)
@@ -55,6 +66,7 @@ void Clock::tick()
 		}
 	}
 }
-Clock::~Clock()
+
+Fyredon::Clock::~Clock()
 {
 }

@@ -1,11 +1,12 @@
-﻿#pragma once
-#ifndef RANDOM_GENERATOR_H
-#define RANDOM_GENERATOR_H
+﻿// Copyright Fyredon. All Rights Reserved.
 
-#include<climits>
-#include <iostream>
+/*=============================================================================
+    RandomGenerator.h: Basic PRNG Generation : Zechen
+=============================================================================*/
+#pragma once
 
 
+namespace Fyredon {
 
 class RandomGenerator {
 public:
@@ -22,4 +23,6 @@ private:
     int rand();
 };
 
-#endif // !RANDOM_GENERATOR
+}
+
+

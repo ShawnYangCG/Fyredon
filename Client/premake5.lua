@@ -14,6 +14,7 @@
 
 	includedirs{
 		"%{wks.location}/Fyredon/Include/",
+		"%{wks.location}/Extern/Include/"
 	}
 
 	links{
@@ -28,7 +29,7 @@
 		-- Post build step: copy DLLs generated into other project binaries
 		postbuildcommands{
 			("{COPY} ../bin/" .. outdir .. "/Fyredon/*.dll ../bin/" .. outdir .. "/%{prj.name}"),
-			("{COPY}  %{wks.location}" ..externdir.. "/FBX/*.dll ../bin/" .. outdir .. "/%{prj.name}") -- FBX
+			("{COPY}  %{wks.location}" ..externdir.. "/Binary/FBX/*.dll ../bin/" .. outdir .. "/%{prj.name}") -- FBX
 		}
 
 

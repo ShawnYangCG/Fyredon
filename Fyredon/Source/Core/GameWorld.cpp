@@ -1,0 +1,127 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	GameWorld.h: Temporary (Pre-ECS) Container to whole state of data in game : Niall
+=============================================================================*/
+#include "Fyredon/Other/pch.h"
+// Implements
+#include "Fyredon/Core/GameWorld.h"
+
+#include "Fyredon/Render/Renderer.h"
+#include "Fyredon/Render/Mesh.h"
+
+#include "Fyredon/Debug/Logger.h"
+#include "Fyredon/Core/RandomGenerator.h"
+
+Fyredon::GameWorld Fyredon::GameWorld::world; 
+
+Fyredon::GameWorld& Fyredon::GameWorld::get_world()
+{
+	return world; 
+}
+
+Fyredon::GameWorld::GameWorld() : total_game_time(0.f) {}
+
+// Info : Tick each entity in game world
+void Fyredon::GameWorld::tick(float delta_time)
+{
+//	for (Primitive& prim : prims) // Update Transforms ...
+//  for (Light& light : lights)   // Update Transforms
+
+	// Tick Entities... (we have nothing tickable currently!)
+
+	total_game_time += delta_time;
+}
+
+// Info : Current (shabby) creation of a world entity :   
+// 1. Allocate to internal array. 
+// 2. Define mapping for named access.
+// 3. Submit pointer to Renderer (draw list). 
+
+// ToDo : also pass xform 
+
+// Info : Handles creation of meshes, this format should be extended for creation of other game entitiy/components.
+void Fyredon::GameWorld::create_mesh(const char* name, const char* file_path)
+{
+	auto rng = Fyredon::RandomGenerator(1234);
+	float x = rng.getDouble();
+	rng = Fyredon::RandomGenerator(1324);
+	float y = rng.getDouble();
+	rng = Fyredon::RandomGenerator(4321);
+	float z = rng.getDouble();
+
+	Mesh mesh(name, file_path);
+	mesh.load_obj();
+	mesh.set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	mesh.translate(glm::vec3(x, y, z));
+
+	// Setup
+	prims.push_back(std::move(mesh));
+	Primitive* mesh_p = &prims.back();
+	prims_map[std::string(name)] = mesh_p;
+
+	// Submit to renderer
+	Renderer::get_renderer().submit_primitive(mesh_p);
+}
+
+void Fyredon::GameWorld::create_mesh(const char* name, const char* file_path, const char* vert_shader, const char* frag_shader)
+{
+	Mesh mesh(name, file_path);
+	prims.push_back(std::move(mesh));
+	Primitive* mesh_p = &prims.back();
+	prims_map[std::string(name)] = mesh_p;
+
+	// Set Shader
+	mesh_p->set_shader(vert_shader, frag_shader);
+
+	// Call load
+	static_cast<Mesh*>(mesh_p)->load_obj();
+
+	// Submit to renderer
+	Renderer::get_renderer().submit_primitive(mesh_p);
+}
+
+void Fyredon::GameWorld::create_light(const char* name, glm::vec3 Pos, float Strength)
+{
+	lights.emplace_back(Pos, Strength);
+	Light* light = &lights.back();
+	lights_map[std::string(name)] = light; 
+
+	Renderer::get_renderer().submit_light(light);
+}
+
+void Fyredon::GameWorld::delete_mesh(const char* name)
+{
+	auto found = prims_map.find(std::string(name));
+	if (found != prims_map.end())
+	{
+		FD_DEBUG_BLOCK_MSG("Tried to delete non existing mesh: ", "s", name);
+		return; 
+	}
+	else
+	{
+		std::size_t idx = found->second - prims.data();
+		prims.erase(prims.begin() + idx);
+		prims_map.erase(std::string(name));
+	}
+
+	// ToDo, delete from renderer draw list
+}
+
+void Fyredon::GameWorld::delete_light(const char* name)
+{
+	auto found = lights_map.find(std::string(name));
+	if (found != lights_map.end())
+	{
+		FD_DEBUG_BLOCK_MSG("Tried to delete non existing light: ", "s", name);
+		return;
+	}
+	else
+	{
+		std::size_t idx = found->second - lights.data();
+		prims.erase(prims.begin() + idx);
+		lights_map.erase(std::string(name));
+	}
+
+	// ToDo, delete from renderer draw list
+}
