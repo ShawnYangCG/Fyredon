@@ -13,7 +13,7 @@
 #include "Fyredon/Render/Primitive.h"
 #include "Fyredon/Render/GroundPlane.h"
 #include "Fyredon/Render/Mesh.h"
-#include "Fyredon/Terrain/TerrainGenerator.h"
+#include "Fyredon/Core/GameWorld.h"
 
 // Ext Headers
 #include "glm/glm.hpp"
@@ -54,7 +54,6 @@ private:
 	void create_test_mesh();
 	void create_test_prims();
 
-	void create_terrain();
 
 public:
 	// Exposed to Engine
@@ -82,8 +81,7 @@ private:
 	Primitive* axis;
 
 
-	TerrainGenerator* terrain_generator;
-	bool terrain_loaded = false;
+
 
 
 	// rm me later... need to support multiple lights first. 

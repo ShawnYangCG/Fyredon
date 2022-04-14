@@ -45,7 +45,7 @@ void TerrainGenerator::read_height_map(std::string path) {
 
 	for (size_t z = 0; z < z_res; z++) {
 		for (size_t x = 0; x < x_res; x++) {
-			glm::vec3 position = glm::vec3(x/10.0,  ((float)(data[z * z_res + x]) /10.0 ) , z/10.0);
+			glm::vec3 position = glm::vec3(x/10.0,  ((float)(data[z * z_res + x]) /100.0 ) , z/10.0);
 			//std::cout << position.x << " " << " "  << position.z  << " " << position.y << "\n";
 			vertices.push_back(position);
 		}
@@ -93,12 +93,12 @@ void TerrainGenerator::read_height_map(std::string path) {
 			//	Set Normal.y to(multiply U.z by V.x) minus(multiply U.x by V.z)
 			//	Set Normal.z to(multiply U.x by V.y) minus(multiply U.y by V.x)
 
-			glm::vec3 u1 = vertex3.pos - vertex0.pos;
-			glm::vec3 v1 = vertex1.pos - vertex0.pos;
+			glm::vec3 u1 = vertex1.pos - vertex0.pos;
+			glm::vec3 v1 = vertex3.pos - vertex0.pos;
 			glm::vec3 n1 = glm::normalize(glm::cross(u1, v1));
 
-			glm::vec3 u2 = vertex2.pos - vertex0.pos;
-			glm::vec3 v2 = vertex3.pos - vertex0.pos;
+			glm::vec3 u2 = vertex3.pos - vertex0.pos;
+			glm::vec3 v2 = vertex2.pos - vertex0.pos;
 			glm::vec3 n2 = glm::normalize(glm::cross(u2, v2));
 
 

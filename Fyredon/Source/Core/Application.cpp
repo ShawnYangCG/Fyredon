@@ -104,6 +104,8 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	renderer.flags.light_pos        = &(ren_set->state.light_pos);
 	renderer.flags.light_str        = &(ren_set->state.light_strength);
 	renderer.flags.test_pos         = &(ren_set->state.test_mesh_pos);
+
+	GameWorld::get_world().create_terrain();
 }
 
 // Info : Executes the Editor Application untill its window is closed
