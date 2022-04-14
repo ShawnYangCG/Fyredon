@@ -13,7 +13,7 @@ int main()
 	Fyredon::EditorApplication& editor_app = Fyredon::EditorApplication::get_instance();
 
 	// Initalize Editor Application
-	editor_app.init(1024, 1024, "Fyredon Engine Editor");
+	editor_app.init(1124, 1024, "Fyredon Engine Editor");
 
 	// Exec Editor Application loop 
 	editor_app.exec();
