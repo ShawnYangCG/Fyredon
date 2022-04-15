@@ -127,5 +127,5 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 static GUIConfig guiConfig;
 
-static bool isSizeChange = false;
+static bool isSizeChange = true;
 }
