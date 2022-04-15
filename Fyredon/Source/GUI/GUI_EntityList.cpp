@@ -16,9 +16,9 @@ Fyredon::GUI_EntityList::GUI_EntityList(const char* Title, GUIConfig* guiConfig,
 
 }
 
-int Fyredon::GUI_EntityList::getSelectedID()
+Entity* Fyredon::GUI_EntityList::getSelectedEntity()
 {
-	return this->selectedEntityIndex;
+	return this->selectedEntity;
 }
 
 void Fyredon::GUI_EntityList::tick()
@@ -56,14 +56,28 @@ void Fyredon::GUI_EntityList::draw()
 
 	ImGui::Begin(title);
 	{
-		
-		/*
-		for (int i = 0; i < this->world->entities.size(); i++) {
+		for (Entity* entity : this->world->entities) {
 			char label[128];
-			sprintf_s(label, "%s", this->world->entities[i]->getName().data());
-			if (ImGui::Selectable(label, this->selectedEntityIndex == i))
-				this->selectedEntityIndex = i;
-		}*/
+			sprintf_s(label, "%s", entity->getName().data());
+			if (ImGui::Selectable(label, this->selectedEntity == entity))
+				this->selectedEntity = entity;
+			printChild(1, entity);
+		}
 	}
 	ImGui::End();
 }
+
+void Fyredon::GUI_EntityList::printChild(int depth, Entity* entity)
+{
+	for (Entity* e : entity->childs) {
+		char label[128];
+		std::string space = "";
+		for (int i = 0; i < depth; i++)
+			space += "  ";
+		sprintf_s(label, "%s%s", space.data(), e->getName().data());
+		if (ImGui::Selectable(label, this->selectedEntity == e))
+			this->selectedEntity = e;
+		printChild(depth + 1, e);
+	}
+}
+

@@ -50,7 +50,16 @@ void Fyredon::GUI_Components::draw()
 
 	ImGui::Begin(title);
 	{
+		if(this->world->gui_org->gui_panels["Hierarchy"])
+			if (((GUI_EntityList*)this->world->gui_org->gui_panels["Hierarchy"])->getSelectedEntity()) {
+				((GUI_EntityList*)this->world->gui_org->gui_panels["Hierarchy"])->getSelectedEntity()->tick();
+				if (ImGui::Button("add component"))
+				{
+					//===== add button action here =====
 
+					//==================================
+				}
+			}
 	}
 	ImGui::End();
 }

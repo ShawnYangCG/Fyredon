@@ -1,9 +1,9 @@
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/ECS/World.h"
 
-World::World()
+World::World(GUI_PanelOrgnizer* gui_org)
 {
-
+    this->gui_org = gui_org;
 }
 
 void World::addEntity(Entity* entity)

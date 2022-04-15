@@ -20,16 +20,17 @@ namespace Fyredon
 	public:
 		GUI_EntityList(const char* Title, GUIConfig* guiConfig, World* world);
 
-		int getSelectedID();
+		Entity* getSelectedEntity();
 
 		virtual void tick() override;
 		virtual void resize() override;
 
 	protected:
 		virtual void draw() override;
+		void printChild(int depth, Entity* entity);
 		
 		World* world;
-		int selectedEntityIndex = -1;
+		Entity* selectedEntity = nullptr;
 
 		const char* title;
 		GUIConfig* guiConfig;

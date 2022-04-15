@@ -11,6 +11,7 @@
 #include "Fyredon/Render/Renderer.h"
 #include "Fyredon/ECS/World.h"
 #include "Fyredon/GUI/GUIConfig.h"
+#include "Fyredon/GUI/GUI_PanelOrgnizer.h"
 
 // Extern Includes
 #include "GLEW/glew.h"
@@ -26,7 +27,6 @@ class GUI_Panel;
 class Texture; 
 class GameWorld; 
 class Renderer; 
-
 /*
 *   ============ Editor Application Class ============
 *   Core class that defines an instance of the engine editor application to be created and executed
@@ -101,8 +101,9 @@ private:
 		const unsigned char* sl_version;
 	} render_device; 
 
-	// GUI 
-	std::vector<GUI_Panel*> gui_panels;
+	// GUI
+	GUI_PanelOrgnizer* gui_org = new GUI_PanelOrgnizer();
+	//std::map<std::string, GUI_Panel*> gui_panels;
 
 	// Camera 
 	Camera camera;

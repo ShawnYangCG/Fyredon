@@ -1,5 +1,6 @@
 #pragma once
 #include "Fyredon/ECS/Entity.h"
+#include "Fyredon/GUI/GUI_PanelOrgnizer.h"
 #include <iostream>
 class Entity;
 class World
@@ -7,9 +8,9 @@ class World
 public:
 	std::vector<Entity*> entities;
 	std::map<std::string, int> entityList;
-	int selectedEntityIndex = -1;
+	GUI_PanelOrgnizer* gui_org;
 
-	World();
+	World(GUI_PanelOrgnizer* gui_org);
 	void addEntity(Entity* entity);
 	void init();
 	void tick();

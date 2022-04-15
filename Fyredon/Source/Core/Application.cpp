@@ -69,11 +69,6 @@ Fyredon::EditorApplication::EditorApplication()
 
 Fyredon::EditorApplication::~EditorApplication()
 {
-	if (gui_panels.size())
-	{
-		for (GUI_Panel* panel : gui_panels) delete panel; 
-	}
-
 	glfwDestroyWindow(window); window = nullptr;
 	glfwTerminate();
 }
@@ -85,6 +80,25 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	std::string title = Title; 
 	title += " :: Default Game Project";
 	width = Width, height = Height, window_title = title.c_str();
+
+	// ======== setup a ECS world ======== 
+	this->ECSworld = new World(this->gui_org);
+	Entity* entity = new Entity("Entity 0");
+	entity->addTransformComponent();
+	this->ECSworld->addEntity(entity);
+	Entity* entity1 = new Entity("Entity 1");
+	entity->addEntity(entity1);
+	Entity* entity2 = new Entity("Entity 2");
+	entity1->addEntity(entity2);
+	Entity* entity3 = new Entity("Entity 3");
+	entity3->addTransformComponent();
+	this->ECSworld->addEntity(entity3);
+	Entity* entity4 = new Entity("Entity 4");
+	entity3->addEntity(entity4);
+	Entity* entity5 = new Entity("Entity 5");
+	entity3->addEntity(entity5);
+	entity5->addTransformComponent();
+
 	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 
 	setup_ogl_window_contex();
@@ -100,23 +114,22 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	Renderer& renderer = Renderer::get_renderer();
 	renderer.init(window);
 	// Hack untill i find a better solution assume RenderSettings is back of array.
-	GUI_RendererSettings* ren_set   = static_cast<GUI_RendererSettings*>(gui_panels.back());
+
+	GUI_RendererSettings* ren_set = static_cast<GUI_RendererSettings*>(gui_org->gui_panels["setting"]);
+
 	renderer.flags.draw_axis        = &(ren_set->state.draw_axis);
 	renderer.flags.draw_grid        = &(ren_set->state.draw_grid);
 	renderer.flags.draw_test_prims  = &(ren_set->state.draw_testmesh);
 	renderer.flags.light_pos        = &(ren_set->state.light_pos);
 	renderer.flags.light_str        = &(ren_set->state.light_strength);
 	renderer.flags.test_pos         = &(ren_set->state.test_mesh_pos);
-
-	// setup a ECS world
-	this->ECSworld = new World();
 }
 
 // Info : Executes the Editor Application untill its window is closed
 void Fyredon::EditorApplication::exec()
 {
 	// Pre Exec Setup
-
+	
 	// Edtior Loop (Game loop nested in here)
 	while (!glfwWindowShouldClose(window))
 	{
@@ -130,9 +143,9 @@ void Fyredon::EditorApplication::exec()
 
 void Fyredon::EditorApplication::resize()
 {
-	for (GUI_Panel* panel : gui_panels)
-	{
-		if (panel) panel->resize();
+	std::map<std::string, GUI_Panel*>::iterator iter;
+	for (iter = gui_org->gui_panels.begin(); iter != gui_org->gui_panels.end(); iter++) {
+		if (iter->second) iter->second->resize();
 	}
 
 	int newWidth = guiConfig.AppWidth - guiConfig.leftBar_width - guiConfig.rightBar_width - guiConfig.xOffset;
@@ -173,9 +186,9 @@ void Fyredon::EditorApplication::tick_gui()
 {
 	viewport_gui();
 	
-	for (GUI_Panel* panel : gui_panels)
-	{
-		if (panel) panel->tick();
+	std::map<std::string, GUI_Panel*>::iterator iter;
+	for (iter = gui_org->gui_panels.begin(); iter != gui_org->gui_panels.end(); iter++) {
+		if (iter->second) iter->second->tick();
 	}
 
 	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
@@ -352,16 +365,16 @@ void Fyredon::EditorApplication::update_camera()
 void Fyredon::EditorApplication::setup_gui()
 {
 	// Menu bar 
-	gui_panels.emplace_back(new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 9)); 
+	gui_org->gui_panels["Menu"] = new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 9);
 
 	// Entity Panel
-	gui_panels.emplace_back(new GUI_EntityList("Hierarchy", &guiConfig, this->ECSworld));
+	gui_org->gui_panels["Hierarchy"] = new GUI_EntityList("Hierarchy", &guiConfig, this->ECSworld);
 
 	// Component Panel
-	gui_panels.emplace_back(new GUI_Components("Inspector", &guiConfig, this->ECSworld));
+	gui_org->gui_panels["Inspector"] = new GUI_Components("Inspector", &guiConfig, this->ECSworld);
 
 	// Asset Panel
-	gui_panels.emplace_back(new GUI_Asset("Asset Browser", &guiConfig, this->ECSworld));
+	gui_org->gui_panels["Asset Browser"] = new GUI_Asset("Asset Browser", &guiConfig, this->ECSworld);
 
 	// Standins
 	//gui_panels.emplace_back(new GUI_FloatingWidget("Floating Panel"));
@@ -370,9 +383,7 @@ void Fyredon::EditorApplication::setup_gui()
 	//gui_panels.emplace_back(new GUI_GameWorld);
 
 	// Renderer Settings Panel 
-	gui_panels.emplace_back(new GUI_RendererSettings);
-	
-	
+	gui_org->gui_panels["setting"] = new GUI_RendererSettings;
 
 	// ImGui Context Setup
 	IMGUI_CHECKVERSION();

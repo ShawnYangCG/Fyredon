@@ -7,10 +7,11 @@ class Component;
 // the class of entity, this class should be inherited by all object used in system
 class Entity
 {
+public:
+	std::vector<Entity*> childs;
 private:
 	std::string name;
 	std::vector<Component*> components;
-	std::vector<Entity*> childs;
 	Entity* parent = nullptr;
 	std::map<std::string, int> componentList;
 

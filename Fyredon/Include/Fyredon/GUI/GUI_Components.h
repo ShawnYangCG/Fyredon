@@ -11,6 +11,7 @@
 #include "Fyredon/GUI/GUI_Panel.h"
 #include "Fyredon/ECS/World.h"
 #include "Fyredon/GUI/GUIConfig.h"
+#include "Fyredon/GUI/GUI_EntityList.h"
 // Extern Includes
 #include "dearimgui/imgui.h"
 
