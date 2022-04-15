@@ -28,6 +28,10 @@ void Fyredon::GUI_Menu::tick()
 	if (menu_state.about) about_popout();
 }
 
+void Fyredon::GUI_Menu::resize()
+{
+}
+
 void Fyredon::GUI_Menu::draw()
 {
 	main_menu(); 
@@ -70,7 +74,6 @@ void Fyredon::GUI_Menu::main_menu()
 					if (ImGui::MenuItem("About")) menu_state.about = 1;
 					ImGui::EndMenu(); // End Help Menu
 				}
-
 				ImGui::MenuItem(title.c_str(), NULL, false, false);
 				ImGui::EndMainMenuBar();
 			}
@@ -85,7 +88,6 @@ void Fyredon::GUI_Menu::main_menu()
 			ImGui::EndMainMenuBar();
 		}
 	}
-	
 	ImGui::PopStyleVar(); // frame y_pad 
 }
 
@@ -103,5 +105,5 @@ void Fyredon::GUI_Menu::about_popout()
 // Pending icon impl 
 void Fyredon::GUI_Menu::play_buttons()
 {
-	return; 
+	
 }

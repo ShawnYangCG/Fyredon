@@ -56,7 +56,7 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context)
 	GL_ERROR();
 	//int w, h;
 	//glfwGetWindowSize(ogl_context, &w, &h);
-	col_tex     = new Texture("ColorAttachment", 0, RENDER_RES_X, RENDER_RES_Y);
+	col_tex     = new Texture("ColorAttachment", 0, this->width, this->height);
 	framebuffer = new Framebuffer(col_tex);
 	GL_ERROR();
 
@@ -77,6 +77,13 @@ void Fyredon::Renderer::submit_primitive(Primitive* prim)
 void Fyredon::Renderer::submit_light(Light* light)
 {
 	lights.push_back(std::move(light));
+}
+
+void Fyredon::Renderer::resize(int width, int height)
+{
+	this->width = width;
+	this->height = height;
+	this->init(this->ogl_wincontext);
 }
 
 // Initalize Render State (abstract these calls later)

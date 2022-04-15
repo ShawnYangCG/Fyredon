@@ -19,7 +19,8 @@ class GUI_FloatingWidget : public GUI_Panel
 public:
 	GUI_FloatingWidget(const char *Title);
 
-	virtual void tick() override; 
+	virtual void tick() override;
+	virtual void resize() override;
 
 protected:
 	virtual void draw() override; 

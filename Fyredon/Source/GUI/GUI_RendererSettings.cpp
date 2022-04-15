@@ -29,6 +29,10 @@ void Fyredon::GUI_RendererSettings::tick()
 	draw(); 
 }
 
+void Fyredon::GUI_RendererSettings::resize()
+{
+}
+
 void Fyredon::GUI_RendererSettings::draw()
 {
 	//ImGui::SetNextWindowPos(ImVec2(800, 20));

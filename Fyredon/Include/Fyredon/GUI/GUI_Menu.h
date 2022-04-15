@@ -20,6 +20,7 @@ public:
 	GUI_Menu(config menu_config, int32_t y_pad = 2);
 
 	virtual void tick() override;
+	virtual void resize() override;
 
 protected:
 	virtual void draw() override; 
