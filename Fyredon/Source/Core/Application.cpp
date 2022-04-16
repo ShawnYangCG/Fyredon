@@ -365,7 +365,7 @@ void Fyredon::EditorApplication::update_camera()
 void Fyredon::EditorApplication::setup_gui()
 {
 	// Menu bar 
-	gui_org->gui_panels["Menu"] = new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 9);
+	gui_org->gui_panels["Menu"] = new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, &guiConfig, 9);
 
 	// Entity Panel
 	gui_org->gui_panels["Hierarchy"] = new GUI_EntityList("Hierarchy", &guiConfig, this->ECSworld);
