@@ -22,6 +22,7 @@ public:
 	GUI_RendererSettings();
 
 	virtual void tick() override; 
+	virtual void resize() override;
 
 	struct {
 		bool draw_grid;

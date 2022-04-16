@@ -249,6 +249,13 @@ void Fyredon::Primitive::rotate(float d_ang, const glm::vec3 &axis)
 	model = glm::rotate(model, glm::radians(d_ang), axis);
 }
 
+void Fyredon::Primitive::local_rotate(float x_ang, float y_ang, float z_ang)
+{
+	model = glm::rotate(model, glm::radians(x_ang), glm::vec3(1, 0, 0));
+	model = glm::rotate(model, glm::radians(y_ang), glm::vec3(0, 1, 0));
+	model = glm::rotate(model, glm::radians(z_ang), glm::vec3(0, 0, 1));
+}
+
 void Fyredon::Primitive::scale(const glm::vec3 &scale)
 {
 	model = glm::scale(model, scale);

@@ -26,7 +26,10 @@
 #include "Fyredon/GUI/GUI_Menu.h"
 #include "Fyredon/GUI/GUI_FloatingWidget.h"
 #include "Fyredon/GUI/GUI_RendererSettings.h"
+#include "Fyredon/GUI/GUI_EntityList.h"
+#include "Fyredon/GUI/GUI_Components.h"
 #include "Fyredon/GUI/GUI_GameWorld.h"
+#include "Fyredon/GUI/GUI_Asset.h"
 
 // Render
 #include "Fyredon/Render/Camera.h"
@@ -66,11 +69,6 @@ Fyredon::EditorApplication::EditorApplication()
 
 Fyredon::EditorApplication::~EditorApplication()
 {
-	if (gui_panels.size())
-	{
-		for (GUI_Panel* panel : gui_panels) delete panel; 
-	}
-
 	glfwDestroyWindow(window); window = nullptr;
 	glfwTerminate();
 }
@@ -82,6 +80,25 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	std::string title = Title; 
 	title += " :: Default Game Project";
 	width = Width, height = Height, window_title = title.c_str();
+
+	// ======== setup a ECS world ======== 
+	this->ECSworld = new World(this->gui_org);
+	Entity* entity = new Entity("Entity 0");
+	entity->addTransformComponent();
+	this->ECSworld->addEntity(entity);
+	Entity* entity1 = new Entity("Entity 1");
+	entity->addEntity(entity1);
+	Entity* entity2 = new Entity("Entity 2");
+	entity1->addEntity(entity2);
+	Entity* entity3 = new Entity("Entity 3");
+	entity3->addTransformComponent();
+	this->ECSworld->addEntity(entity3);
+	Entity* entity4 = new Entity("Entity 4");
+	entity3->addEntity(entity4);
+	Entity* entity5 = new Entity("Entity 5");
+	entity3->addEntity(entity5);
+	entity5->addTransformComponent();
+
 	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 
 	setup_ogl_window_contex();
@@ -97,7 +114,9 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	Renderer& renderer = Renderer::get_renderer();
 	renderer.init(window);
 	// Hack untill i find a better solution assume RenderSettings is back of array.
-	GUI_RendererSettings* ren_set   = static_cast<GUI_RendererSettings*>(gui_panels.back());
+
+	GUI_RendererSettings* ren_set = static_cast<GUI_RendererSettings*>(gui_org->gui_panels["setting"]);
+
 	renderer.flags.draw_axis        = &(ren_set->state.draw_axis);
 	renderer.flags.draw_grid        = &(ren_set->state.draw_grid);
 	renderer.flags.draw_test_prims  = &(ren_set->state.draw_testmesh);
@@ -110,7 +129,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 void Fyredon::EditorApplication::exec()
 {
 	// Pre Exec Setup
-
+	
 	// Edtior Loop (Game loop nested in here)
 	while (!glfwWindowShouldClose(window))
 	{
@@ -122,14 +141,32 @@ void Fyredon::EditorApplication::exec()
 	shutdown_gui();
 }
 
+void Fyredon::EditorApplication::resize()
+{
+	std::map<std::string, GUI_Panel*>::iterator iter;
+	for (iter = gui_org->gui_panels.begin(); iter != gui_org->gui_panels.end(); iter++) {
+		if (iter->second) iter->second->resize();
+	}
+
+	int newWidth = guiConfig.AppWidth - guiConfig.leftBar_width - guiConfig.rightBar_width - guiConfig.xOffset;
+	int yheight = guiConfig.leftBar_height > guiConfig.rightBar_height ?
+		guiConfig.leftBar_height : guiConfig.rightBar_height;
+	int newHeight = yheight - guiConfig.yOffset;
+	glViewport(0, 0, newWidth, newHeight);
+	Renderer::get_renderer().resize(newWidth, newHeight);
+}
+
 // Info : This should be encapsulated into its own class later for game + engine state
 void Fyredon::EditorApplication::tick_engine()
 {
 	get_dt();
 
-	// Tick World
+	// Tick World when game run
 	GameWorld::get_world().tick(dt);
 	update_camera();
+
+	guiConfig.AppHeight = height;
+	guiConfig.AppWidth = width;
 
 	// Tick Renderer
 	Renderer::get_renderer().render(camera);
@@ -149,9 +186,9 @@ void Fyredon::EditorApplication::tick_gui()
 {
 	viewport_gui();
 	
-	for (GUI_Panel* panel : gui_panels)
-	{
-		if (panel) panel->tick();
+	std::map<std::string, GUI_Panel*>::iterator iter;
+	for (iter = gui_org->gui_panels.begin(); iter != gui_org->gui_panels.end(); iter++) {
+		if (iter->second) iter->second->tick();
 	}
 
 	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
@@ -182,9 +219,22 @@ void Fyredon::EditorApplication::paint_end()
 // Info : Move this into GUI Class, passing renderer texture. 
 void Fyredon::EditorApplication::viewport_gui()
 {
+	if (isSizeChange == true) {
+		resize();
+		isSizeChange = false;
+	}
+
+	int width = guiConfig.AppWidth - guiConfig.leftBar_width - guiConfig.rightBar_width;
+	int yheight = guiConfig.leftBar_height > guiConfig.rightBar_height ?
+		guiConfig.leftBar_height : guiConfig.rightBar_height;
+	int height = yheight;
+
+	ImGui::SetNextWindowPos(ImVec2(guiConfig.leftBar_width, guiConfig.menuHeight));
+	ImGui::SetNextWindowSize(ImVec2(width, height));
+	
 	Fyredon::Texture* tex = Renderer::get_renderer().get_colour_attachment();
-	//ImGui::SetNextWindowPos(ImVec2(150, 20));
-	//ImGui::SetNextWindowSize(ImVec2(RENDER_RES_X, RENDER_RES_Y));
+	
+	
 	ImGui::Begin("Game Viewport");
 	// Flip V Min. 
 	ImVec2 uv_min = ImVec2(0.0f, 1.0f);                 
@@ -211,6 +261,7 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 //	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
+	#define EDITOR_WINDOW_RESIZE true
 	#ifdef EDITOR_WINDOW_RESIZE
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); 
 	#else
@@ -218,7 +269,8 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	#endif
 
 	// Create Window
-	const GLFWvidmode *monitor = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode *monitor = glfwGetVideoMode(primaryMonitor);
 	#ifdef EDITOR_FULLSCREEN
 	width = monitor->width, height = monitor->height;
 	#endif
@@ -284,7 +336,8 @@ void Fyredon::EditorApplication::get_dt()
 void Fyredon::EditorApplication::update_camera()
 {
 	// Fetch global GLFW State
-	width = GLFWState.width, height = GLFWState.height;
+	if (GLFWState.width != 0 && GLFWState.height != 0)
+		width = GLFWState.width, height = GLFWState.height;
 
 	// Only set yaw,pitch if delta from last tick (update_camera() call). 
 	float delta_yaw   = GLFWState.mouse_offset_x != last_yawoffs   ? GLFWState.mouse_offset_x : 0.f;
@@ -312,17 +365,26 @@ void Fyredon::EditorApplication::update_camera()
 void Fyredon::EditorApplication::setup_gui()
 {
 	// Menu bar 
-	gui_panels.emplace_back(new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, 5)); 
+	gui_org->gui_panels["Menu"] = new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, &guiConfig, 9);
+
+	// Entity Panel
+	gui_org->gui_panels["Hierarchy"] = new GUI_EntityList("Hierarchy", &guiConfig, this->ECSworld);
+
+	// Component Panel
+	gui_org->gui_panels["Inspector"] = new GUI_Components("Inspector", &guiConfig, this->ECSworld);
+
+	// Asset Panel
+	gui_org->gui_panels["Asset Browser"] = new GUI_Asset("Asset Browser", &guiConfig, this->ECSworld);
 
 	// Standins
-	gui_panels.emplace_back(new GUI_FloatingWidget("Asset Browser"));
+	//gui_panels.emplace_back(new GUI_FloatingWidget("Floating Panel"));
 
 	// Testing only
 	//gui_panels.emplace_back(new GUI_GameWorld);
 
 	// Renderer Settings Panel 
-	gui_panels.emplace_back(new GUI_RendererSettings);
-	
+	gui_org->gui_panels["setting"] = new GUI_RendererSettings;
+
 	// ImGui Context Setup
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -353,6 +415,7 @@ void Fyredon::framebuffer_size_callback(GLFWwindow* window, int width, int heigh
 {
 	EditorApp.GLFWState.width = width, EditorApp.GLFWState.height = height;
 	glViewport(0, 0, width, height);
+	isSizeChange = true;
 }
 
 // Info : Called on mouse input event.

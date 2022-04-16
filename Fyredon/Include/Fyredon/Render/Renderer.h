@@ -60,6 +60,7 @@ public:
 	// Exposed to Engine
 	void submit_primitive(Primitive* prim);
 	void submit_light(Light* light);
+	void resize(int width, int height);
 
 	// Public Renderer flags (to hook from GUI) 
 	struct
@@ -69,6 +70,9 @@ public:
 		glm::vec3* light_pos, *test_pos; 
 		float* light_str; 
 	} flags;
+
+	int width = RENDER_RES_X;
+	int height = RENDER_RES_Y;
 
 private:
 	static Renderer renderer; 
@@ -96,6 +100,8 @@ private:
 
 	GLFWwindow* ogl_wincontext; 
 	bool is_init; 
+
+	
 };
 
 }

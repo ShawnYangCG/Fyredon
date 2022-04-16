@@ -6,6 +6,7 @@
 #pragma once
 
 #include "GUI_Panel.h"
+#include "Fyredon/GUI/GUIConfig.h"
 // include file_dialog ...
 
 namespace Fyredon
@@ -17,9 +18,10 @@ class GUI_Menu : public GUI_Panel
 public:
 	enum config { EDIT_VIEW_HELP_ABOUT = 0, DEBUG };
 
-	GUI_Menu(config menu_config, int32_t y_pad = 2);
+	GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y_pad = 2);
 
 	virtual void tick() override;
+	virtual void resize() override;
 
 protected:
 	virtual void draw() override; 
@@ -38,6 +40,7 @@ private:
 
 	config cfg; 
 	int8_t pad_y; 
+	GUIConfig* gui_config;
 };
 
 }

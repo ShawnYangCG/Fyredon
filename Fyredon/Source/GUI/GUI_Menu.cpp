@@ -1,4 +1,4 @@
-// Copyright Fyredon. All Rights Reserved.
+﻿// Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
 	GUI_Menu.cpp: Top Window GUI Menu
@@ -12,10 +12,11 @@
 // Extern Includes
 #include "dearimgui/imgui.h"
 
-Fyredon::GUI_Menu::GUI_Menu(config menu_config, int32_t y_pad)
-	: GUI_Panel(), cfg(menu_config), pad_y(y_pad)
+Fyredon::GUI_Menu::GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y_pad)
+	: GUI_Panel(), cfg(menu_config), pad_y(y_pad) ,gui_config(gui_config)
 {
 	menu_state.about = 0, menu_state.close = 0, menu_state.play = 0; 
+	menu_state.pause = 0;
 	set_title("Fyredon Engine Version 0.0.0");
 }
 
@@ -26,6 +27,10 @@ void Fyredon::GUI_Menu::tick()
 
 	// Handle Panel State
 	if (menu_state.about) about_popout();
+}
+
+void Fyredon::GUI_Menu::resize()
+{
 }
 
 void Fyredon::GUI_Menu::draw()
@@ -70,11 +75,45 @@ void Fyredon::GUI_Menu::main_menu()
 					if (ImGui::MenuItem("About")) menu_state.about = 1;
 					ImGui::EndMenu(); // End Help Menu
 				}
-
 				ImGui::MenuItem(title.c_str(), NULL, false, false);
+				std::string space = "";
+				for (int i = 0; i < (this->gui_config->AppWidth / 2 - 420 - 45 - 20) / 7; i++)
+					space += " ";
+				ImGui::MenuItem(space.data(), NULL, false, false);
+				if (menu_state.play == false) {
+					ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(0, 150, 0, 255));
+					if (ImGui::MenuItem("Play", NULL, !menu_state.play, true)) {
+						menu_state.play = true;
+						menu_state.pause = false;
+						//======== Play ========
+
+						//======================
+					}
+					ImGui::PopStyleColor();
+				}
+				else {
+					ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(200, 0, 0, 255));
+					if (ImGui::MenuItem("Pause", NULL, menu_state.play, true)) {
+						menu_state.play = false;
+						menu_state.pause = true;
+					}
+					ImGui::PopStyleColor();
+				}
+
+				ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(0, 0, 200, 255));
+				if (ImGui::MenuItem("Reset", NULL, true, menu_state.pause)) {
+					menu_state.play = false;
+					menu_state.pause = false;
+					//======== Reset ========
+
+					//=======================
+				}
+				ImGui::PopStyleColor();
+
 				ImGui::EndMainMenuBar();
 			}
 			break;
+			//play_buttons();
 		}
 		case (config::DEBUG):
 		{
@@ -85,7 +124,6 @@ void Fyredon::GUI_Menu::main_menu()
 			ImGui::EndMainMenuBar();
 		}
 	}
-	
 	ImGui::PopStyleVar(); // frame y_pad 
 }
 
@@ -103,5 +141,5 @@ void Fyredon::GUI_Menu::about_popout()
 // Pending icon impl 
 void Fyredon::GUI_Menu::play_buttons()
 {
-	return; 
+	
 }
