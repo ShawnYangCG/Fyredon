@@ -4,28 +4,32 @@
 	GUI_NewProjectWindow.cpp: create a new project window
 =============================================================================*/
 #include "Fyredon/Other/pch.h"
+// Implements
 #include "Fyredon/GUI/GUI_NewProjectWindow.h"
 
-GUI_NewProjectWindow::GUI_NewProjectWindow(int windowWidth, int windowHeight)
+// Extern 
+#include "dearimgui/imgui.h"
+
+Fyredon::GUI_NewProjectWindow::GUI_NewProjectWindow(int windowWidth, int windowHeight)
 {
 	reLocation(windowWidth, windowHeight);
 }
 
-GUI_NewProjectWindow::~GUI_NewProjectWindow()
+Fyredon::GUI_NewProjectWindow::~GUI_NewProjectWindow()
 {
 }
 
-std::string GUI_NewProjectWindow::getName()
+std::string Fyredon::GUI_NewProjectWindow::getName()
 {
 	return this->Name;
 }
 
-std::string GUI_NewProjectWindow::getPath()
+std::string Fyredon::GUI_NewProjectWindow::getPath()
 {
 	return this->Path;
 }
 
-void GUI_NewProjectWindow::tick()
+void Fyredon::GUI_NewProjectWindow::tick()
 {
 	// if create check pass return true else false
 	ImGui::SetNextWindowPos(ImVec2(windowWidth / 2 - width/2, windowHeight / 2 - height/2));
@@ -105,7 +109,7 @@ void GUI_NewProjectWindow::tick()
 	ImGui::End();
 }
 
-std::string GUI_NewProjectWindow::getWarning(int state)
+std::string Fyredon::GUI_NewProjectWindow::getWarning(int state)
 {
 	if (0 == state)
 		return "";
@@ -119,12 +123,12 @@ std::string GUI_NewProjectWindow::getWarning(int state)
 		return "Path format uncorrect";
 }
 
-bool GUI_NewProjectWindow::getIsNext()
+bool Fyredon::GUI_NewProjectWindow::getIsNext()
 {
 	return this->isNext;
 }
 
-std::string GUI_NewProjectWindow::TCHARTurnString(TCHAR* STR)
+std::string Fyredon::GUI_NewProjectWindow::TCHARTurnString(TCHAR* STR)
 {
 	int iLen = WideCharToMultiByte(CP_ACP, 0, STR, -1, NULL, 0, NULL, NULL);
 	char* chRtn = new char[iLen * sizeof(char)];
@@ -133,18 +137,18 @@ std::string GUI_NewProjectWindow::TCHARTurnString(TCHAR* STR)
 	return str;
 }
 
-void GUI_NewProjectWindow::reLocation(int windowWidth, int windowHeight)
+void Fyredon::GUI_NewProjectWindow::reLocation(int windowWidth, int windowHeight)
 {
 	this->windowWidth = windowWidth;
 	this->windowHeight = windowHeight;
 }
 
-bool GUI_NewProjectWindow::projectExist(std::string path)
+bool Fyredon::GUI_NewProjectWindow::projectExist(std::string path)
 {
 	return !(_access(path.data(), 0) == -1);
 }
 
-LPCWSTR GUI_NewProjectWindow::stringToLPCWSTR(std::string orig)
+LPCWSTR Fyredon::GUI_NewProjectWindow::stringToLPCWSTR(std::string orig)
 {
 	size_t origsize = orig.length() + 1;
 	const size_t newsize = 100;

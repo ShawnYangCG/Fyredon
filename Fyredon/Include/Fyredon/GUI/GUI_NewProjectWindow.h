@@ -1,13 +1,22 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	GUI_NewProjectWindow.cpp: create a new project window
+=============================================================================*/
 #pragma once
+
 #include <string>
-// Extern Includes
-#include "dearimgui/imgui.h"
+
 #include <Shlobj.h>
 #include <io.h>
+
+namespace Fyredon {
+
 class GUI_NewProjectWindow {
 public:
 	GUI_NewProjectWindow(int windowWidth, int windowHeight);
 	~GUI_NewProjectWindow();
+
 	std::string getName();
 	std::string getPath();
 	void tick();
@@ -29,3 +38,5 @@ private:
 	int width = 460;
 	int height = 170;
 };
+
+}
