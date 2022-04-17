@@ -13,14 +13,12 @@
 #include "Fyredon/Render/Primitive.h"
 #include "Fyredon/Render/GroundPlane.h"
 #include "Fyredon/Render/Mesh.h"
-#include "Fyredon/Terrain/TerrainGenerator.h"
 
 // Ext Headers
 #include "glm/glm.hpp"
 
 #define RENDER_RES_X 768
 #define RENDER_RES_Y 512
-
 
 struct GLFWwindow;
 
@@ -54,8 +52,6 @@ private:
 	void create_test_mesh();
 	void create_test_prims();
 
-	void create_terrain();
-
 public:
 	// Exposed to Engine
 	void submit_primitive(Primitive* prim);
@@ -85,11 +81,6 @@ private:
 	Mesh* test_mesh;
 	Primitive* axis;
 
-
-	TerrainGenerator* terrain_generator;
-	bool terrain_loaded = false;
-
-
 	// rm me later... need to support multiple lights first. 
 	std::vector<Light*> lights; 
 
@@ -97,11 +88,8 @@ private:
 	Texture* col_tex; 
 	Framebuffer* framebuffer; 
 
-
 	GLFWwindow* ogl_wincontext; 
 	bool is_init; 
-
-	
 };
 
 }
