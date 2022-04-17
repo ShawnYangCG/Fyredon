@@ -63,7 +63,7 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context)
 	// Test Primitives
 	create_test_prims();
 	create_test_mesh();
-	create_terrain();
+	//create_terrain();
 	GL_ERROR();
 
 	is_init = true; 

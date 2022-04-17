@@ -125,11 +125,41 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	renderer.flags.test_pos         = &(ren_set->state.test_mesh_pos);
 }
 
+std::string Fyredon::EditorApplication::create_new_project()
+{
+	bool isNext = false;
+	GUI_NewProjectWindow* newProject = new GUI_NewProjectWindow(width, height);
+	while (!glfwWindowShouldClose(window)) {
+		if (isNext)
+			break;
+		if (isSizeChange == true) {
+			if (GLFWState.width != 0 && GLFWState.height != 0) {
+				width = GLFWState.width, height = GLFWState.height;
+				newProject->reLocation(width, height);
+			}
+		}
+		
+		paint_begin();
+
+		newProject->tick();
+		isNext = newProject->getIsNext();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		paint_end();
+	}
+	std::string projectName = newProject->getName();
+	std::string projectPath = newProject->getPath();
+	return projectPath + "\\" + projectName;
+}
+
 // Info : Executes the Editor Application untill its window is closed
 void Fyredon::EditorApplication::exec()
 {
 	// Pre Exec Setup
-	
+	// create new project
+	create_new_project();
+
 	// Edtior Loop (Game loop nested in here)
 	while (!glfwWindowShouldClose(window))
 	{
@@ -184,12 +214,23 @@ void Fyredon::EditorApplication::tick_editor()
 
 void Fyredon::EditorApplication::tick_gui()
 {
+	ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(40, 40, 40, 255));
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(70, 70, 70, 255));
+	ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(40, 40, 40, 255));
+	ImGui::PushStyleColor(ImGuiCol_TitleBg, IM_COL32(50, 50, 50, 255));
+	ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(40, 40, 40, 255));
+
 	viewport_gui();
 	
 	std::map<std::string, GUI_Panel*>::iterator iter;
 	for (iter = gui_org->gui_panels.begin(); iter != gui_org->gui_panels.end(); iter++) {
 		if (iter->second) iter->second->tick();
 	}
+	ImGui::PopStyleColor();
+	ImGui::PopStyleColor();
+	ImGui::PopStyleColor();
+	ImGui::PopStyleColor();
+	ImGui::PopStyleColor();
 
 	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
 	ImGui::Render();
@@ -207,6 +248,7 @@ void Fyredon::EditorApplication::paint_begin()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+	
 }
 
 // End of Application paint operations (within Tick())

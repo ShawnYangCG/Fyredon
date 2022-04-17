@@ -12,6 +12,7 @@
 #include "Fyredon/ECS/World.h"
 #include "Fyredon/GUI/GUIConfig.h"
 #include "Fyredon/GUI/GUI_PanelOrgnizer.h"
+#include "Fyredon/GUI/GUI_NewProjectWindow.h"
 
 // Extern Includes
 #include "GLEW/glew.h"
@@ -57,6 +58,9 @@ public:
 
 protected:
 	EditorApplication();
+
+	// create new project
+	std::string create_new_project();
 
 	// Application Tick
 	void tick_editor();
