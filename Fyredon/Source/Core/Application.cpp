@@ -1,18 +1,13 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Application.h: Base Engine Editor Application : Niall, [..]
+	Application.h: Base Engine Editor Application : Niall, Shawn
 =============================================================================*/
 // Project Includes
 #include "Fyredon/Other/pch.h"
 
 // Implements 
 #include "Fyredon/Core/Application.h"
-
-/* GL, TBD : Move GLEW impland incl to here.
-#define GLEW_STATIC 
-#include "Fyredon/Extern/GLEW/glew.h"
-#include "Fyredon/Extern/GLFW/glfw3.h" */
 
 // Core 
 #include "Fyredon/Core/Threads.h"
@@ -45,9 +40,10 @@
 
 #define GL_VERSION_MAJOR 4
 #define GL_VERSION_MINOR 5
-
 //#define EDITOR_WINDOW_RESIZE
 //#define EDITOR_FULLSCREEN 
+
+// #define ENABLE_CREATE_NEW_PROJECT
 
 // ================ Init Singleton Instance + Static Data ================
 Fyredon::EditorApplication Fyredon::EditorApplication::app;
@@ -64,7 +60,9 @@ Fyredon::EditorApplication::EditorApplication()
 	: dt(0.f), cur_t(0.f), prev_t(0.f), width(1024), height(1024), last_yawoffs(0.f),
 	last_pitchoffs(0.f), last_zoom(0.f), window_title("null")
 {
+	// Camera (to move to world)
 	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, width / height, true);
+
 	gui_org = new GUI_PanelOrgnizer();
 }
 
@@ -72,6 +70,8 @@ Fyredon::EditorApplication::~EditorApplication()
 {
 	glfwDestroyWindow(window); window = nullptr;
 	glfwTerminate();
+
+	if (gui_org) delete gui_org; 
 }
 
 // Info : Called before application loop is ran, to do inital application setup. 
@@ -82,7 +82,8 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	title += " :: Default Game Project";
 	width = Width, height = Height, window_title = title.c_str();
 
-	// ======== setup a ECS world ======== 
+
+	// ======== setup a ECS world ======== (Do we need this Shawn ? - Niall)
 	this->ECSworld = new World(this->gui_org);
 	Entity* entity = new Entity("Entity 0");
 	entity->addTransformComponent();
@@ -129,7 +130,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 std::string Fyredon::EditorApplication::create_new_project()
 {
 	bool isNext = false;
-	GUI_NewProjectWindow* newProject = new GUI_NewProjectWindow(width, height, START);
+	GUI_NewProjectWindow* newProject = new GUI_NewProjectWindow(width, height);
 	while (!glfwWindowShouldClose(window)) {
 		if (isNext)
 			break;
@@ -145,8 +146,6 @@ std::string Fyredon::EditorApplication::create_new_project()
 		newProject->tick();
 		isNext = newProject->getIsNext();
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		paint_end();
 	}
 	std::string projectName = newProject->getName();
@@ -159,12 +158,16 @@ void Fyredon::EditorApplication::exec()
 {
 	// Pre Exec Setup
 	// create new project
+#ifdef ENABLE_CREATE_NEW_PROJECT
 	create_new_project();
+#endif
 
 	// Edtior Loop (Game loop nested in here)
 	while (!glfwWindowShouldClose(window))
 	{
+		// If Play ...
 		tick_engine();
+
 		tick_editor();
 	}
 
@@ -232,10 +235,6 @@ void Fyredon::EditorApplication::tick_gui()
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
-
-	// ImGui render and forward to OpenGL Impl, todo wrap im ImGui wrapper class...
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 // Start of Application paint operations (within Tick())
@@ -255,6 +254,9 @@ void Fyredon::EditorApplication::paint_begin()
 // End of Application paint operations (within Tick())
 void Fyredon::EditorApplication::paint_end()
 {
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
@@ -276,7 +278,6 @@ void Fyredon::EditorApplication::viewport_gui()
 	ImGui::SetNextWindowSize(ImVec2(width, height));
 	
 	Fyredon::Texture* tex = Renderer::get_renderer().get_colour_attachment();
-	
 	
 	ImGui::Begin("Game Viewport");
 	// Flip V Min. 

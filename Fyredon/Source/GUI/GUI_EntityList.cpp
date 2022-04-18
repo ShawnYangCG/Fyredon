@@ -56,6 +56,8 @@ void Fyredon::GUI_EntityList::draw()
 
 	ImGui::Begin(title);
 	{
+		if (!world) { ImGui::End(); return; }
+
 		for (Entity* entity : this->world->entities) {
 			char label[128];
 			sprintf_s(label, "%s", entity->getName().data());

@@ -1,3 +1,9 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	Entity.h : Base Entity class, Shawn. 
+=============================================================================*/
+
 #pragma once
 #include "Fyredon/ECS/Component.h"
 #include <vector>
@@ -5,6 +11,7 @@
 #include <map>
 class Component;
 // the class of entity, this class should be inherited by all object used in system
+
 class Entity
 {
 public:
