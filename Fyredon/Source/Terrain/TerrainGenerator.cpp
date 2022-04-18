@@ -27,7 +27,7 @@ void TerrainGenerator::read_height_map(std::string path) {
 
 	std::filesystem::path file = std::filesystem::current_path() / "..\\Assets\\Images\\Heightmaps" / path;
 
-	std::cout << file.string().c_str() << "\n";
+	//std::cout << file.string().c_str() << "\n";
 
 	std::filesystem::path file2 = std::filesystem::current_path() / "..\\Assets\\heightmap" / "rewrite.png";
 
@@ -37,10 +37,10 @@ void TerrainGenerator::read_height_map(std::string path) {
 	int x_res = image_width;
 	int z_res = image_height;
 
-	std::cout << x_res << " x_res" << "\n";
-	std::cout << z_res << " z_res" << "\n";
-	std::cout << image_n_channels << " chan" << "\n";
-	std::cout << image_width * image_height * image_n_channels << " image size" << "\n";
+	//std::cout << x_res << " x_res" << "\n";
+	//std::cout << z_res << " z_res" << "\n";
+	//std::cout << image_n_channels << " chan" << "\n";
+	//std::cout << image_width * image_height * image_n_channels << " image size" << "\n";
 
 
 }
@@ -229,11 +229,11 @@ void TerrainGenerator::generate_mesh(int res) {
 		}
 	}
 
-	std::cout << TerrainMesh.obj_data.verts.size() << " size\n";
-	std::cout << "verts " << vertices.size() << "\n";
+	//std::cout << TerrainMesh.obj_data.verts.size() << " size\n";
+	//std::cout << "verts " << vertices.size() << "\n";
 
 	TerrainMesh.set_data_mesh(TerrainMesh.obj_data.verts);
-	std::cout << "set mesh \n";
+	//std::cout << "set mesh \n";
 }
 
 
