@@ -17,6 +17,7 @@ Fyredon::GUI_Menu::GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y
 {
 	menu_state.about = 0, menu_state.close = 0, menu_state.play = 0; 
 	menu_state.pause = 0;
+	newProject = new GUI_NewProjectWindow(this->gui_config->AppWidth, this->gui_config->AppHeight);
 	set_title("Fyredon Engine Version 0.0.0");
 }
 
@@ -52,7 +53,9 @@ void Fyredon::GUI_Menu::main_menu()
 			{
 				if (ImGui::BeginMenu("Fyredon"))
 				{
-					if (ImGui::MenuItem("New")) {}
+					if (ImGui::MenuItem("New")) {
+						this->IsNew = true;
+					}
 					if (ImGui::MenuItem("Open", "Ctrl+O")) {}
 					if (ImGui::MenuItem("Save", "Ctrl+S")) {}
 					if (ImGui::MenuItem("Save Project As", "Ctrl+Shift+S")) {}
@@ -125,6 +128,11 @@ void Fyredon::GUI_Menu::main_menu()
 		}
 	}
 	ImGui::PopStyleVar(); // frame y_pad 
+
+	// show new windows when click the choise in menu
+	if (this->IsNew) {
+		new_project();
+	}
 }
 
 void Fyredon::GUI_Menu::about_popout()
@@ -142,4 +150,18 @@ void Fyredon::GUI_Menu::about_popout()
 void Fyredon::GUI_Menu::play_buttons()
 {
 	
+}
+
+void Fyredon::GUI_Menu::new_project()
+{
+	if (!isNext) {
+		newProject->reLocation(this->gui_config->AppWidth,this->gui_config->AppHeight);
+		newProject->tick();
+		this->isNext = newProject->getIsNext();
+	}
+	else {
+		this->IsNew = false;
+		this->isNext = false;
+		newProject->resetState();
+	}
 }

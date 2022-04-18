@@ -7,6 +7,7 @@
 
 #include "GUI_Panel.h"
 #include "Fyredon/GUI/GUIConfig.h"
+#include "Fyredon/GUI/GUI_NewProjectWindow.h"
 // include file_dialog ...
 
 namespace Fyredon
@@ -29,6 +30,7 @@ protected:
 	void about_popout();
 	void main_menu();
 	void play_buttons();
+	void new_project();
 
 private: 
 	struct
@@ -41,6 +43,11 @@ private:
 	config cfg; 
 	int8_t pad_y; 
 	GUIConfig* gui_config;
+
+	// new project
+	GUI_NewProjectWindow* newProject;
+	bool isNext = false;
+	bool IsNew = false;
 };
 
 }

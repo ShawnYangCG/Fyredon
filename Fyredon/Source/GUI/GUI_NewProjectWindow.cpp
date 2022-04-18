@@ -1,18 +1,15 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_NewProjectWindow.cpp: create a new project window
+	GUI_NewProjectWindow.cpp: create a new project window : Shawn
 =============================================================================*/
 #include "Fyredon/Other/pch.h"
-// Implements
 #include "Fyredon/GUI/GUI_NewProjectWindow.h"
 
-// Extern 
-#include "dearimgui/imgui.h"
-
-Fyredon::GUI_NewProjectWindow::GUI_NewProjectWindow(int windowWidth, int windowHeight)
+Fyredon::GUI_NewProjectWindow::GUI_NewProjectWindow(int windowWidth, int windowHeight, int NEWPROJECTSTATE)
 {
 	reLocation(windowWidth, windowHeight);
+	this->state = NEWPROJECTSTATE;
 }
 
 Fyredon::GUI_NewProjectWindow::~GUI_NewProjectWindow()
@@ -94,8 +91,10 @@ void Fyredon::GUI_NewProjectWindow::tick()
 				std::cout << this->Path + "\\" + this->Name << std::endl;
 			}
 			else {
-				if(CreateDirectoryW(stringToLPCWSTR(this->Path + "\\" + this->Name),NULL))
+				if (CreateDirectoryW(stringToLPCWSTR(this->Path + "\\" + this->Name), NULL)) {
 					this->isNext = true;
+					this->CreateClick = true;
+				}
 				else
 					PathState = 4;
 			}
@@ -103,9 +102,13 @@ void Fyredon::GUI_NewProjectWindow::tick()
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Close")) {
-		exit(0);
+		if (state == START)
+			exit(0);
+		else if (state == DEFULT) {
+			this->isNext = true;
+			this->CloseClick = true;
+		}	
 	}
-
 	ImGui::End();
 }
 
@@ -126,6 +129,28 @@ std::string Fyredon::GUI_NewProjectWindow::getWarning(int state)
 bool Fyredon::GUI_NewProjectWindow::getIsNext()
 {
 	return this->isNext;
+}
+
+bool Fyredon::GUI_NewProjectWindow::getIsCreate()
+{
+	return this->CreateClick;
+}
+
+bool Fyredon::GUI_NewProjectWindow::getIsClose()
+{
+	return this->CloseClick;
+}
+
+void Fyredon::GUI_NewProjectWindow::resetState()
+{
+	this->isNext = false;
+	this->CreateClick = false;
+	this->CloseClick = false;
+	this->Name = "";
+	this->Path = "";
+	this->NameState = 0;
+	this->PathState = 0;
+
 }
 
 std::string Fyredon::GUI_NewProjectWindow::TCHARTurnString(TCHAR* STR)

@@ -12,6 +12,8 @@
 
 #include "Fyredon/Render/Primitive.h"
 #include "Fyredon/Render/Light.h"
+#include "Fyredon/Terrain/TerrainGenerator.h"
+
 
 namespace Fyredon {
 
@@ -29,15 +31,23 @@ public:
 	void create_mesh(const char* name, const char* file_path);
 	void create_mesh(const char* name, const char* file_path, const char *vert_shader, const char *frag_shader);
 	void create_light(const char* name, glm::vec3 Pos, float Strength); 
+	void create_terrain();
+
 
 	void delete_mesh(const char* name); 
 	void delete_light(const char* name);
+
+	TerrainGenerator* terrain_generator;
+	bool terrain_loaded = false;
+
 private:
 	GameWorld();
 
 	// Ownership of game world entities
 	std::vector<Primitive> prims;
 	std::vector<Light>     lights; 
+
+;
 
 	// Maps for named access
 	std::unordered_map<std::string, Primitive*> prims_map; 

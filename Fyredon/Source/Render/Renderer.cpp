@@ -63,7 +63,6 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context)
 	// Test Primitives
 	create_test_prims();
 	create_test_mesh();
-	//create_terrain();
 	GL_ERROR();
 
 	is_init = true; 
@@ -227,3 +226,4 @@ void Fyredon::Renderer::create_test_prims()
 	axis->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
 	axis->mode = Render_Mode::RENDER_LINES; 
 }
+
