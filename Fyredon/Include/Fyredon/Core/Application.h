@@ -106,7 +106,7 @@ private:
 	} render_device; 
 
 	// GUI
-	GUI_PanelOrgnizer* gui_org = new GUI_PanelOrgnizer();
+	GUI_PanelOrgnizer* gui_org;
 	//std::map<std::string, GUI_Panel*> gui_panels;
 
 	// Camera 

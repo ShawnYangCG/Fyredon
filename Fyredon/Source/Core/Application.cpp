@@ -65,6 +65,7 @@ Fyredon::EditorApplication::EditorApplication()
 	last_pitchoffs(0.f), last_zoom(0.f), window_title("null")
 {
 	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, width / height, true);
+	gui_org = new GUI_PanelOrgnizer();
 }
 
 Fyredon::EditorApplication::~EditorApplication()
@@ -128,7 +129,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 std::string Fyredon::EditorApplication::create_new_project()
 {
 	bool isNext = false;
-	GUI_NewProjectWindow* newProject = new GUI_NewProjectWindow(width, height);
+	GUI_NewProjectWindow* newProject = new GUI_NewProjectWindow(width, height, START);
 	while (!glfwWindowShouldClose(window)) {
 		if (isNext)
 			break;
