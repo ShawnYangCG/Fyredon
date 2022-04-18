@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_NewProjectWindow.cpp: create a new project window
+	GUI_NewProjectWindow.cpp: create a new project window : Shawn
 =============================================================================*/
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/GUI/GUI_NewProjectWindow.h"

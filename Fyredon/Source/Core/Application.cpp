@@ -71,7 +71,7 @@ Fyredon::EditorApplication::~EditorApplication()
 	glfwDestroyWindow(window); window = nullptr;
 	glfwTerminate();
 
-	if (gui_org) delete gui_org; 
+	//if (gui_org) delete gui_org; 
 }
 
 // Info : Called before application loop is ran, to do inital application setup. 
@@ -83,23 +83,8 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	width = Width, height = Height, window_title = title.c_str();
 
 
-	// ======== setup a ECS world ======== (Do we need this Shawn ? - Niall)
+	// ======== setup a ECS world ======== 
 	this->ECSworld = new World(this->gui_org);
-	Entity* entity = new Entity("Entity 0");
-	entity->addTransformComponent();
-	this->ECSworld->addEntity(entity);
-	Entity* entity1 = new Entity("Entity 1");
-	entity->addEntity(entity1);
-	Entity* entity2 = new Entity("Entity 2");
-	entity1->addEntity(entity2);
-	Entity* entity3 = new Entity("Entity 3");
-	entity3->addTransformComponent();
-	this->ECSworld->addEntity(entity3);
-	Entity* entity4 = new Entity("Entity 4");
-	entity3->addEntity(entity4);
-	Entity* entity5 = new Entity("Entity 5");
-	entity3->addEntity(entity5);
-	entity5->addTransformComponent();
 
 	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 

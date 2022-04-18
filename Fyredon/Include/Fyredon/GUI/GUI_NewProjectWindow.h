@@ -1,9 +1,15 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	GUI_NewProjectWindow.h: create a new project window : Shawn
+=============================================================================*/
 #pragma once
+// Std Headers
 #include <string>
-// Extern Includes
-#include "dearimgui/imgui.h"
 #include <Shlobj.h>
 #include <io.h>
+// Extern Includes
+#include "dearimgui/imgui.h"
 namespace Fyredon
 {
 	enum NEWPROJECTSTATE
