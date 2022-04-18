@@ -16,12 +16,25 @@ public:
 
 	float heightFromIndex(int index);
 
+	void draw_water_quad();
+	float bilinear_interpolation(float x, float z);
+
+
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 
 	void load_obj(bool has_tex = false);
 
 	Fyredon::Mesh TerrainMesh;
+	Fyredon::Mesh water_quad;
+
+	int image_width, image_height, image_n_channels;
+
+	float heightFromXZ(int x , int y);
+
+	unsigned char* image_data;
+	void generate_mesh(int res);
+	float triangle_plane(float x, float z);
 
 private:
 
