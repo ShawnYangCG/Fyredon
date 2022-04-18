@@ -40,7 +40,7 @@
 
 #define GL_VERSION_MAJOR 4
 #define GL_VERSION_MINOR 5
-//#define EDITOR_WINDOW_RESIZE
+#define EDITOR_WINDOW_RESIZE
 //#define EDITOR_FULLSCREEN 
 
 // #define ENABLE_CREATE_NEW_PROJECT
@@ -272,7 +272,7 @@ void Fyredon::EditorApplication::viewport_gui()
 	ImVec2 uv_max = ImVec2(1.0f, 0.0f);                 
 	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);   
 	ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); 
-	ImGui::Image((ImTextureID)tex->ID, ImVec2(tex->width, tex->height), uv_min, uv_max, tint_col, border_col);
+	ImGui::Image(tex->get_imgui_texture(), ImVec2(tex->width, tex->height), uv_min, uv_max, tint_col, border_col);
 	ImGui::End();
 }
 
@@ -292,7 +292,6 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 //	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
-	#define EDITOR_WINDOW_RESIZE true
 	#ifdef EDITOR_WINDOW_RESIZE
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); 
 	#else

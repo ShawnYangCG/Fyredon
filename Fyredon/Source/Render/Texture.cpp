@@ -90,11 +90,17 @@ void Fyredon::Texture::bind() { glBindTexture(GL_TEXTURE_2D, ID); }
 
 void Fyredon::Texture::unbind() { glBindTexture(GL_TEXTURE_2D, 0); }
 
+ImTextureID Fyredon::Texture::get_imgui_texture()
+{
+	return reinterpret_cast<ImTextureID>(ID);
+}
+
 // ====================== TextureImage Class Implementation ======================
 
-Fyredon::TextureImage::TextureImage(const char* File_Path, const char* Tex_Name, GLuint Tex_Unit)
-	: Fyredon::Texture(Tex_Name, Tex_Unit, -1, -1), file_path(File_Path), flip(true) 
-{}
+Fyredon::TextureImage::TextureImage(const char* File_Path, const char* Tex_Name, GLuint Tex_Unit, bool Flip)
+	: Fyredon::Texture(Tex_Name, Tex_Unit, -1, -1), file_path(File_Path), flip(Flip) 
+{
+}
 
 // Info : Do loading after construction
 void Fyredon::TextureImage::load()
