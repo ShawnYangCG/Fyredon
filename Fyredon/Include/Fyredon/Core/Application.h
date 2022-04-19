@@ -57,6 +57,9 @@ namespace Fyredon {
 			bool is_init = false;
 		} GLFWState;
 
+		static bool isSizeChange;
+		static GUIConfig guiConfig;
+
 	protected:
 		EditorApplication();
 
@@ -108,6 +111,7 @@ namespace Fyredon {
 
 		// GUI
 		GUI_PanelOrgnizer* gui_org;
+
 		//std::map<std::string, GUI_Panel*> gui_panels;
 
 		// Camera 
@@ -131,7 +135,5 @@ namespace Fyredon {
 
 	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-	static GUIConfig guiConfig;
 
-	static bool isSizeChange = true;
 }

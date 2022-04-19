@@ -67,6 +67,10 @@ Fyredon::EditorApplication::EditorApplication()
 	gui_org = new GUI_PanelOrgnizer();
 }
 
+// Static Members
+bool Fyredon::EditorApplication::isSizeChange = false; 
+GUIConfig Fyredon::EditorApplication::guiConfig = GUIConfig();
+
 Fyredon::EditorApplication::~EditorApplication()
 {
 	glfwDestroyWindow(window); window = nullptr;
@@ -452,7 +456,7 @@ void Fyredon::framebuffer_size_callback(GLFWwindow* window, int width, int heigh
 {
 	EditorApp.GLFWState.width = width, EditorApp.GLFWState.height = height;
 	glViewport(0, 0, width, height);
-	isSizeChange = true;
+	EditorApplication::get_instance().isSizeChange = true;
 }
 
 // Info : Called on mouse input event.

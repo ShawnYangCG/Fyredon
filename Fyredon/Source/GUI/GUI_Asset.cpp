@@ -10,15 +10,22 @@
 // Extern Includes
 #include "dearimgui/imgui.h"
 
+#include <cstring>
+#include <thread>
+
 #define ICON_SIZE 64
 
 // Add Title to GUI_Panel base ctor.
 Fyredon::GUI_Asset::GUI_Asset(const char* Title, GUIConfig* guiConfig, World* world)
 	: GUI_Panel(Title), guiConfig(guiConfig), world(world), path_changed(false)
 {
+	// Default Path
+	cur_path = std::filesystem::current_path().string();
+	prev_path = cur_path;
+	
 	// Icon Setup
 	icon_dir = new TextureImage("..//Assets//Images//Icons//open-folder.png", "dir_icon", 0, false);
-	icon_unk_file = new TextureImage("..//Assets//Images//Icons//unkown-file.png", "unk_file_icon", 0, false);
+	icon_unk_file = new TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk_file_icon", 0, false);
 	icon_dir->load(), icon_unk_file->load();
 }
 
@@ -47,48 +54,77 @@ void Fyredon::GUI_Asset::draw()
 	ImGui::SetNextWindowPos(ImVec2(0, this->posY));
 	ImGui::SetNextWindowSize(ImVec2(this->width, this->height));
 
-	static const char* loc_path;
+	static char loc_path [512];
+	strcpy_s(loc_path, 256, cur_path.c_str());
+
 	std::size_t total = files.size() + dirs.size();
 	std:size_t rows   = total / 6; 
 
 	ImGui::Begin(title.c_str());
 	{
-		std::size_t j = 0; 
+		// Directory (local path) String
+		if (ImGui::InputText("Directory", loc_path, 512))
+		{
+			cur_path = loc_path;
+			path_changed = true;
+		}
+
 		if (total > 0)
 		{
-			//ImGui::Columns(16);
-			// Draw Dirs first
-			for (std::size_t i = 0; i < dirs.size(); ++i, ++j)
+			ImGui::Columns(12, 0, false);
+
+			/*
+			// Parent Dir		
+			if (ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE)))
 			{
-				const std::filesystem::directory_entry &dir = dirs[i];
-				if (i != 0 && i % 6 == 0) ImGui::NewLine();
+				cur_path = prev_path;
+				path_changed = true;
+			}
+			ImGui::Text("..");
+			ImGui::NextColumn();*/
+
+			// Dirs
+			for (std::size_t i = 0; i < dirs.size(); ++i)
+			{
+				std::filesystem::directory_entry &dir = dirs[i];
+
+				// Dir Button
 				if (ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE))) 
 				{
 					path_changed = true; 
-					local_path = dir.path().string();
+					cur_path = dir.path().string();
 				}
-			}
-			for (std::size_t i = 0; i < files.size(); ++i, ++j)
+				// Dir Label
+				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
+				ImGui::Text(dir.path().filename().string().c_str());
+				ImGui::PopStyleColor();
+				ImGui::NextColumn();
+			} 
+
+			// Files
+			for (std::size_t i = 0; i < files.size(); ++i)
 			{
 				std::filesystem::directory_entry& file = files[i];
-				ImGui::SameLine();
+
+				// File Button
 				if (ImGui::ImageButton(icon_unk_file->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE)))
 				{
 					// File Selected
 					selected = &file; 
 				}
-
-				//ImGui::NewLine();
+				// File Label
 				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
-				ImGui::Text(file.path().filename().string().c_str());
+				ImGui::TextWrapped(file.path().filename().string().c_str());
 				ImGui::PopStyleColor();
-				//ImGui::Separator();
-			}
+				ImGui::NextColumn();
+			} 
+			ImGui::Columns(1); // Reset Cols
 		}
 
-		// If Dir pressed, redraw
+		// Dir Changed, re-draw in dir
 		if (path_changed) 
 		{
+			prev_path = cur_path; 
 			path_changed = false; 
 			files_setup();
 			draw();
@@ -100,8 +136,7 @@ void Fyredon::GUI_Asset::draw()
 void Fyredon::GUI_Asset::files_setup()
 {
 	files.clear(), dirs.clear();
-	path = local_path.empty() ? std::filesystem::current_path() : std::filesystem::path(local_path);
-	std::filesystem::path path = std::filesystem::current_path();
+	path = std::filesystem::path(cur_path);
 
 	if (!std::filesystem::exists(path)) return;
 	
