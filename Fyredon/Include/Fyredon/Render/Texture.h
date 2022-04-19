@@ -9,6 +9,10 @@
 #include <iostream>
 #include <string>
 
+#ifndef ImTextureID
+typedef void* ImTextureID;       
+#endif
+
 namespace Fyredon {
 
 using GLuint = unsigned int;
@@ -30,6 +34,8 @@ public:
 	void deactivate();
 	void bind();
 	void unbind();
+	ImTextureID get_imgui_texture();
+
 
 public:
 	std::string name;
@@ -47,8 +53,8 @@ class TextureImage : public Texture
 public:
 	enum filter_type { NEAREST = 0, LINEAR };
 public:
-	TextureImage(const char* File_Path, const char* Tex_Name, GLuint Tex_Unit);
-	TextureImage() = default;
+	TextureImage(const char* File_Path, const char* Tex_Name, GLuint Tex_Unit, bool Flip);
+	TextureImage() = delete; 
 	virtual ~TextureImage() = default;
 
 	void load();

@@ -9,6 +9,10 @@
 #include <Fyredon/Other/dllport.h>
 #include "Fyredon/Render/Camera.h"
 #include "Fyredon/Render/Renderer.h"
+#include "Fyredon/ECS/World.h"
+#include "Fyredon/GUI/GUIConfig.h"
+#include "Fyredon/GUI/GUI_PanelOrgnizer.h"
+#include "Fyredon/GUI/GUI_NewProjectWindow.h"
 
 // Extern Includes
 #include "GLEW/glew.h"
@@ -24,7 +28,6 @@ class GUI_Panel;
 class Texture; 
 class GameWorld; 
 class Renderer; 
-
 /*
 *   ============ Editor Application Class ============
 *   Core class that defines an instance of the engine editor application to be created and executed
@@ -41,6 +44,7 @@ public:
 	// Call from client main()
 	void init(std::size_t Width, std::size_t Height, const char* Title);
 	void exec(); 
+	void resize();
 
 	// GLFW / Input State (modified via public callback access)
 	static struct {
@@ -54,6 +58,9 @@ public:
 
 protected:
 	EditorApplication();
+
+	// create new project
+	std::string create_new_project();
 
 	// Application Tick
 	void tick_editor();
@@ -88,7 +95,7 @@ private:
 
 	// Application Window
 	GLFWwindow* window; 
-	std::size_t width, height; 
+	std::size_t width, height;
 
 	// Render Device
 	struct {
@@ -98,8 +105,9 @@ private:
 		const unsigned char* sl_version;
 	} render_device; 
 
-	// GUI 
-	std::vector<GUI_Panel*> gui_panels;
+	// GUI
+	GUI_PanelOrgnizer* gui_org;
+	//std::map<std::string, GUI_Panel*> gui_panels;
 
 	// Camera 
 	Camera camera;
@@ -110,7 +118,8 @@ private:
 	float cur_t, prev_t; 
 
 	// Game World
-	GameWorld* world; 
+	GameWorld* world;
+	World* ECSworld;
 
 }; // EditorApp
 
@@ -121,4 +130,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
+static GUIConfig guiConfig;
+
+static bool isSizeChange = true;
 }

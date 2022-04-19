@@ -23,6 +23,10 @@ void Fyredon::GUI_FloatingWidget::tick()
 	draw(); 
 }
 
+void Fyredon::GUI_FloatingWidget::resize()
+{
+}
+
 void Fyredon::GUI_FloatingWidget::draw()
 {
 	ImGui::Begin(title);

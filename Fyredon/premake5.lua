@@ -52,7 +52,8 @@ project "Fyredon"
 	filter "configurations:Debug"
 		defines{
 			"FD_DEBUG",
-			"GLEW_STATIC"
+			"GLEW_STATIC",
+			"FBXSDK_SHARED"
 		}
 		runtime "Debug"
 		symbols "on"
@@ -62,7 +63,8 @@ project "Fyredon"
 	filter "configurations:Release"
 		defines{
 			"FD_RELEASE",
-			"GLEW_STATIC"
+			"GLEW_STATIC",
+			"FBXSDK_SHARED"
 		}
 
 		runtime "Release"
