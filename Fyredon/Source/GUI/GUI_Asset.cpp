@@ -55,20 +55,26 @@ void Fyredon::GUI_Asset::draw()
 
 	ImGui::Begin(title.c_str());
 	{
+		std::size_t item = 0; 
 		if (total > 0)
 		{
+			ImGui::Columns(16);
 			// Draw Dirs first
-			for (std::size_t d = 0; d < dirs.size(); ++d)
+			for (std::size_t item = 0; item < dirs.size(); ++item)
 			{
-				if (d % 6 == 0) ImGui::NewLine();
+				const std::filesystem::directory_entry &dir = dirs[item];
+				//if (item % 6 == 0) ImGui::NewLine();
 				ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE));
 			}
-
-			/*
-			for (const auto& dir : dirs)
+			for (; item < total; ++item)
 			{
-				//ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE));
-			} */
+				ImGui::ImageButton(icon_unk_file->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE));
+				if (item % 6 == 0) ImGui::NewLine();
+				//ImGui::NewLine();
+				//ImGui::Text("File");
+				ImGui::Separator();
+			}
+
 
 			//ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE));
 		}
@@ -80,7 +86,6 @@ void Fyredon::GUI_Asset::files_setup()
 {
 	files.clear(), dirs.clear();
 	std::filesystem::path path = std::filesystem::current_path();
-	std::cout << path << "\n";
 	if (path.empty() || !std::filesystem::exists(path)) return;
 
 	for (const auto& file : std::filesystem::directory_iterator(path)) 
