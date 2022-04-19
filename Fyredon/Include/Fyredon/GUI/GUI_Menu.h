@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_Menu.h: Top Window GUI Menu
+	GUI_Menu.h: Top Window GUI Menu : Niall, Shawn
 =============================================================================*/
 #pragma once
 

@@ -1,7 +1,7 @@
 ﻿// Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_Menu.cpp: Top Window GUI Menu
+	GUI_Menu.cpp: Top Window GUI Menu : Niall, Shawn
 =============================================================================*/
 
 #include "Fyredon/Other/pch.h"
@@ -78,6 +78,8 @@ void Fyredon::GUI_Menu::main_menu()
 					if (ImGui::MenuItem("About")) menu_state.about = 1;
 					ImGui::EndMenu(); // End Help Menu
 				}
+
+
 				ImGui::MenuItem(title.c_str(), NULL, false, false);
 				std::string space = "";
 				for (int i = 0; i < (this->gui_config->AppWidth / 2 - 420 - 45 - 20) / 7; i++)

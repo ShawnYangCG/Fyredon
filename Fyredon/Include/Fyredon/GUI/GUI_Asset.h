@@ -2,7 +2,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_Asset.h: Show all asset
+	GUI_Asset.h: Show all asset, Shawn, Niall 
 =============================================================================*/
 #pragma once
 
@@ -16,6 +16,7 @@
 // Extern Includes
 #include "dearimgui/imgui.h"
 
+#include <vector>
 #include <filesystem>
 
 namespace Fyredon
@@ -44,12 +45,15 @@ protected:
 private:
 	TextureImage* icon_dir; 
 	TextureImage* icon_unk_file; 
-
+	
 	std::vector<std::filesystem::directory_entry> files;
 	std::vector<std::filesystem::directory_entry> dirs;
 
-	std::string* local_path;
+	std::filesystem::directory_entry* selected; 
 
+	std::filesystem::path path; 
+	std::string local_path;
+	bool path_changed; 
 };
 
 
