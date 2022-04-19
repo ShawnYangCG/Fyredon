@@ -13,6 +13,7 @@
 #include "Fyredon/Core/Threads.h"
 #include "Fyredon/Core/FileSystem.h"
 #include "Fyredon/Core/GameWorld.h"
+#include "Fyredon/Core/SaveState.h"
 
 // Debug
 #include <Fyredon/Debug/Logger.h>
@@ -56,7 +57,7 @@ Fyredon::EditorApplication& Fyredon::EditorApplication::get_instance()
 
 // ================ Editor Application Class Implementation ================
 
-Fyredon::EditorApplication::EditorApplication() 
+Fyredon::EditorApplication::EditorApplication()
 	: dt(0.f), cur_t(0.f), prev_t(0.f), width(1024), height(1024), last_yawoffs(0.f),
 	last_pitchoffs(0.f), last_zoom(0.f), window_title("null")
 {
@@ -78,7 +79,7 @@ Fyredon::EditorApplication::~EditorApplication()
 void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, const char* Title)
 {
 	// Override defaults
-	std::string title = Title; 
+	std::string title = Title;
 	title += " :: Default Game Project";
 	width = Width, height = Height, window_title = title.c_str();
 
@@ -104,14 +105,15 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 
 	GUI_RendererSettings* ren_set = static_cast<GUI_RendererSettings*>(gui_org->gui_panels["setting"]);
 
-	renderer.flags.draw_axis        = &(ren_set->state.draw_axis);
-	renderer.flags.draw_grid        = &(ren_set->state.draw_grid);
-	renderer.flags.draw_test_prims  = &(ren_set->state.draw_testmesh);
-	renderer.flags.light_pos        = &(ren_set->state.light_pos);
-	renderer.flags.light_str        = &(ren_set->state.light_strength);
-	renderer.flags.test_pos         = &(ren_set->state.test_mesh_pos);
+	renderer.flags.draw_axis = &(ren_set->state.draw_axis);
+	renderer.flags.draw_grid = &(ren_set->state.draw_grid);
+	renderer.flags.draw_test_prims = &(ren_set->state.draw_testmesh);
+	renderer.flags.light_pos = &(ren_set->state.light_pos);
+	renderer.flags.light_str = &(ren_set->state.light_strength);
+	renderer.flags.test_pos = &(ren_set->state.test_mesh_pos);
 
 	GameWorld::get_world().create_terrain();
+
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
@@ -127,7 +129,7 @@ std::string Fyredon::EditorApplication::create_new_project()
 				newProject->reLocation(width, height);
 			}
 		}
-		
+
 		paint_begin();
 
 		newProject->tick();
@@ -191,6 +193,11 @@ void Fyredon::EditorApplication::tick_engine()
 
 	// Tick Renderer
 	Renderer::get_renderer().render(camera);
+
+	// Tick state update (if save state requested)
+	if (SaveState::getInstance().update) {
+		SaveState::getInstance().tick(camera.position, camera.yaw, camera.pitch);
+	}
 }
 
 // Info : All operations done within the editor application for a single tick
@@ -199,7 +206,7 @@ void Fyredon::EditorApplication::tick_editor()
 	paint_begin();
 
 	tick_gui();
-	
+
 	paint_end();
 }
 
@@ -212,7 +219,7 @@ void Fyredon::EditorApplication::tick_gui()
 	ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(40, 40, 40, 255));
 
 	viewport_gui();
-	
+
 	std::map<std::string, GUI_Panel*>::iterator iter;
 	for (iter = gui_org->gui_panels.begin(); iter != gui_org->gui_panels.end(); iter++) {
 		if (iter->second) iter->second->tick();
@@ -235,7 +242,7 @@ void Fyredon::EditorApplication::paint_begin()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	
+
 }
 
 // End of Application paint operations (within Tick())
@@ -263,15 +270,15 @@ void Fyredon::EditorApplication::viewport_gui()
 
 	ImGui::SetNextWindowPos(ImVec2(guiConfig.leftBar_width, guiConfig.menuHeight));
 	ImGui::SetNextWindowSize(ImVec2(width, height));
-	
+
 	Fyredon::Texture* tex = Renderer::get_renderer().get_colour_attachment();
-	
+
 	ImGui::Begin("Game Viewport");
 	// Flip V Min. 
-	ImVec2 uv_min = ImVec2(0.0f, 1.0f);                 
-	ImVec2 uv_max = ImVec2(1.0f, 0.0f);                 
-	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);   
-	ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); 
+	ImVec2 uv_min = ImVec2(0.0f, 1.0f);
+	ImVec2 uv_max = ImVec2(1.0f, 0.0f);
+	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f);
 	ImGui::Image(tex->get_imgui_texture(), ImVec2(tex->width, tex->height), uv_min, uv_max, tint_col, border_col);
 	ImGui::End();
 }
@@ -291,19 +298,19 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_VERSION_MAJOR);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-//	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
-	#ifdef EDITOR_WINDOW_RESIZE
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); 
-	#else
+	//	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
+#ifdef EDITOR_WINDOW_RESIZE
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+#else
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-	#endif
+#endif
 
 	// Create Window
-	GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
-	const GLFWvidmode *monitor = glfwGetVideoMode(primaryMonitor);
-	#ifdef EDITOR_FULLSCREEN
+	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* monitor = glfwGetVideoMode(primaryMonitor);
+#ifdef EDITOR_FULLSCREEN
 	width = monitor->width, height = monitor->height;
-	#endif
+#endif
 	window = glfwCreateWindow(width, height, window_title, NULL, NULL);
 	if (window == NULL)
 	{
@@ -337,10 +344,10 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	}
 
 	// Query GL Device and Version Info - 
-	render_device.vendor      = glGetString(GL_VENDOR);
-	render_device.name        = glGetString(GL_RENDERER);
-	render_device.version     = glGetString(GL_VERSION);
-	render_device.sl_version  = glGetString(GL_SHADING_LANGUAGE_VERSION);
+	render_device.vendor = glGetString(GL_VENDOR);
+	render_device.name = glGetString(GL_RENDERER);
+	render_device.version = glGetString(GL_VERSION);
+	render_device.sl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
 	// Cleanup Debug Output
 	FD_DEBUG_BLOCK_BEGIN("DEBUG::OPENGL::DEVICE_INFO");
@@ -353,13 +360,13 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 
 GLFWwindow* Fyredon::EditorApplication::get_ogl_context()
 {
-	return window; 
+	return window;
 }
- 
+
 void Fyredon::EditorApplication::get_dt()
 {
 	prev_t = cur_t;
-	cur_t  = glfwGetTime();
+	cur_t = glfwGetTime();
 	dt = cur_t - prev_t;
 }
 
@@ -370,13 +377,13 @@ void Fyredon::EditorApplication::update_camera()
 		width = GLFWState.width, height = GLFWState.height;
 
 	// Only set yaw,pitch if delta from last tick (update_camera() call). 
-	float delta_yaw   = GLFWState.mouse_offset_x != last_yawoffs   ? GLFWState.mouse_offset_x : 0.f;
+	float delta_yaw = GLFWState.mouse_offset_x != last_yawoffs ? GLFWState.mouse_offset_x : 0.f;
 	float delta_pitch = GLFWState.mouse_offset_y != last_pitchoffs ? GLFWState.mouse_offset_y : 0.f;
-	float delta_zoom  = GLFWState.scroll_y       != last_zoom      ? GLFWState.scroll_y       : 0.f;
+	float delta_zoom = GLFWState.scroll_y != last_zoom ? GLFWState.scroll_y : 0.f;
 	// Set last offsets
-	last_yawoffs   = GLFWState.mouse_offset_x;
+	last_yawoffs = GLFWState.mouse_offset_x;
 	last_pitchoffs = GLFWState.mouse_offset_y;
-	last_zoom      = GLFWState.scroll_y;
+	last_zoom = GLFWState.scroll_y;
 
 	// Update Camera State
 	camera.update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
@@ -476,4 +483,3 @@ void Fyredon::scroll_callback(GLFWwindow* window, double xoffset, double yoffset
 {
 	EditorApp.GLFWState.scroll_y = yoffset;
 }
-

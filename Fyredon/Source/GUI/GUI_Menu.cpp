@@ -11,6 +11,7 @@
 
 // Extern Includes
 #include "dearimgui/imgui.h"
+#include "Fyredon/Core/SaveState.h"
 
 Fyredon::GUI_Menu::GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y_pad)
 	: GUI_Panel(), cfg(menu_config), pad_y(y_pad) ,gui_config(gui_config)
@@ -28,6 +29,11 @@ void Fyredon::GUI_Menu::tick()
 
 	// Handle Panel State
 	if (menu_state.about) about_popout();
+
+	if (menu_state.savestate) {
+		saved_state();
+		menu_state.savestate = false;
+	}
 }
 
 void Fyredon::GUI_Menu::resize()
@@ -63,7 +69,7 @@ void Fyredon::GUI_Menu::main_menu()
 				}
 				if (ImGui::BeginMenu("Edit"))
 				{
-					if (ImGui::MenuItem("PlaceHolder 1")) {}
+					if (ImGui::MenuItem("Save State")) { menu_state.savestate = true; }
 					if (ImGui::MenuItem("PlaceHolder 2")) {}
 					ImGui::EndMenu(); // End Edit Menu
 				}
@@ -166,4 +172,10 @@ void Fyredon::GUI_Menu::new_project()
 		this->isNext = false;
 		newProject->resetState();
 	}
+}
+
+// Save engine state called
+void Fyredon::GUI_Menu::saved_state()
+{
+	SaveState::getInstance().update = true;
 }

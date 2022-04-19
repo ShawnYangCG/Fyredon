@@ -31,6 +31,7 @@ protected:
 	void main_menu();
 	void play_buttons();
 	void new_project();
+	void saved_state();
 
 private: 
 	struct
@@ -38,6 +39,7 @@ private:
 		int8_t open, save, close : 1; // File menu
 		int8_t play, pause, stop : 1; // Play menu
 		int8_t about : 1;             // About menu
+		int8_t savestate : 1;		  // Save state
 	} menu_state;
 
 	config cfg; 

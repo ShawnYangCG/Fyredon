@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Application.h: Base Engine Editor Application : Niall 
+	Application.h: Base Engine Editor Application : Niall
 =============================================================================*/
 #pragma once
 
@@ -24,113 +24,114 @@
 
 namespace Fyredon {
 
-class GUI_Panel;
-class Texture; 
-class GameWorld; 
-class Renderer; 
-/*
-*   ============ Editor Application Class ============
-*   Core class that defines an instance of the engine editor application to be created and executed
-*	by the client app.
-*/
+	class GUI_Panel;
+	class Texture;
+	class GameWorld;
+	class Renderer;
+	class SaveState;
+	/*
+	*   ============ Editor Application Class ============
+	*   Core class that defines an instance of the engine editor application to be created and executed
+	*	by the client app.
+	*/
 
-class FD_API EditorApplication
-{
-public:
-	~EditorApplication(); 
+	class FD_API EditorApplication
+	{
+	public:
+		~EditorApplication();
 
-	static EditorApplication& get_instance();
+		static EditorApplication& get_instance();
 
-	// Call from client main()
-	void init(std::size_t Width, std::size_t Height, const char* Title);
-	void exec(); 
-	void resize();
+		// Call from client main()
+		void init(std::size_t Width, std::size_t Height, const char* Title);
+		void exec();
+		void resize();
 
-	// GLFW / Input State (modified via public callback access)
-	static struct {
-		int    width, height;
-		double mouse_offset_x  = 0.f, mouse_offset_y  = 0.f;
-		double mousepos_x      = 0.f, mousepos_y      = 0.f;
-		double mousepos_prev_x = 0.f, mousepos_prev_y = 0.f;
-		double scroll_y = 0.f;
-		bool is_init = false;
-	} GLFWState;
+		// GLFW / Input State (modified via public callback access)
+		static struct {
+			int    width, height;
+			double mouse_offset_x = 0.f, mouse_offset_y = 0.f;
+			double mousepos_x = 0.f, mousepos_y = 0.f;
+			double mousepos_prev_x = 0.f, mousepos_prev_y = 0.f;
+			double scroll_y = 0.f;
+			bool is_init = false;
+		} GLFWState;
 
-protected:
-	EditorApplication();
+	protected:
+		EditorApplication();
 
-	// create new project
-	std::string create_new_project();
+		// create new project
+		std::string create_new_project();
 
-	// Application Tick
-	void tick_editor();
+		// Application Tick
+		void tick_editor();
 
-	// Engine / Game Tick
-	void tick_engine();
+		// Engine / Game Tick
+		void tick_engine();
 
-	// OpenGL Setup
-	void setup_ogl_window_contex();
-	void setup_ogl_loading();
-	GLFWwindow* get_ogl_context();
+		// OpenGL Setup
+		void setup_ogl_window_contex();
+		void setup_ogl_loading();
+		GLFWwindow* get_ogl_context();
 
-	// Application Paint Steps
-	void paint_begin();
-	void paint_end();
+		// Application Paint Steps
+		void paint_begin();
+		void paint_end();
 
-	// GUI Setup
-	void setup_gui();
-	void shutdown_gui();
-	void tick_gui();
-	void viewport_gui();
+		// GUI Setup
+		void setup_gui();
+		void shutdown_gui();
+		void tick_gui();
+		void viewport_gui();
 
-	// Engine/World (temp)
-	void update_camera();
-	void get_dt();
+		// Engine/World (temp)
+		void update_camera();
+		void get_dt();
 
-private:
-	static EditorApplication app; // singleton
+	private:
+		static EditorApplication app; // singleton
 
-	const char *window_title; 
-	const char *project_filepath;
+		const char* window_title;
+		const char* project_filepath;
 
-	// Application Window
-	GLFWwindow* window; 
-	std::size_t width, height;
+		// Application Window
+		GLFWwindow* window;
+		std::size_t width, height;
 
-	// Render Device
-	struct {
-		const unsigned char* vendor;
-		const unsigned char* name;
-		const unsigned char* version;
-		const unsigned char* sl_version;
-	} render_device; 
+		// Render Device
+		struct {
+			const unsigned char* vendor;
+			const unsigned char* name;
+			const unsigned char* version;
+			const unsigned char* sl_version;
+		} render_device;
 
-	// GUI
-	GUI_PanelOrgnizer* gui_org;
-	//std::map<std::string, GUI_Panel*> gui_panels;
+		// GUI
+		GUI_PanelOrgnizer* gui_org;
+		//std::map<std::string, GUI_Panel*> gui_panels;
 
-	// Camera 
-	Camera camera;
-	float last_yawoffs, last_pitchoffs, last_zoom;
+		// Camera 
+		Camera camera;
+		float last_yawoffs, last_pitchoffs, last_zoom;
 
-	// Editor State
-	float dt;
-	float cur_t, prev_t; 
+		// Editor State
+		float dt;
+		float cur_t, prev_t;
 
-	// Game World
-	GameWorld* world;
-	World* ECSworld;
+		// Game World
+		GameWorld* world;
+		World* ECSworld;
 
-}; // EditorApp
+	}; // EditorApp
 
-//  ============ GLFW Input Callbacks ============
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+	//  ============ GLFW Input Callbacks ============
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+	void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-static GUIConfig guiConfig;
+	static GUIConfig guiConfig;
 
-static bool isSizeChange = true;
+	static bool isSizeChange = true;
 }
