@@ -26,7 +26,7 @@ void Fyredon::SaveState::tick(glm::vec3& cam_pos, float yaw, float pitch)
 	encode();
 
 	update = false;
-	FD_DEBUG_INFO("fffff", cam_pos.x, cam_pos.y, cam_pos.z, yaw, pitch);
+	//FD_DEBUG_INFO("fffff", cam_pos.x, cam_pos.y, cam_pos.z, yaw, pitch);
 }
 
 
