@@ -7,8 +7,6 @@
 // Implements 
 #include "Fyredon/GUI/GUI_Components.h"
 
-// Extern Includes
-#include "dearimgui/imgui.h"
 Fyredon::GUI_Components::GUI_Components(const char* Title, GUIConfig* guiConfig, World* world)
 	: GUI_Panel(), title(Title), guiConfig(guiConfig), world(world)
 {
@@ -50,16 +48,22 @@ void Fyredon::GUI_Components::draw()
 
 	ImGui::Begin(title);
 	{
-		if(this->world->gui_org->gui_panels["Hierarchy"])
+		if (this->world->gui_org->gui_panels["Hierarchy"]) {
+			Entity* entity = nullptr;
 			if (((GUI_EntityList*)this->world->gui_org->gui_panels["Hierarchy"])->getSelectedEntity()) {
-				((GUI_EntityList*)this->world->gui_org->gui_panels["Hierarchy"])->getSelectedEntity()->tick();
-				if (ImGui::Button("add component"))
-				{
-					//===== add button action here =====
-
-					//==================================
-				}
+				entity = ((GUI_EntityList*)this->world->gui_org->gui_panels["Hierarchy"])->getSelectedEntity();
 			}
+			if (entity) {
+				entity->tick();
+			}
+			if (this->selectedEntity != entity) {
+				this->selectedEntity = entity;
+				actionButton = new AddComponentButtonAction(entity);
+			}
+			if (this->actionButton) {
+				this->actionButton->tick();
+			}
+		}
 	}
 	ImGui::End();
 }

@@ -138,6 +138,7 @@ void Fyredon::Renderer::render_entity(Camera& cam_ref)
 			mesh->shader.setVec("camPos_world", cam_ref.position);
 			mesh->shader.setVec("lightPos_world", *flags.light_pos);
 			mesh->shader.setFloat("lightStr", *flags.light_str);
+	
 			mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 			mesh->render();
 			free(mesh);

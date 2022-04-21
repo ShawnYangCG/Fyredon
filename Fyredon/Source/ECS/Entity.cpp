@@ -133,4 +133,7 @@ void Entity::addTransformComponent()
         Tcomponent->parent = this;
         this->components.push_back(Tcomponent);
     }
+    else {
+        std::cout << "Error: Entity [" << this->name << "] already contain component [Transform]" << std::endl;
+    }
 }

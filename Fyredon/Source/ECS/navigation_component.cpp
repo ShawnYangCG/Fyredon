@@ -36,7 +36,7 @@ void navigation_component::GUI_struct()
 	if (ImGui::Button("Create grid"))
 	{
 		createGrid();
-		addWalls();
+		//addWalls();
 	}
 }
 
@@ -65,24 +65,24 @@ void navigation_component::createGrid()
 
 void navigation_component::getMeshDetail() 
 {
-	if (this->mesh->obj_data.v_p.size() > 0) {
-		this->min_X = this->mesh->obj_data.v_p[0][0];
-		this->max_X = this->mesh->obj_data.v_p[0][0];
-		this->min_Z = this->mesh->obj_data.v_p[0][2];
-		this->max_Z = this->mesh->obj_data.v_p[0][2];
+	if (this->mesh->obj_data.verts.size() > 0) {
+		this->min_X = this->mesh->obj_data.verts[0].pos[0];
+		this->max_X = this->mesh->obj_data.verts[0].pos[0];
+		this->min_Z = this->mesh->obj_data.verts[0].pos[2];
+		this->max_Z = this->mesh->obj_data.verts[0].pos[2];
 	}
-	for (int i = 0; i < this->mesh->obj_data.v_p.size(); i++) {
-		if (this->mesh->obj_data.v_p[i][0] < this->min_X) {
-			this->min_X = this->mesh->obj_data.v_p[i][0];
+	for (int i = 0; i < this->mesh->obj_data.verts.size(); i++) {
+		if (this->mesh->obj_data.verts[i].pos[0] < this->min_X) {
+			this->min_X = this->mesh->obj_data.verts[i].pos[0];
 		}
-		if (this->mesh->obj_data.v_p[i][0] > this->max_X) {
-			this->max_X = this->mesh->obj_data.v_p[i][0];
+		if (this->mesh->obj_data.verts[i].pos[0] > this->max_X) {
+			this->max_X = this->mesh->obj_data.verts[i].pos[0];
 		}
-		if (this->mesh->obj_data.v_p[i][2] < this->min_Z) {
-			this->min_Z = this->mesh->obj_data.v_p[i][2];
+		if (this->mesh->obj_data.verts[i].pos[2] < this->min_Z) {
+			this->min_Z = this->mesh->obj_data.verts[i].pos[2];
 		}
-		if (this->mesh->obj_data.v_p[i][2] > this->max_Z) {
-			this->max_Z = this->mesh->obj_data.v_p[i][2];
+		if (this->mesh->obj_data.verts[i].pos[2] > this->max_Z) {
+			this->max_Z = this->mesh->obj_data.verts[i].pos[2];
 		}
 	}
 	this->width = this->max_X - this->min_X;

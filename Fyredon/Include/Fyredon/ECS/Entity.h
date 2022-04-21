@@ -11,7 +11,6 @@
 #include <map>
 class Component;
 // the class of entity, this class should be inherited by all object used in system
-
 class Entity
 {
 public:

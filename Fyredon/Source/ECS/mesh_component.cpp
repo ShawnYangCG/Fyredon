@@ -10,10 +10,10 @@ mesh_component::mesh_component(Fyredon::Mesh* mesh)
 
 void mesh_component::GUI_struct()
 {
-	std::string vector = "Vector: " + std::to_string(this->mesh->obj_data.v_n.size());
+	std::string vertex = "Vertex: " + std::to_string(this->mesh->obj_data.verts.size());
 	std::string edge = "Edge:";
 	std::string face = "Face:";
-	ImGui::Text(vector.data());
+	ImGui::Text(vertex.data());
 	ImGui::Text(edge.data());
 	ImGui::Text(face.data());
 }
