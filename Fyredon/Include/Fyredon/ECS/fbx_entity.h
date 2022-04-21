@@ -1,5 +1,8 @@
 #pragma once
-#include "Fyredon/ECS/ECS.h"
+#include "Fyredon/ECS/Entity.h"
+#include "Fyredon/ECS/Component.h"
+#include "Fyredon/ECS/mesh_component.h"
+#include "Fyredon/ECS/fbx_property_component.h"
 // 1.
 // include your own header file
 #include "Fyredon/FBX/fbx_mesh.h"

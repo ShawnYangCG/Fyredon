@@ -90,6 +90,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 
 	// ======== setup a ECS world ======== 
 	this->ECSworld = new World(this->gui_org);
+	Renderer::get_renderer().connectWorld(this->ECSworld);
 
 	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 
@@ -116,7 +117,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	renderer.flags.light_str = &(ren_set->state.light_strength);
 	renderer.flags.test_pos = &(ren_set->state.test_mesh_pos);
 
-	GameWorld::get_world().create_terrain();
+	//GameWorld::get_world().create_terrain();
 
 }
 
@@ -228,6 +229,10 @@ void Fyredon::EditorApplication::tick_gui()
 	for (iter = gui_org->gui_panels.begin(); iter != gui_org->gui_panels.end(); iter++) {
 		if (iter->second) iter->second->tick();
 	}
+
+	// GUI's action
+	this->menuAction->tick();
+
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
@@ -407,6 +412,7 @@ void Fyredon::EditorApplication::setup_gui()
 {
 	// Menu bar 
 	gui_org->gui_panels["Menu"] = new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, &guiConfig, 9);
+	this->menuAction = new MenuAction(this->gui_org, this->ECSworld);
 
 	// Entity Panel
 	gui_org->gui_panels["Hierarchy"] = new GUI_EntityList("Hierarchy", &guiConfig, this->ECSworld);

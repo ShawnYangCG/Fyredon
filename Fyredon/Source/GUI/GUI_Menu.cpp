@@ -16,8 +16,10 @@
 Fyredon::GUI_Menu::GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y_pad)
 	: GUI_Panel(), cfg(menu_config), pad_y(y_pad) ,gui_config(gui_config)
 {
-	menu_state.about = 0, menu_state.close = 0, menu_state.play = 0; 
-	menu_state.pause = 0;
+	menu_state.IsNew = 0, menu_state.open = 0, menu_state.save = 0, menu_state.saveAs = 0;
+	menu_state.play = 0, menu_state.pause = 0, menu_state.reset = 0;
+	menu_state.about = 0,
+	menu_state.createTerrain = 0;
 	newProject = new GUI_NewProjectWindow(this->gui_config->AppWidth, this->gui_config->AppHeight);
 	set_title("Fyredon Engine Version 0.0.0");
 }
@@ -60,7 +62,7 @@ void Fyredon::GUI_Menu::main_menu()
 				if (ImGui::BeginMenu("Fyredon"))
 				{
 					if (ImGui::MenuItem("New")) {
-						this->IsNew = true;
+						this->menu_state.IsNew = true;
 					}
 					if (ImGui::MenuItem("Open", "Ctrl+O")) {}
 					if (ImGui::MenuItem("Save", "Ctrl+S")) {}
@@ -70,6 +72,12 @@ void Fyredon::GUI_Menu::main_menu()
 				if (ImGui::BeginMenu("Edit"))
 				{
 					if (ImGui::MenuItem("Save State")) { menu_state.savestate = true; }
+					if (ImGui::MenuItem("PlaceHolder 2")) {}
+					ImGui::EndMenu(); // End Edit Menu
+				}
+				if (ImGui::BeginMenu("GameObject"))
+				{
+					if (ImGui::MenuItem("Terrain")) { menu_state.createTerrain = true; }
 					if (ImGui::MenuItem("PlaceHolder 2")) {}
 					ImGui::EndMenu(); // End Edit Menu
 				}
@@ -88,7 +96,7 @@ void Fyredon::GUI_Menu::main_menu()
 
 				ImGui::MenuItem(title.c_str(), NULL, false, false);
 				std::string space = "";
-				for (int i = 0; i < (this->gui_config->AppWidth / 2 - 420 - 45 - 20) / 7; i++)
+				for (int i = 0; i < (this->gui_config->AppWidth / 2 - 495 - 45 - 20) / 8; i++)
 					space += " ";
 				ImGui::MenuItem(space.data(), NULL, false, false);
 				if (menu_state.play == false) {
@@ -136,11 +144,6 @@ void Fyredon::GUI_Menu::main_menu()
 		}
 	}
 	ImGui::PopStyleVar(); // frame y_pad 
-
-	// show new windows when click the choise in menu
-	if (this->IsNew) {
-		new_project();
-	}
 }
 
 void Fyredon::GUI_Menu::about_popout()
@@ -168,7 +171,7 @@ void Fyredon::GUI_Menu::new_project()
 		this->isNext = newProject->getIsNext();
 	}
 	else {
-		this->IsNew = false;
+		this->menu_state.IsNew = false;
 		this->isNext = false;
 		newProject->resetState();
 	}

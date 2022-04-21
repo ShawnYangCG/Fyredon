@@ -14,6 +14,9 @@
 #include "Fyredon/Render/GroundPlane.h"
 #include "Fyredon/Render/Mesh.h"
 #include "Fyredon/Core/GameWorld.h"
+#include "Fyredon/ECS/World.h"
+#include "Fyredon/ECS/mesh_component.h"
+#include "Fyredon/ECS/transform_component.h"
 
 // Ext Headers
 #include "glm/glm.hpp"
@@ -48,6 +51,7 @@ private:
 	void get_GLError(const char *file, int32_t line);
 
 	void render_prep();
+	void render_entity(Camera& cam_ref);
 
 	// Debug
 	void create_test_mesh();
@@ -58,6 +62,7 @@ public:
 	void submit_primitive(Primitive* prim);
 	void submit_light(Light* light);
 	void resize(int width, int height);
+	void connectWorld(World* world);
 
 	// Public Renderer flags (to hook from GUI) 
 	struct
@@ -91,6 +96,9 @@ private:
 
 	GLFWwindow* ogl_wincontext; 
 	bool is_init; 
+
+	// ECS
+	World* world;
 };
 
 }
