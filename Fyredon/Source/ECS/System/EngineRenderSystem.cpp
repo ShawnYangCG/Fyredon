@@ -14,10 +14,8 @@ void EngineRenderSystem::tick()
 			mesh_component* meCom = (mesh_component*)entity->getComponentByName("Mesh");
 			transform_component* transf = (transform_component*)entity->getComponentByName("Transform");
 			if (transf->isChanged) {
-				free(meCom->mesh_render);
 				Fyredon::Mesh* mesh = (Fyredon::Mesh*)malloc(sizeof(Fyredon::Mesh));
 				memcpy((void*)mesh, (void*)meCom->mesh, sizeof(Fyredon::Mesh));
-				meCom->mesh_render = mesh;
 				float TranslationX, TranslationY, TranslationZ;
 				float ScaleX, ScaleY, ScaleZ;
 				float RotationX, RotationY, RotationZ;
@@ -35,8 +33,9 @@ void EngineRenderSystem::tick()
 				ScaleX = transf->matrixScale[0];
 				ScaleY = transf->matrixScale[1];
 				ScaleZ = transf->matrixScale[2];
-				mesh->scale(glm::vec3(ScaleX, ScaleY, ScaleZ));	
-				renderer->submit_primitive(meCom->mesh_render);
+				mesh->scale(glm::vec3(ScaleX, ScaleY, ScaleZ));
+				memcpy((void*)meCom->mesh_render, (void*)mesh, sizeof(Fyredon::Mesh));
+				free(mesh);
 			}
 			
 			/*

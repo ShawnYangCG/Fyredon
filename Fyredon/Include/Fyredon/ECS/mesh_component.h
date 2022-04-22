@@ -1,6 +1,7 @@
 #pragma once
 #include "Fyredon/ECS/Component.h"
 #include "Fyredon/Render/Mesh.h"
+#include "Fyredon/Render/Renderer.h"
 // 1.
 // create your own component by inherit Component class
 class mesh_component : public Component

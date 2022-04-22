@@ -151,7 +151,6 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	GL_ERROR();
 
 	framebuffer->bind(); // Not remaining bound for some reason ...
-	std::cout << prims.size() << std::endl;
 	if (prims.size())
 	{
 		for (Primitive *p : prims)
