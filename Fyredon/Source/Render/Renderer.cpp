@@ -86,11 +86,6 @@ void Fyredon::Renderer::resize(int width, int height)
 	this->init(this->ogl_wincontext);
 }
 
-void Fyredon::Renderer::connectWorld(World* world)
-{
-	this->world = world;
-}
-
 // Initalize Render State (abstract these calls later)
 void Fyredon::Renderer::render_prep()
 {
@@ -107,43 +102,6 @@ void Fyredon::Renderer::render_prep()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
-
-void Fyredon::Renderer::render_entity(Camera& cam_ref)
-{
-	for (Entity* entity : this->world->entities) {
-		if (entity->getComponentByName("Mesh")) {
-			mesh_component* meCom = (mesh_component*)entity->getComponentByName("Mesh");
-			Mesh* mesh = (Mesh*)malloc(sizeof(Mesh));
-			memcpy((void*)mesh, (void*)meCom->mesh, sizeof(Mesh));
-			float TranslationX, TranslationY, TranslationZ;
-			float ScaleX, ScaleY, ScaleZ;
-			float RotationX, RotationY, RotationZ;
-			transform_component* transf = (transform_component*)entity->getComponentByName("Transform");
-			TranslationX = transf->matrixTranslation[0];
-			TranslationY = transf->matrixTranslation[1];
-			TranslationZ = transf->matrixTranslation[2];
-			mesh->translate(glm::vec3(TranslationX, TranslationY, TranslationZ));
-
-			RotationX = transf->matrixRotation[0];
-			RotationY = transf->matrixRotation[1];
-			RotationZ = transf->matrixRotation[2];
-			mesh->local_rotate(RotationX, RotationY, RotationZ);
-
-			ScaleX = transf->matrixScale[0];
-			ScaleY = transf->matrixScale[1];
-			ScaleZ = transf->matrixScale[2];
-			mesh->scale(glm::vec3(ScaleX, ScaleY, ScaleZ));
-
-			mesh->shader.setVec("camPos_world", cam_ref.position);
-			mesh->shader.setVec("lightPos_world", *flags.light_pos);
-			mesh->shader.setFloat("lightStr", *flags.light_str);
-	
-			mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
-			mesh->render();
-			free(mesh);
-		}
-	}
 }
 
 // Info : Basic forward rendering pipeline, render to framebuffer.
@@ -193,9 +151,7 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	GL_ERROR();
 
 	framebuffer->bind(); // Not remaining bound for some reason ...
-
-	this->render_entity(cam_ref);
-	/*
+	std::cout << prims.size() << std::endl;
 	if (prims.size())
 	{
 		for (Primitive *p : prims)
@@ -208,7 +164,7 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 			p->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 			p->render();
 		}
-	}*/
+	}
 	GL_ERROR(); 
 
 	// Unbind Framebuffers

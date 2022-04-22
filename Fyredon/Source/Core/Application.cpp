@@ -90,7 +90,6 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 
 	// ======== setup a ECS world ======== 
 	this->ECSworld = new World(this->gui_org);
-	Renderer::get_renderer().connectWorld(this->ECSworld);
 
 	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 
@@ -117,7 +116,9 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	renderer.flags.light_str = &(ren_set->state.light_strength);
 	renderer.flags.test_pos = &(ren_set->state.test_mesh_pos);
 
-	//GameWorld::get_world().create_terrain();
+	// ========== setup system ===============
+	// render system
+	this->renderSys = new EngineRenderSystem(this->ECSworld, &renderer);
 
 }
 
@@ -161,6 +162,7 @@ void Fyredon::EditorApplication::exec()
 	{
 		tick_engine();
 		tick_editor();
+		
 		// If Play ...
 		tick_play();
 	}
@@ -195,6 +197,13 @@ void Fyredon::EditorApplication::tick_engine()
 
 	guiConfig.AppHeight = height;
 	guiConfig.AppWidth = width;
+
+	// submit mesh from world to renderer
+	GUI_RendererSettings* Rset = (GUI_RendererSettings*)gui_org->gui_panels["setting"];
+	// the render prims map haven't finished so use this for testing, need to remove next 2 lines
+	this->renderSys->setCamera(&camera);
+	this->renderSys->setLight(&Rset->state.light_pos, &Rset->state.light_strength);
+	this->renderSys->tick();
 
 	// Tick Renderer
 	Renderer::get_renderer().render(camera);
@@ -245,6 +254,8 @@ void Fyredon::EditorApplication::tick_gui()
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
+
+	// tick system
 }
 
 // Start of Application paint operations (within Tick())

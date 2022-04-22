@@ -14,6 +14,7 @@
 #include "Fyredon/GUI/GUI_PanelOrgnizer.h"
 #include "Fyredon/GUI/GUI_NewProjectWindow.h"
 #include "Fyredon/Action/MenuAction.h"
+#include "Fyredon/ECS/System/EngineRenderSystem.h"
 
 // Extern Includes
 #include "GLEW/glew.h"
@@ -130,6 +131,7 @@ namespace Fyredon {
 		// Game World
 		GameWorld* world;
 		World* ECSworld;
+		EngineRenderSystem* renderSys;
 
 	}; // EditorApp
 

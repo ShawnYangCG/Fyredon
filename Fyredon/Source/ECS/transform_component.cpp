@@ -8,7 +8,35 @@ transform_component::transform_component() {
 
 void transform_component::GUI_struct()
 {
+	this->isChanged = false;
 	ImGui::InputFloat3("Position", this->matrixTranslation);
 	ImGui::InputFloat3("Rotation", this->matrixRotation);
 	ImGui::InputFloat3("Scale", this->matrixScale);
+	checkChanged();
+}
+
+void transform_component::checkChanged()
+{
+	if ((matrixTranslation_check[0] != matrixTranslation[0] ||
+		matrixTranslation_check[1] != matrixTranslation[1] ||
+		matrixTranslation_check[2] != matrixTranslation[2] ||
+		matrixRotation_check[0] != matrixRotation[0] ||
+		matrixRotation_check[1] != matrixRotation[1] ||
+		matrixRotation_check[2] != matrixRotation[2] ||
+		matrixScale_check[0] != matrixScale[0] ||
+		matrixScale_check[1] != matrixScale[1] ||
+		matrixScale_check[2] != matrixScale[2]) 
+		&& this->isChanged == false
+		) {
+		matrixTranslation_check[0] = matrixTranslation[0];
+		matrixTranslation_check[1] = matrixTranslation[1];
+		matrixTranslation_check[2] = matrixTranslation[2];
+		matrixRotation_check[0] = matrixRotation[0];
+		matrixRotation_check[1] = matrixRotation[1];
+		matrixRotation_check[2] = matrixRotation[2];
+		matrixScale_check[0] = matrixScale[0];
+		matrixScale_check[1] = matrixScale[1];
+		matrixScale_check[2] = matrixScale[2];
+		this->isChanged = true;
+	}
 }

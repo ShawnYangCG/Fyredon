@@ -14,6 +14,7 @@ public:
 	// add your own variable here
 	// == variable ==
 	Fyredon::Mesh* mesh;
+	Fyredon::Mesh* mesh_render;
 	// ==============
 
 	// 4.
