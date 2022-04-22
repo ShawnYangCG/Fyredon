@@ -182,11 +182,12 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		axis->render();
 	}
 
+	/*
 	if (*flags.draw_test_prims)
 	{
 		test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		test_mesh->render();
-	}
+	}*/
 
 	// Draw Primtivies
 	GL_ERROR();

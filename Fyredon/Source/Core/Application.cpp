@@ -159,10 +159,10 @@ void Fyredon::EditorApplication::exec()
 	// Edtior Loop (Game loop nested in here)
 	while (!glfwWindowShouldClose(window))
 	{
-		// If Play ...
 		tick_engine();
-
 		tick_editor();
+		// If Play ...
+		tick_play();
 	}
 
 	// Post Exec Shutdown
@@ -202,6 +202,13 @@ void Fyredon::EditorApplication::tick_engine()
 	// Tick state update (if save state requested)
 	if (SaveState::getInstance().update) {
 		SaveState::getInstance().tick(camera.position, camera.yaw, camera.pitch);
+	}
+}
+
+void Fyredon::EditorApplication::tick_play()
+{
+	if (((GUI_Menu*)gui_org->gui_panels["Menu"])->menu_state.play) {
+		std::cout << "play" << std::endl;
 	}
 }
 

@@ -73,6 +73,9 @@ namespace Fyredon {
 		// Engine / Game Tick
 		void tick_engine();
 
+		// play
+		void tick_play();
+
 		// OpenGL Setup
 		void setup_ogl_window_contex();
 		void setup_ogl_loading();
