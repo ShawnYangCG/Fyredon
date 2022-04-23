@@ -68,7 +68,7 @@ Fyredon::EditorApplication::EditorApplication()
 }
 
 // Static Members
-bool Fyredon::EditorApplication::isSizeChange = false; 
+bool Fyredon::EditorApplication::isSizeChange = true; 
 GUIConfig Fyredon::EditorApplication::guiConfig = GUIConfig();
 
 Fyredon::EditorApplication::~EditorApplication()
@@ -119,7 +119,6 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// ========== setup system ===============
 	// render system
 	this->renderSys = new EngineRenderSystem(this->ECSworld, &renderer);
-
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
@@ -134,6 +133,7 @@ std::string Fyredon::EditorApplication::create_new_project()
 				width = GLFWState.width, height = GLFWState.height;
 				newProject->reLocation(width, height);
 			}
+			isSizeChange = false;
 		}
 
 		paint_begin();
@@ -239,7 +239,10 @@ void Fyredon::EditorApplication::tick_gui()
 	ImGui::PushStyleColor(ImGuiCol_TitleBg, IM_COL32(50, 50, 50, 255));
 	ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(40, 40, 40, 255));
 
-	viewport_gui();
+	if (isSizeChange == true) {
+		resize();
+		isSizeChange = false;
+	}
 
 	std::map<std::string, GUI_Panel*>::iterator iter;
 	for (iter = gui_org->gui_panels.begin(); iter != gui_org->gui_panels.end(); iter++) {
@@ -280,34 +283,6 @@ void Fyredon::EditorApplication::paint_end()
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();
-}
-
-// Info : Move this into GUI Class, passing renderer texture. 
-void Fyredon::EditorApplication::viewport_gui()
-{
-	if (isSizeChange == true) {
-		resize();
-		isSizeChange = false;
-	}
-
-	int width = guiConfig.AppWidth - guiConfig.leftBar_width - guiConfig.rightBar_width;
-	int yheight = guiConfig.leftBar_height > guiConfig.rightBar_height ?
-		guiConfig.leftBar_height : guiConfig.rightBar_height;
-	int height = yheight;
-
-	ImGui::SetNextWindowPos(ImVec2(guiConfig.leftBar_width, guiConfig.menuHeight));
-	ImGui::SetNextWindowSize(ImVec2(width, height));
-
-	Fyredon::Texture* tex = Renderer::get_renderer().get_colour_attachment();
-
-	ImGui::Begin("Game Viewport");
-	// Flip V Min. 
-	ImVec2 uv_min = ImVec2(0.0f, 1.0f);
-	ImVec2 uv_max = ImVec2(1.0f, 0.0f);
-	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-	ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f);
-	ImGui::Image(tex->get_imgui_texture(), ImVec2(tex->width, tex->height), uv_min, uv_max, tint_col, border_col);
-	ImGui::End();
 }
 
 // ============= Editor Application OpenGL Setup =============
@@ -355,7 +330,11 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 
 	// ============= Set Context and Viewport =============
 	glfwMakeContextCurrent(window);
-	glViewport(0, 0, width, height);
+	int newWidth = guiConfig.AppWidth - guiConfig.leftBar_width - guiConfig.rightBar_width - guiConfig.xOffset;
+	int yheight = guiConfig.leftBar_height > guiConfig.rightBar_height ?
+		guiConfig.leftBar_height : guiConfig.rightBar_height;
+	int newHeight = yheight - guiConfig.yOffset;
+	glViewport(0, 0, newWidth, newHeight);
 }
 
 // Info : Setup OpenGL function loading via GLEW 
@@ -440,6 +419,9 @@ void Fyredon::EditorApplication::setup_gui()
 
 	// Asset Panel
 	gui_org->gui_panels["Asset Browser"] = new GUI_Asset("Asset Browser", &guiConfig, this->ECSworld);
+
+	// game viewport
+	gui_org->gui_panels["Game Viewport"] = new GUI_Viewport("Game Viewport", &guiConfig);
 
 	// Standins
 	//gui_panels.emplace_back(new GUI_FloatingWidget("Floating Panel"));

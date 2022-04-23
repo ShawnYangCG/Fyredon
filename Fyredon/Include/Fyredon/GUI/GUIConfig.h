@@ -27,7 +27,7 @@ struct GUIConfig{
 	const int rightBar_height_max = 500;
 
 	// render widget offset
-	const int xOffset = 18;
-	const int yOffset = 38;
+	const int xOffset = 20;
+	const int yOffset = 60;
 };
 
