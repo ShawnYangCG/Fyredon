@@ -35,8 +35,8 @@ Fyredon::Framebuffer::Framebuffer(Texture* ColourTexture)
 
 Fyredon::Framebuffer::~Framebuffer()
 {
-	glDeleteFramebuffers(0,  &FBO_ID);
-	glDeleteRenderbuffers(0, &RBO_ID);
+	glDeleteFramebuffers (1,  &FBO_ID);
+	glDeleteRenderbuffers(1,  &RBO_ID);
 }
 
 void Fyredon::Framebuffer::bind() const 

@@ -112,8 +112,6 @@ namespace Fyredon {
 		// GUI
 		GUI_PanelOrgnizer* gui_org;
 
-		//std::map<std::string, GUI_Panel*> gui_panels;
-
 		// Camera 
 		Camera camera;
 		float last_yawoffs, last_pitchoffs, last_zoom;

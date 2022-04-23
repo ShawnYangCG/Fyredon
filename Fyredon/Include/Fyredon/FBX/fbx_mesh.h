@@ -9,14 +9,14 @@ public:
 		std::vector<glm::vec3> v_p;
 		std::vector<glm::vec3> v_n;
 		std::vector<glm::vec2> v_t;
-		std::vector<Fyredon::vert> verts;
+		std::vector<Fyredon::Vert> verts;
 	} fbx_obj_data;
 	struct
 	{
 		std::vector<glm::vec3> v_p;
 		std::vector<glm::vec3> v_n;
 		std::vector<glm::vec2> v_t;
-		std::vector<Fyredon::vert> verts;
+		std::vector<Fyredon::Vert> verts;
 	} fbx_obj_data_backup;
 };
 

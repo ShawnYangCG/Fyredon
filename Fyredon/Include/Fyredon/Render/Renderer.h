@@ -19,7 +19,7 @@
 #include "glm/glm.hpp"
 
 #define RENDER_RES_X 768
-#define RENDER_RES_Y 512
+#define RENDER_RES_Y 504
 
 struct GLFWwindow;
 
@@ -32,7 +32,7 @@ struct GLFWState;
 class Renderer
 {
 public:
-	~Renderer() = default;
+	~Renderer();
 
 	static Renderer& get_renderer();
 	void init(GLFWwindow* ogl_context);
@@ -68,22 +68,22 @@ public:
 		float* light_str; 
 	} flags;
 
-	int width = RENDER_RES_X;
+	int width  = RENDER_RES_X;
 	int height = RENDER_RES_Y;
 
 private:
 	static Renderer renderer; 
 
 	// Draw Lists for Renderer to draw per frame 
+	// Draw Prims
 	std::vector<Primitive*> prims;
-	
+	// Draw Lights
+	std::vector<Light*> lights;
+
 	// Renderers own prims 
 	GroundPlane* ground;
-	Mesh* test_mesh;
-	Primitive* axis;
-
-	// rm me later... need to support multiple lights first. 
-	std::vector<Light*> lights; 
+	Mesh*        test_mesh;
+	Primitive*   axis;
 
 	// Framebuffer
 	Texture* col_tex; 
@@ -91,6 +91,7 @@ private:
 
 	GLFWwindow* ogl_wincontext; 
 	bool is_init; 
+	bool has_testprims; 
 };
 
 }

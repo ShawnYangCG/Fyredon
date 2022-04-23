@@ -61,7 +61,7 @@ void fbx_mesh::load_obj(bool has_tex)
 					// add vert
 					// Create Vertex
 					for (int vertice = 0; vertice < vboMesh.verticesCount; vertice++) {
-						Fyredon::vert vertex;
+						Fyredon::Vert vertex;
 						vertex.pos = fbxData.fbx_obj_data.v_p[vertice];
 						vertex.normal = fbxData.fbx_obj_data.v_n[vertice];
 						vertex.uv = fbxData.fbx_obj_data.v_t[vertice];

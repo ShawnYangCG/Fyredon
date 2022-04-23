@@ -29,14 +29,12 @@ Fyredon::Renderer& Fyredon::Renderer::get_renderer()
 
 Fyredon::Renderer::Renderer()
 {
-	// These will point to GUI Booleans 
+	// These will point to Renderer GUI Booleans 
 	flags.draw_grid       = nullptr;
 	flags.draw_axis       = nullptr;
 	flags.draw_test_prims = nullptr;
 	flags.ren_normals     = nullptr; 
 	flags.ren_wire        = nullptr; 
-
-	//for (std::size_t i = 0; i < (sizeof(flags) / sizeof(bool*)); ++i) {bool* b = ((bool*)&flags) + i; b = nullptr; }
 
 	// Replace with Light Array
 	flags.light_str = nullptr; 
@@ -44,25 +42,41 @@ Fyredon::Renderer::Renderer()
 	flags.test_pos  = nullptr;
 
 	is_init = false; 
+	has_testprims = false; 
 }
 
-// Info : Get OGL Context and do inital setup. 
+Fyredon::Renderer::~Renderer()
+{
+	// Dealloc FB Resources
+	delete col_tex; 
+	delete framebuffer; 
+
+	// Dealloc Test Prims
+	delete ground;
+	delete test_mesh;
+	delete axis; 
+}
+
+// Info : Get OGL Context and do intalization setup with creation of framebuffer to draw to.  
 void Fyredon::Renderer::init(GLFWwindow* ogl_context)
 {
-	// Assume we are on the same thread
+	// Assume we are on the same thread as OGL Context creation
 	ogl_wincontext = ogl_context;
 
-	// Framebuffer Setup (Should not be tied to Window Size in Future)
-	GL_ERROR();
-	//int w, h;
-	//glfwGetWindowSize(ogl_context, &w, &h);
-	col_tex     = new Texture("ColorAttachment", 0, this->width, this->height);
+	// Allocate Texture and Framebuffer
+	if (col_tex)     delete col_tex; 
+	if (framebuffer) delete framebuffer; 
+	col_tex     = new Texture("ColorAttachment", 0, width, height);
 	framebuffer = new Framebuffer(col_tex);
 	GL_ERROR();
 
-	// Test Primitives
-	create_test_prims();
-	create_test_mesh();
+	// Create Test Primitives
+	if (!has_testprims)
+	{
+		create_test_prims();
+		create_test_mesh();
+		has_testprims = true; 
+	}
 	GL_ERROR();
 
 	is_init = true; 
@@ -81,9 +95,9 @@ void Fyredon::Renderer::submit_light(Light* light)
 
 void Fyredon::Renderer::resize(int width, int height)
 {
-	this->width = width;
+	this->width  = width;
 	this->height = height;
-	this->init(this->ogl_wincontext);
+	init(ogl_wincontext);
 }
 
 // Initalize Render State (abstract these calls later)
@@ -193,9 +207,8 @@ void Fyredon::Renderer::get_GLError(const char* file, int32_t line)
 void Fyredon::Renderer::create_test_mesh()
 {
 	test_mesh = new Mesh("test_pig", "..//Assets//Mesh//pighead.obj");
-	test_mesh->load_obj(false);
+	test_mesh->load_obj();
 	test_mesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
-	test_mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
 	test_mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
 	test_mesh->scale(glm::vec3(2.f));
 	test_mesh->mode = Render_Mode::RENDER_MESH;
@@ -210,18 +223,15 @@ void Fyredon::Renderer::create_test_prims()
 	ground->set_tile(2.f);
 
 	// Axis
-	axis = new Primitive("axis");
-	float data[66] =
-	{
-		0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f,
-		1.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f,
-		0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f,
-		0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f,
-		0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-		0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-	};
-	axis->set_data_mesh(data, 6);
-	axis->scale(glm::vec3(1.f));
+	axis = new Primitive("axis", false);
+	std::vector<Vert> verts; 
+	verts.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
+	verts.emplace_back(glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
+	verts.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
+	verts.emplace_back(glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
+	verts.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
+	verts.emplace_back(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
+	axis->set_data_mesh(verts);
 	axis->translate(glm::vec3(0.f, 0.01f, 0.f));
 	axis->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
 	axis->mode = Render_Mode::RENDER_LINES; 

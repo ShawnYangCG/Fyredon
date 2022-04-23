@@ -1,4 +1,8 @@
-// COMP5823M - A2 : Niall Horn - colour.frag
+// Copyright Fyredon. All Rights Reserved.
+/*=============================================================================
+	guides.frag : Guides Geo Fragment Shader : Niall
+=============================================================================*/
+
 #version 400 core 
 
 in vec3 colour;

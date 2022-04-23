@@ -1,4 +1,8 @@
-// COMP5823M - A2 : Niall Horn - ground.vert
+// Copyright Fyredon. All Rights Reserved.
+/*=============================================================================
+	ground.vert : Vertex Shader for Ground Plane Grid : Niall
+=============================================================================*/
+
 #version 400 core 
 
 // Input 

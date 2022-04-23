@@ -7,32 +7,34 @@
 // Implements 
 #include "Fyredon/Render/Primitive.h"
 
+// Project Headers
+#include "Fyredon/Render/Texture.h"
+
 // Std Headers
-#include <iostream>
 #include <cassert>
 
 // Ext Headers 
-// GLEW
 #include "GLEW/glew.h" 
-// GLFW
 #include "GLFW/glfw3.h" 
-// GLM
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#pragma warning( disable : 26495) 
+#pragma warning( disable : 26812) 
 
 // ================================== Primitive Class Implementation ==================================
 
-Fyredon::Primitive::Primitive(const char *Name)
-	: name(Name), vert_count(0), mode(Render_Mode::RENDER_POINTS)
+Fyredon::Primitive::Primitive(const char *Name, bool Indexed)
+	: name(Name), indexed(Indexed), vert_count(0), mode(Render_Mode::RENDER_MESH)
 {
-	flags.buffers_set  = 0;
-	flags.camTrs_set   = 0;
-	flags.data_set     = 0; 
-	flags.shader_set   = 0;
+	flags.buffers_set   = 0;
+	flags.vert_data_set = 0; 
+	flags.inds_data_set = 0;
+	flags.shader_set    = 0;
+	flags.camera_set    = 0;
+	flags.texture_set   = 0;
 
-	// Init World to ident
-	model = glm::mat4(1);
+	model = glm::mat4(1.f);
 }
 
 Fyredon::Primitive::~Primitive()
@@ -40,7 +42,12 @@ Fyredon::Primitive::~Primitive()
 	if (!flags.buffers_set) return; 
 	if (VAO) glDeleteVertexArrays(1, &VAO);
 	if (VBO) glDeleteBuffers(1, &VBO);
+	if (EBO) glDeleteBuffers(1, &EBO);
+
+	if (tex) delete tex;
 }
+
+// ============= Rendering =============
 
 void Fyredon::Primitive::render()
 {
@@ -54,85 +61,143 @@ void Fyredon::Primitive::render()
 	// Bind Primitive State
 	shader.use();
 
+	// Activate and Bind Texture
+	if (use_tex)
+	{
+		tex->activate();
+		tex->bind();
+	}
+
 	// Update Modfied Uniforms
 	shader.setMat4("model", model);
 
 	// Render in set mode
 	glBindVertexArray(VAO);
-	switch (mode)
+	if (indexed)  // ---- Indexed Based Drawing of Data
 	{
-		case (RENDER_POINTS) :
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		switch (mode)
 		{
-			//glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-			//glDrawArrays(GL_TRIANGLES, 0, vert_count);
-			glDrawArrays(GL_POINTS, 0, vert_count);
-			break;
+			case (RENDER_POINTS):
+			{
+				if (wireframe) {
+					glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+					glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
+					glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES); // Restore state
+					break; 
+				}
+
+				glDrawElements(GL_POINTS, index_count, GL_UNSIGNED_INT, 0);
+				break;
+			}
+			case (RENDER_LINES):
+			{
+				if (wireframe) {
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
+					glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
+					glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
+					break;
+				}
+
+				glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
+				break;
+			}
+			case (RENDER_MESH):
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
+				break;
+			}
 		}
-		case (RENDER_LINES) :
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+	else  // ---- TriSoup Based Drawing of Data
+	{
+		switch (mode)
 		{
-			glDrawArrays(GL_LINES, 0, vert_count);
-			break;
-		}
-		case (RENDER_MESH) :
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glDrawArrays(GL_TRIANGLES, 0, vert_count);
-			break;
+			case (RENDER_POINTS):
+			{
+				if (wireframe) {
+					glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+					glDrawArrays(GL_TRIANGLES, 0, vert_count);
+					glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
+					break;
+				}
+				glDrawArrays(GL_POINTS, 0, vert_count);
+				break;
+			}
+			case (RENDER_LINES):
+			{
+				if (wireframe) {
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
+					glDrawArrays(GL_TRIANGLES, 0, vert_count);
+					glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
+				}
+				glDrawArrays(GL_LINES, 0, vert_count);
+				break;
+			}
+			case (RENDER_MESH):
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				glDrawArrays(GL_TRIANGLES, 0, vert_count);
+				break;
+			}
 		}
 	}
 
 	// Clear State
 	glUseProgram(0);
 	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-// ======= Info : Mesh Data  =======
-// Mesh Data Assumptions 11 * 4 byte floats. 
-// Stride :    0         3         6       9
-// Data   : (x,y,z) | (x,y,z) | (r,g,b) | (u,v)
-// ================================
+// ===================== Mesh Data Setters =====================
+// 
+/* ====== = Info : Mesh Data  =======
+// Mesh Data Assumptions 12 * 4 byte floats. 
+// Stride :  0         3         6         9
+// Data   : (x,y,z) | (x,y,z) | (r,g,b) | (u,v,w) */
 
-void Fyredon::Primitive::set_data_mesh(const std::vector<vert> &data)
+void Fyredon::Primitive::set_data_mesh(const std::vector<Vert> &data)
 {
-	// Copy Mesh Data
-	vert_data.clear();
+	// Copy/Replace Vertex Mesh Data
+	vert_data = data;
 	vert_count = data.size();
 
 	// Serailize into float array
+	std::vector<float> serial_data; 
 	for (std::size_t v = 0; v < vert_count; ++v)
 	{
-		const vert &vert = data[v];
+		const Vert &vert = data[v];
 		// Position 
-		vert_data.push_back(vert.pos.x), vert_data.push_back(vert.pos.y), vert_data.push_back(vert.pos.z);
+		serial_data.emplace_back(vert.pos.x), serial_data.emplace_back(vert.pos.y), serial_data.emplace_back(vert.pos.z);
 		// Normal
-		vert_data.push_back(vert.normal.x), vert_data.push_back(vert.normal.y), vert_data.push_back(vert.normal.z);
+		serial_data.emplace_back(vert.normal.x), serial_data.emplace_back(vert.normal.y), serial_data.emplace_back(vert.normal.z);
 		// Colour
-		vert_data.push_back(vert.col.r), vert_data.push_back(vert.col.g), vert_data.push_back(vert.col.b);
+		serial_data.emplace_back(vert.col.r), serial_data.emplace_back(vert.col.g), serial_data.emplace_back(vert.col.b);
 		// UV
-		vert_data.push_back(vert.uv.x),  vert_data.push_back(vert.uv.y);
+		serial_data.emplace_back(vert.uv.x), serial_data.emplace_back(vert.uv.y), serial_data.emplace_back(vert.uv.z);
 	}
-
-	flags.data_set = 1;
+	flags.vert_data_set = 1;
 
 	// Setup Buffers
-	create_buffers();
+	create_vertex_buffers(serial_data);
 }
-void Fyredon::Primitive::set_data_mesh(const float *data, std::size_t vert_n)
+
+void Fyredon::Primitive::set_data_indices(const std::vector<GLuint>& data)
 {
-	flags.data_set = 0; 
-	// Copy Mesh Data
-	vert_data.clear();
-	vert_data.resize(vert_n * 11);
-	vert_count = vert_n;
-	std::memcpy(vert_data.data(), data, (vert_n * 11 * sizeof(float)));
+	inds_data = data;
+	index_count = data.size();
 
-	flags.data_set = 1; 
+	flags.inds_data_set = 1;
 
-	// Setup Buffers
-	create_buffers();
+	// Setup Index Buffer
+	create_index_buffer();
 }
 
-void Fyredon::Primitive::create_buffers()
+// ===================== Buffer Creation =====================
+
+void Fyredon::Primitive::create_vertex_buffers(const std::vector<float> &serial_verts)
 {
 	// Delete previous resources 
 	if (VAO) glDeleteVertexArrays(1, &VAO);
@@ -145,20 +210,20 @@ void Fyredon::Primitive::create_buffers()
 	// Fill with mesh data (Assumes Mesh is in correct layout within mesh_data float array)
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, (vert_count * 11 * sizeof(float)), vert_data.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, (vert_count * 12 * sizeof(float)), serial_verts.data(), GL_STATIC_DRAW);
 
 	// Vertex Attribute 
 	// Position (0)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), reinterpret_cast<void*>(0));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(0);
 	// Normals (1)
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), reinterpret_cast<void*>(sizeof(float) * 3));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), reinterpret_cast<void*>(sizeof(float) * 3));
 	glEnableVertexAttribArray(1);
 	// Colours (2)
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), reinterpret_cast<void*>(sizeof(float) * 6));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), reinterpret_cast<void*>(sizeof(float) * 6));
 	glEnableVertexAttribArray(2);
 	// UVs (3)
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), reinterpret_cast<void*>(sizeof(float) * 9));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), reinterpret_cast<void*>(sizeof(float) * 9));
 	glEnableVertexAttribArray(3);
 
 	// Clear bound state
@@ -168,48 +233,70 @@ void Fyredon::Primitive::create_buffers()
 	flags.buffers_set = 1;
 }
 
-// These functions could be optimized to only update delta attribute regions of the buffer, layout would need to change.  
-
-// Only sets position of vertices (allows for updating positions per tick)
-void Fyredon::Primitive::update_data_position(const std::vector<glm::vec3> &posData)
+void Fyredon::Primitive::create_index_buffer()
 {
-	for (std::size_t v = 0; v < vert_count; ++v)
-	{
-		std::size_t i = v * 11; // Vert Index, Position. 
-		vert_data[i++] = posData[v].x;
-		vert_data[i++] = posData[v].y;
-		vert_data[i++] = posData[v].z;
+	if (!indexed) {
+		std::cerr << "Trying to create index buffer on triangle soup primitive\n";
+		return; 
 	}
 
-	// Refill Buffer
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, (vert_count * 11 * sizeof(float)), vert_data.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	if (index_count == 0 || inds_data.size() == 0) {
+		std::cerr << "No Indices Provided\n";
+		return;
+	}
+
+	// Delete previous resources 
+	if (EBO) glDeleteBuffers(1, &EBO);
+
+	// Gen EBO
+	glGenBuffers(1, &EBO);
+
+	// Fill Index Buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_count * sizeof(GLuint), inds_data.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-// Only sets colour of vertcies (allows for updating colours per tick)
-void Fyredon::Primitive::update_data_colour(const std::vector<glm::vec3> &colData)
+// ===================== Mesh Data Update =====================
+// Assumes Data has been set and buffers created.
+
+// Info : Only sets position of vertices (allows for updating positions per tick)
+void Fyredon::Primitive::update_data_position(const std::vector<glm::vec3>& pos_data)
 {
+	assert(vert_count == pos_data.size() == vert_data.size());
+	assert(flags.vert_data_set && flags.buffers_set);
+
 	for (std::size_t v = 0; v < vert_count; ++v)
 	{
-		std::size_t i = 6 + v * 11; // Vert Index, Colour. 
-		vert_data[i++] = colData[v].r;
-		vert_data[i++] = colData[v].g;
-		vert_data[i++] = colData[v].b;
+		vert_data[v].pos = pos_data[v];
 	}
 
-	// Refill Buffer
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, (vert_count * 11 * sizeof(float)), vert_data.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// Kinda slow, but saves storing multiple data arrays in memory
+	set_data_mesh(vert_data);
+}
+
+// Info : Only sets colour of vertcies (allows for updating colours per tick)
+void Fyredon::Primitive::update_data_colour(const std::vector<glm::vec3> &col_data)
+{
+	assert(vert_count == col_data.size() == vert_data.size());
+	assert(flags.vert_data_set && flags.buffers_set);
+
+	for (std::size_t v = 0; v < vert_count; ++v)
+	{
+		vert_data[v].col = col_data[v];
+	}
+	set_data_mesh(vert_data);
 }
 
 void Fyredon::Primitive::set_colour(const glm::vec3 &col)
 {
+	assert(flags.vert_data_set && flags.buffers_set);
+
 	std::vector<glm::vec3> data(vert_count, col);
 	update_data_colour(data);
 }
 
+// Info : Only support shader program using Vertex and Fragment pipeline currently
 void Fyredon::Primitive::set_shader(const char *vert_path, const char *frag_path)
 {
 	// Create Shader
@@ -224,21 +311,24 @@ void Fyredon::Primitive::set_shader(const char *vert_path, const char *frag_path
 	if (shader.valid_state) flags.shader_set = 1; 
 }
 
+// Info : Forward Transforms to shader uniforms
 void Fyredon::Primitive::set_cameraTransform(const glm::mat4x4 &view, const glm::mat4x4 &persp)
 {
 	if (!flags.shader_set) return; 
 	shader.setMat4("view", view);
 	shader.setMat4("proj", persp);
-	flags.camTrs_set = 1;
+	flags.camera_set = 1;
 }
 
 // Flags that need to be set for rendering to be valid
 bool Fyredon::Primitive::check_state() const
 {
-	return flags.buffers_set & flags.camTrs_set & flags.data_set & flags.shader_set;
+	if (indexed) return flags.buffers_set & flags.camera_set & flags.vert_data_set & flags.inds_data_set & flags.shader_set;
+	return flags.buffers_set & flags.camera_set & flags.vert_data_set & flags.shader_set;
 }
 
-// Model Matrix Transformations 
+// ===================== Model Matrix Transformations =====================
+
 void Fyredon::Primitive::translate(const glm::vec3 &offs)
 {
 	model = glm::translate(model, offs);
@@ -261,21 +351,34 @@ void Fyredon::Primitive::scale(const glm::vec3 &scale)
 	model = glm::scale(model, scale);
 }
 
-// Debug
+// ===================== Texturing =====================
+
+void Fyredon::Primitive::load_texture(const char* filepath, GLuint unit)
+{
+	std::string tex_name = name + "_texture";
+	tex = new TextureImage(filepath, tex_name.c_str(), unit, true);
+	tex->load();
+
+	if (tex->valid_state) flags.texture_set = 1; else return;
+	shader.setInt("tex", unit);
+}
+
+// ===================== Debug Code =====================
 void Fyredon::Primitive::debug() const
 {
 	// Check for correct mesh_data size to vertex count with attributes. (11 * sizeof(float) per vert).
 	assert((vert_data.size() * sizeof(float)) == (vert_count * sizeof(float) * 11));
 
 	std::cout << "======== DEBUG::Camera::Primitive_" << name << "::Vertex_Data::BEGIN ========\n";
-	for (std::size_t v = 0; v < vert_count; ++v)
+	std::size_t i = 0; 
+	for (const Vert& vert : vert_data)
 	{
-		std::size_t i = v * 11;
-		std::cout << "Vertex_" << v << "\n"
-			<< "Pos =  [" << vert_data[i++] << "," << vert_data[i++] << "," << vert_data[i++] << "]\n"
-			<< "Norm = [" << vert_data[i++] << "," << vert_data[i++] << "," << vert_data[i++] << "]\n"
-			<< "Col =  [" << vert_data[i++] << "," << vert_data[i++] << "," << vert_data[i++] << "]\n"
-			<< "Tex =  [" << vert_data[i++] << "," << vert_data[i++] << "\n";
+		std::cout << "Vertex_" << i << "\n"
+			<< "Pos =  [" << vert.pos.x    << ", " << vert.pos.y    << ","  << vert.pos.z    << "]\n"
+			<< "Norm = [" << vert.normal.x << ", " << vert.normal.y << ","  << vert.normal.z << "]\n"
+			<< "Col =  [" << vert.col.x    << ", " << vert.col.y    << ","  << vert.col.z    << "]\n"
+			<< "Tex =  [" << vert.uv.x     << ", " << vert.uv.y     << ", " << vert.uv.z     << "\n";
+		i++;
 	}
 	std::cout << "======== DEBUG::Camera::Primitive_" << name << "::Vertex_Data::END ========\n";
 }

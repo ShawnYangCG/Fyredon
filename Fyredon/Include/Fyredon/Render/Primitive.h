@@ -15,11 +15,22 @@
 // Project Headers
 #include "Fyredon/Render/Shader.h"
 
-// Info : Base Primitive object for rendering within the viewer app. 
-namespace Fyredon
-{
+/* Info : Base Primitive object for rendering within the viewer app.
+*  Supports both indexed and non-indexed (Tri-Soup) meshes.
+*/ 
+	
+namespace Fyredon {
 
-struct vert;
+class TextureImage;
+
+// 48 Byte (16 Byte Aligned) Vertex 
+struct Vert
+{
+	glm::vec3 pos;
+	glm::vec3 normal;
+	glm::vec3 col;
+	glm::vec3 uv;
+};
 
 enum Render_Mode
 {
@@ -31,71 +42,76 @@ enum Render_Mode
 class Primitive
 {
 public:
-	Primitive() = delete; 
-	Primitive(const char *Name);
+	Primitive(const char *Name, bool Indexed);
+	Primitive() = delete;
 	virtual ~Primitive();
 
 	// Virtual Methods 
 	virtual void render();
+
+	virtual void create_vertex_buffers(const std::vector<float>& serial_verts);
+
+	virtual void create_index_buffer();
+
 	virtual void debug()       const;
+
 	virtual bool check_state() const;
-	virtual void create_buffers();
 
 	// Setters
-	void set_data_mesh(const std::vector<vert> &data);
-	void set_data_mesh(const float *data, std::size_t vert_n);
+	void set_data_mesh(const std::vector<Vert> &data);
 
-	void update_data_position(const std::vector<glm::vec3> &posData);
-	void update_data_colour(const std::vector<glm::vec3> &colData);
+	void set_data_indices(const std::vector<GLuint>& indices);
 
-	void set_colour(const glm::vec3 &col);
+	void set_colour(const glm::vec3& col);
 
-	void set_cameraTransform(const glm::mat4x4 &view, const glm::mat4x4 &persp);
+	void set_cameraTransform(const glm::mat4x4& view, const glm::mat4x4& persp);
 
-	void set_shader(const char *vert_path, const char *frag_path);
+	void set_shader(const char* vert_path, const char* frag_path);
+
+	// Update single vertex attribute only
+	void update_data_position(const std::vector<glm::vec3> &pos_data);
+
+	void update_data_colour  (const std::vector<glm::vec3> &col_data);
+
+	// Primitive now supports textures
+	void load_texture(const char* filepath, GLuint unit = 0);
 
 	// Model Transforms
-	void scale(const glm::vec3 &scale);
-	void translate(const glm::vec3 &offs);
-	void rotate(float d_ang, const glm::vec3 &axis);
+	void scale       (const glm::vec3 &scale);
+	void translate   (const glm::vec3 &offs);
+	void rotate      (float d_ang, const glm::vec3 &axis);
 	void local_rotate(float x_ang, float y_ang, float z_ang);
 
 public:
-	// Intrinsics
-	std::string name;
-	glm::mat4 model; 
 
-	// Shader
-	Shader shader; 
-	glm::mat4x4 s_view, s_persp; 
+	// ------- Vertex Data -------
+	std::vector<Vert>   vert_data; 
+	std::vector<GLuint> inds_data;
+	std::size_t vert_count, index_count;
 
-	// Data
-	std::vector<float> vert_data; 
-	std::size_t vert_count;
+	// ------- GL Resources -------
+	GLuint VBO, VAO, EBO; 
+	glm::mat4 model;
+	Shader shader;
 
-	// GL Resources
-	GLuint VBO, VAO; 
-
-	// State
+	// ------- State -------
 	Render_Mode mode;
+	bool indexed, wireframe;
 	// Required state for rendering
 	struct
 	{
-		uint8_t data_set : 1;
-		uint8_t buffers_set : 1;
-		uint8_t shader_set : 1;
-		uint8_t camTrs_set : 1;
+		uint8_t vert_data_set : 1;
+		uint8_t inds_data_set : 1;
+		uint8_t buffers_set   : 1;
+		uint8_t shader_set    : 1;
+		uint8_t camera_set    : 1;
+		uint8_t texture_set   : 1;
 	} flags;
-};
+	// Texture State
+	bool use_tex;
+	TextureImage* tex;
 
-
-// ==== Struct for Vertex Data ====
-struct vert
-{
-	glm::vec3 pos;
-	glm::vec3 normal;
-	glm::vec3 col;
-	glm::vec2 uv;
+	std::string name;
 };
 
 }

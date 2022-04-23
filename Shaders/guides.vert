@@ -1,4 +1,8 @@
-// COMP5823M - A2 : Niall Horn - basic.vert
+// Copyright Fyredon. All Rights Reserved.
+/*=============================================================================
+	guides.vert : Guides Geo Vertex Shader : Niall
+=============================================================================*/
+
 #version 400 core 
 
 // Input 

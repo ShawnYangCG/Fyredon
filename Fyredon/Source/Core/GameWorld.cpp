@@ -38,8 +38,7 @@ void Fyredon::GameWorld::tick(float delta_time)
 // 1. Allocate to internal array. 
 // 2. Define mapping for named access.
 // 3. Submit pointer to Renderer (draw list). 
-
-// ToDo : also pass xform 
+// ToDo : also pass per prim xform + render commands
 
 // Info : Handles creation of meshes, this format should be extended for creation of other game entitiy/components.
 void Fyredon::GameWorld::create_mesh(const char* name, const char* file_path)
@@ -132,7 +131,6 @@ void Fyredon::GameWorld::create_terrain() {
 	terrain_generator->read_height_map("Heightmap.png");
 	terrain_generator->generate_mesh(257*2);
 	terrain_generator->TerrainMesh.use_tex = false;
-	terrain_generator->TerrainMesh.create_buffers();
 	terrain_generator->TerrainMesh.set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	terrain_generator->TerrainMesh.set_colour(glm::vec3(1.f, 0.f, 0.f));
 	terrain_generator->TerrainMesh.translate(glm::vec3(0.f, 0.f, 0.f));

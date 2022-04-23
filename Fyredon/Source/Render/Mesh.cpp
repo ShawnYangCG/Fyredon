@@ -7,33 +7,25 @@
 // Implements
 #include "Fyredon/Render/Mesh.h"
 
+// Extern Headers
 #include "GLEW/glew.h"
 
 // Std Headers
 #include <fstream>
 #include <sstream>
 
+#pragma warning( disable : 26812) 
+
 // =================== Mesh Implementation ===================
 
-Fyredon::Mesh::Mesh(const char *name, const char *filePath)
-	: Primitive(name), file_path(filePath)
-{
-	use_tex = false; 
-	tex = nullptr;
-	has_tex = false;
-	wireframe = false; 
-	mode = Render_Mode::RENDER_MESH;
-}
+Fyredon::Mesh::Mesh(const char* name, const char* filePath)
+	: Primitive(name, false), file_path(filePath) {}
 
-Fyredon::Mesh::~Mesh()
+// Info : Load Obj, assuming triangle based meshes with indices. 
+void Fyredon::Mesh::load_obj()
 {
-	if (tex) delete tex; 
-}
+	has_texcoords = false; 
 
-// For now mesh is treated as triangle soup. No reuse of shared vertices. 
-// Very basic, assumes obj file has tris. 
-void Fyredon::Mesh::load_obj(bool has_tex)
-{
 	// Check file exists
 	std::ifstream in(file_path);
 	if (!in.is_open())
@@ -42,9 +34,7 @@ void Fyredon::Mesh::load_obj(bool has_tex)
 		return;
 	}
 
-	// Debug Stream
 	std::ostringstream dbg; 
-
 	std::string line;
 	while (std::getline(in, line))
 	{
@@ -75,25 +65,22 @@ void Fyredon::Mesh::load_obj(bool has_tex)
 			ss >> yy;
 			ss >> zz;
 			obj_data.v_n.emplace_back(xx, yy, zz);
-			dbg << "vn_" << obj_data.v_p.size() << " = " << xx << "," << yy << "," << zz << "\n";
+			dbg << "vn_" << obj_data.v_n.size() << " = " << xx << "," << yy << "," << zz << "\n";
 		}
 		// Vertex Texture
-		if (has_tex)
+		if (str == "vt")
 		{
-			// Vertex Texture Coord 
-			if (str == "vt")
-			{
-				float uu, vv; 
-				ss >> uu;
-				ss >> vv;
-				obj_data.v_t.emplace_back(uu, vv);
-				dbg << "vt_" << obj_data.v_p.size() << " = " << uu << "," << vv << "\n";
-			}
+			has_texcoords = true; 
+			float uu, vv;
+			ss >> uu;
+			ss >> vv;
+			obj_data.v_t.emplace_back(uu, vv, 0.f);
+			dbg << "vt_" << obj_data.v_t.size() << " = " << uu << "," << vv << "\n";
 		}
 		// Faces / Indices
 		if (str == "f")
 		{
-			if (has_tex) // Get each face vertex (w/ texture coords)
+			if (use_tex) // Get each face vertex (w/ texture coords)
 			{
 				for (int i = 0; i < 3; ++i)
 				{
@@ -111,7 +98,7 @@ void Fyredon::Mesh::load_obj(bool has_tex)
 					ss >> i_vn; // 'v_n' index
 
 					// Create Vertex
-					vert vertex;
+					Vert vertex;
 					// neg 1 offset for obj indices '1' based. 
 					vertex.pos    = obj_data.v_p[i_vp - 1];
 					vertex.normal = obj_data.v_n[i_vn - 1];
@@ -119,7 +106,7 @@ void Fyredon::Mesh::load_obj(bool has_tex)
 					vertex.col    = glm::vec3(1.f, 1.f, 1.f);
 
 					// Append to vert array
-					obj_data.verts.push_back(std::move(vertex));
+					vert_data.push_back(vertex);
 				}
 			}
 			else // Get each face vertex (wo/ texture coords)
@@ -137,15 +124,15 @@ void Fyredon::Mesh::load_obj(bool has_tex)
 					ss >> i_vn; // 'v_n' index
 
 					// Create Vertex
-					vert vertex;
+					Vert vertex;
 					// neg 1 offset for obj indices '1' based. 
 					vertex.pos    = obj_data.v_p[i_vp - 1];
 					vertex.normal = obj_data.v_n[i_vn - 1];
-					vertex.uv     = glm::vec2(0.f, 0.f);
+					vertex.uv     = glm::vec3(0.f, 0.f, 0.f);
 					vertex.col    = glm::vec3(1.f, 1.f, 1.f);
 
 					// Append to vert array
-					obj_data.verts.push_back(std::move(vertex));
+					vert_data.push_back(vertex);
 				}
 			}
 		}
@@ -154,10 +141,10 @@ void Fyredon::Mesh::load_obj(bool has_tex)
 	// Close 
 	in.close();
 
-	dbg << "Vert Count = " << obj_data.verts.size() << "\n";
+	dbg << "Vert Count = " << vert_data.size() << "\n";
 
 	// Pass verts to primitive::mesh_data
-	set_data_mesh(obj_data.verts);
+	set_data_mesh(vert_data);
 
 	// Check Primitive is correct.
 	//debug();
@@ -167,76 +154,3 @@ void Fyredon::Mesh::load_obj(bool has_tex)
 #endif
 }
 
-void Fyredon::Mesh::load_texture(const char *filepath, GLuint unit)
-{
-	std::string tex_name = name + " texture";
-	tex = new TextureImage(filepath, tex_name.c_str(), unit, true);
-	tex->load();
-
-	if (tex->valid_state) has_tex = true; else return; 
-	shader.setInt("tex", unit);
-	use_tex = true; 
-}
-
-// Add Texture requirement to check_state if used. 
-bool Fyredon::Mesh::check_state() const
-{
-	if (use_tex)
-	{
-		return Primitive::check_state() & has_tex;
-	}
-	return Primitive::check_state();
-}
-
-// Override Primitive::Render()
-void Fyredon::Mesh::render()
-{
-	// Check for state to render
-	if (!check_state())
-	{
-		std::cerr << "ERROR::Mesh::" << name << "::Render called, with incorrectly set state." << std::endl;
-		std::terminate();
-	}
-
-	// Bind Primitive State
-	shader.use();
-
-	// Update Modfied Uniforms
-	shader.setMat4("model", model);
-
-	// Activate and Bind Texture
-	if (use_tex)
-	{
-		tex->activate();
-		tex->bind();
-	}
-
-	// Draw 
-	glBindVertexArray(VAO);
-	switch (mode)
-	{
-		case (RENDER_POINTS):
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-			glDrawArrays(GL_TRIANGLES, 0, vert_count);
-			break;
-		}
-		case (RENDER_LINES):
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glDrawArrays(GL_TRIANGLES, 0, vert_count);
-			break;
-		}
-		case (RENDER_MESH):
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glDrawArrays(GL_TRIANGLES, 0, vert_count);
-			break;
-		}
-	}
-
-	// Clear State
-	glUseProgram(0);
-	glBindVertexArray(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-}

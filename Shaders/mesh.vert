@@ -1,4 +1,8 @@
-// COMP5823M - A2 : Niall Horn - mesh.vert
+// Copyright Fyredon. All Rights Reserved.
+/*=============================================================================
+	mesh.vert : Mesh Vertex Shader : Niall
+=============================================================================*/
+
 #version 400 core 
 
 // Input 

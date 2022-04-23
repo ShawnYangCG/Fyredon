@@ -21,7 +21,6 @@ Fyredon::GUI_Asset::GUI_Asset(const char* Title, GUIConfig* guiConfig, World* wo
 {
 	// Default Path
 	cur_path = std::filesystem::current_path().string();
-	prev_path = cur_path;
 	
 	// Icon Setup
 	icon_dir = new TextureImage("..//Assets//Images//Icons//open-folder.png", "dir_icon", 0, false);
@@ -71,27 +70,25 @@ void Fyredon::GUI_Asset::draw()
 
 		if (total > 0)
 		{
-			ImGui::Columns(12, 0, false);
+			ImGui::Columns(12, 0, false); // Begin Column Layout
 
-			/*
-			// Parent Dir		
+			// Parent Dir
+			//ImGui::PushID(1);
 			if (ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE)))
 			{
-				cur_path = prev_path;
 				path_changed = true;
+				cur_path = std::filesystem::path(cur_path).parent_path().string();
 			}
 			ImGui::Text("..");
-			ImGui::NextColumn();*/
+			ImGui::NextColumn();
 
 			// Dirs
-			for (std::size_t i = 0; i < dirs.size(); ++i)
+			for (std::filesystem::directory_entry& dir : dirs)
 			{
-				std::filesystem::directory_entry &dir = dirs[i];
-
 				// Dir Button
-				if (ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE))) 
+				if (ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE)))
 				{
-					path_changed = true; 
+					path_changed = true;
 					cur_path = dir.path().string();
 				}
 				// Dir Label
@@ -99,13 +96,11 @@ void Fyredon::GUI_Asset::draw()
 				ImGui::Text(dir.path().filename().string().c_str());
 				ImGui::PopStyleColor();
 				ImGui::NextColumn();
-			} 
+			}
 
 			// Files
-			for (std::size_t i = 0; i < files.size(); ++i)
+			for (std::filesystem::directory_entry& file : files)
 			{
-				std::filesystem::directory_entry& file = files[i];
-
 				// File Button
 				if (ImGui::ImageButton(icon_unk_file->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE)))
 				{
@@ -118,13 +113,13 @@ void Fyredon::GUI_Asset::draw()
 				ImGui::PopStyleColor();
 				ImGui::NextColumn();
 			} 
-			ImGui::Columns(1); // Reset Cols
+
+			ImGui::Columns(1); // End Column layout
 		}
 
 		// Dir Changed, re-draw in dir
 		if (path_changed) 
 		{
-			prev_path = cur_path; 
 			path_changed = false; 
 			files_setup();
 			draw();

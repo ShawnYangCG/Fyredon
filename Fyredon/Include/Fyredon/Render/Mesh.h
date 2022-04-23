@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Mesh.h: .obj based mesh : Niall
+	Mesh.h: Wavefront .obj based mesh : Niall
 =============================================================================*/
 #pragma once
 
@@ -17,41 +17,33 @@
 #include "primitive.h"
 #include "texture.h"
 
-// Info : Primitive based class for rendering meshes based on loaded .obj file, along with textures. 
-// Vertex Attribute layout same as Primitive (P(x,y,z), N(x,y,z), C(r,g,b), UV(u,v))
+/* Info : Primitive derived class for rendering meshes based on loaded.obj file.
+* Vertex Attribute layout same as Primitive (P(x,y,z), N(x,y,z), C(r,g,b), UV(u,v,w))
+* This does not use indexing. 
+* Only use this class for OBJ based mesh files, for manual vertex/index specifcation, use Primitive. */
 
 namespace Fyredon
 {
 class Mesh : public Primitive
 {
 public:
-	Mesh() : Primitive("") {}
+	Mesh() : Primitive("", false) {}
 	Mesh(const char *name, const char *filePath);
-	~Mesh();
+	virtual ~Mesh() = default; 
 
-	virtual void render()            override; 
-	virtual bool check_state() const override;
+	void load_obj();
 
-	void load_obj(bool has_tex = false);
-	void load_texture(const char *filepath, GLuint unit = 0);
-
-public:
+private:
 	std::string file_path; 
+	// ToDo: Consider making this data local storage only on loading. 
 	struct
 	{
 		std::vector<glm::vec3> v_p;
 		std::vector<glm::vec3> v_n;
-		std::vector<glm::vec2> v_t; 
-		std::vector<vert> verts;
+		std::vector<glm::vec3> v_t; 
 	} obj_data;
 
-	// State
-	bool has_tex;
-	bool wireframe; 
-
-	// Texture 
-	bool use_tex;
-	TextureImage *tex; 
+	bool has_texcoords;
 };
 }
 
