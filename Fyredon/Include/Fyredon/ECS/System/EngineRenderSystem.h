@@ -2,6 +2,7 @@
 #include "Fyredon/ECS/World.h"
 #include "Fyredon/ECS/Entity.h"
 #include "Fyredon/ECS/mesh_component.h"
+#include "Fyredon/ECS/camera_component.h"
 #include "Fyredon/ECS/transform_component.h"
 #include "Fyredon/Render/Camera.h"
 #include "Fyredon/Render/Renderer.h"

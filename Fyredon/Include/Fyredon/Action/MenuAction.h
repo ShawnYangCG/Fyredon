@@ -3,6 +3,7 @@
 #include "Fyredon/GUI/GUI_Menu.h"
 #include "Fyredon/ECS/World.h"
 #include "Fyredon/ECS/terrain_entity.h"
+#include "Fyredon/ECS/camera_entity.h"
 //#include "Fyredon/ECS/fbx_entity.h"
 
 namespace Fyredon
@@ -17,5 +18,6 @@ namespace Fyredon
 		void createTerrainEntity();
 		void createPigHead();
 		void createDoll();
+		void createCamera();
 	};
 }

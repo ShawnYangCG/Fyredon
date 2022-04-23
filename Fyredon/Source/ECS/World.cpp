@@ -20,6 +20,20 @@ void World::addEntity(Entity* entity)
     }
 }
 
+void World::addCamera(Entity* entity)
+{
+    if (this->cameraList.count(entity->getName()) == 0) {
+        this->cameraList[entity->getName()] = this->cameras.size();
+        this->cameras.push_back(entity);
+    }
+    else {
+        //std::cout << "Error: World already contain entity [" << entity->getName() << "]" << std::endl;
+        entity->setName(entity->getName() + " " + std::to_string(this->cameras.size()));
+        this->cameraList[entity->getName()] = this->cameras.size();
+        this->cameras.push_back(entity);
+    }
+}
+
 void World::init()
 {
     for (int i = 0; i < this->entities.size(); i++) {
@@ -64,4 +78,22 @@ Entity* World::getEntityByName(std::string EntityName)
         return nullptr;
     }
     return this->entities[this->entityList[EntityName]];
+}
+
+Entity* World::getCameraByIndex(int index)
+{
+    if (index < 0 || index >= this->cameras.size()) {
+        std::cout << "Error: the index of getEntityByIndex(int index) out of bounds" << std::endl;
+        return nullptr;
+    }
+    return this->cameras[index];
+}
+
+Entity* World::getCameraByName(std::string CameraName)
+{
+    if (this->cameraList.count(CameraName) == 0) {
+        std::cout << "Error: World do not contain entity [" << CameraName << "]" << std::endl;
+        return nullptr;
+    }
+    return this->cameras[this->cameraList[CameraName]];
 }

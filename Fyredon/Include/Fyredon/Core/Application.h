@@ -16,6 +16,7 @@
 #include "Fyredon/Action/MenuAction.h"
 #include "Fyredon/ECS/System/EngineRenderSystem.h"
 #include "Fyredon/GUI/GUI_Viewport.h"
+#include "Fyredon/ECS/camera_entity.h"
 
 // Extern Includes
 #include "GLEW/glew.h"

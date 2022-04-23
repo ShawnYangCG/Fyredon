@@ -1,10 +1,16 @@
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/ECS/camera_entity.h"
 
-camera_entity::camera_entity(std::string name, glm::vec3 pos, float target_offset, float fov, float ar, bool freelook, float width, float height)
+camera_entity::camera_entity()
 {
-	this->setName(name);
+	this->setName("Camera");
 	this->addTransformComponent();
-	Fyredon::Camera* camera = new Fyredon::Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, width / height, true);
+	this->addComponent(new camera_component(new Fyredon::Camera()));
+}
 
+camera_entity::camera_entity(Fyredon::Camera* camera)
+{
+	this->setName("Camera");
+	this->addTransformComponent();
+	this->addComponent(new camera_component(camera));
 }

@@ -119,6 +119,10 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// ========== setup system ===============
 	// render system
 	this->renderSys = new EngineRenderSystem(this->ECSworld, &renderer);
+
+	// set a default camera
+	camera_entity* camEntity = new camera_entity();
+	this->ECSworld->addCamera(camEntity);
 }
 
 std::string Fyredon::EditorApplication::create_new_project()

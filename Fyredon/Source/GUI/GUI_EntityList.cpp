@@ -57,7 +57,13 @@ void Fyredon::GUI_EntityList::draw()
 	ImGui::Begin(title);
 	{
 		if (!world) { ImGui::End(); return; }
-
+		for (Entity* entity : this->world->cameras) {
+			char label[128];
+			sprintf_s(label, "%s", entity->getName().data());
+			if (ImGui::Selectable(label, this->selectedEntity == entity))
+				this->selectedEntity = entity;
+			printChild(1, entity);
+		}
 		for (Entity* entity : this->world->entities) {
 			char label[128];
 			sprintf_s(label, "%s", entity->getName().data());

@@ -28,6 +28,10 @@ void Fyredon::MenuAction::tick()
 		createDoll();
 		menuPanel->menu_state.createDoll = false;
 	}
+	if (menuPanel->menu_state.createCamera) {
+		createCamera();
+		menuPanel->menu_state.createCamera = false;
+	}
 }
 
 void Fyredon::MenuAction::createTerrainEntity()
@@ -69,4 +73,10 @@ void Fyredon::MenuAction::createDoll()
 	this->world->addEntity(fbxObject1);
 	//this->aniSys->addFbxEntity(fbxObject1);
 	*/
+}
+
+void Fyredon::MenuAction::createCamera()
+{
+	camera_entity* entity = new camera_entity();
+	this->world->addCamera(entity);
 }

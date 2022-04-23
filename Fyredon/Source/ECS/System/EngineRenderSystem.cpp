@@ -9,6 +9,36 @@ EngineRenderSystem::EngineRenderSystem(World* world, Fyredon::Renderer* renderer
 
 void EngineRenderSystem::tick()
 {
+	// render camera
+	for (Entity* entity : this->world->cameras) {
+		camera_component* caCom = (camera_component*)entity->getComponentByName("Camera");
+		transform_component* transf = (transform_component*)entity->getComponentByName("Transform");
+		if (transf->isChanged) {
+			Fyredon::Primitive* mesh = (Fyredon::Primitive*)malloc(sizeof(Fyredon::Primitive));
+			memcpy((void*)mesh, (void*)caCom->outlook, sizeof(Fyredon::Primitive));
+			float TranslationX, TranslationY, TranslationZ;
+			float ScaleX, ScaleY, ScaleZ;
+			float RotationX, RotationY, RotationZ;
+
+			TranslationX = transf->matrixTranslation[0];
+			TranslationY = transf->matrixTranslation[1];
+			TranslationZ = transf->matrixTranslation[2];
+			mesh->translate(glm::vec3(TranslationX, TranslationY, TranslationZ));
+
+			RotationX = transf->matrixRotation[0];
+			RotationY = transf->matrixRotation[1];
+			RotationZ = transf->matrixRotation[2];
+			mesh->local_rotate(RotationX, RotationY, RotationZ);
+
+			ScaleX = transf->matrixScale[0];
+			ScaleY = transf->matrixScale[1];
+			ScaleZ = transf->matrixScale[2];
+			mesh->scale(glm::vec3(ScaleX, ScaleY, ScaleZ));
+			memcpy((void*)caCom->outlook_render, (void*)mesh, sizeof(Fyredon::Primitive));
+			free(mesh);
+		}
+	}
+	// render object
 	for (Entity* entity : this->world->entities) {
 		if (entity->getComponentByName("Mesh")) {
 			mesh_component* meCom = (mesh_component*)entity->getComponentByName("Mesh");
@@ -37,15 +67,6 @@ void EngineRenderSystem::tick()
 				memcpy((void*)meCom->mesh_render, (void*)mesh, sizeof(Fyredon::Mesh));
 				free(mesh);
 			}
-			
-			/*
-			meCom->mesh_render->shader.setVec("camPos_world", camera->position);
-			meCom->mesh_render->shader.setVec("lightPos_world", *light_pos);
-			meCom->mesh_render->shader.setFloat("lightStr", *light_strength);
-			meCom->mesh_render->set_cameraTransform(camera->get_view_matrix(), camera->get_proj_matrix());
-
-			meCom->mesh_render->render();
-			*/
 		}
 	}
 }

@@ -1,8 +1,10 @@
 #pragma once
-#include "Fyredon/ECS/ECS.h"
+#include "Fyredon/ECS/Entity.h"
 // 1.
 // include your own header file
 #include "Fyredon/Render/Camera.h"
+#include "Fyredon/ECS/camera_component.h"
+
 // 2.
 // inherit the entity class
 class camera_entity : public Entity
@@ -13,7 +15,8 @@ public:
 
 	// 4.
 	// rewrite the constructor
-	camera_entity(std::string name, glm::vec3 pos, float target_offset, float fov, float ar, bool freelook, float width, float height);
+	camera_entity();
+	camera_entity(Fyredon::Camera* camera);
 };
 // 5.
 // don't forget to add this header in ECS.h

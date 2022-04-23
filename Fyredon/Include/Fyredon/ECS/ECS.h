@@ -15,6 +15,7 @@
 #include "Fyredon/ECS/mesh_component.h"
 #include "Fyredon/ECS/navigation_component.h"
 #include "Fyredon/ECS/test_move_component.h"
+#include "Fyredon/ECS/camera_component.h"
 
 // system
 #include "Fyredon/ECS/System/AnimationSystem.h"
