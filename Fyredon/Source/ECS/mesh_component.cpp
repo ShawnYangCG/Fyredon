@@ -1,7 +1,7 @@
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/ECS/mesh_component.h"
 
-mesh_component::mesh_component(Fyredon::Primitive* mesh)
+mesh_component::mesh_component(Fyredon::Mesh* mesh)
 {
 	this->componentName = "Mesh";
 	this->mesh = mesh;

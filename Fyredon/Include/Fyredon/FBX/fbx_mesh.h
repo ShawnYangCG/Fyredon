@@ -14,7 +14,7 @@ public:
 	{
 		std::vector<glm::vec3> v_p;
 		std::vector<glm::vec3> v_n;
-		std::vector<glm::vec2> v_t;
+		std::vector<glm::vec3> v_t;
 		std::vector<Fyredon::Vert> verts;
 	};
 	mesh_data fbx_obj_data;

@@ -16,7 +16,7 @@ public:
 	// when you create your own component you need to inherit this class and 
 	// add your own variable here
 	// == variable ==
-	Fyredon::Primitive* mesh;
+	Fyredon::Mesh* mesh;
 	AStarMap* map;
 	std::vector<Pos> walls;
 	float min_width = 0.5;

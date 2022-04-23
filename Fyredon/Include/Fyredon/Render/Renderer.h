@@ -10,9 +10,9 @@
 
 // Project Headers
 #include "Fyredon/Render/Camera.h"
-#include "Fyredon/Render/Primitive.h"
-#include "Fyredon/Render/GroundPlane.h"
 #include "Fyredon/Render/Mesh.h"
+#include "Fyredon/Render/Mesh_OBJ.h"
+#include "Fyredon/Render/GroundPlane.h"
 #include "Fyredon/Core/GameWorld.h"
 
 // Ext Headers
@@ -27,6 +27,7 @@ namespace Fyredon {
 
 class Framebuffer;
 class Light; 
+class Texture; 
 struct GLFWState;
 
 class Renderer
@@ -55,17 +56,17 @@ private:
 
 public:
 	// Exposed to Engine
-	void submit_primitive(Primitive* prim);
+	void submit_primitive(Mesh* prim);
 	void submit_light(Light* light);
 	void resize(int width, int height);
 
 	// Public Renderer flags (to hook from GUI) 
 	struct
 	{
-		bool *draw_grid, *draw_axis, *draw_test_prims;
+		glm::vec3 *light_pos, *test_pos; 
+		bool *draw_grid,   *draw_axis, *draw_test_prims;
 		bool *ren_normals, *ren_wire;
-		glm::vec3* light_pos, *test_pos; 
-		float* light_str; 
+		float *light_str; 
 	} flags;
 
 	int width  = RENDER_RES_X;
@@ -76,14 +77,14 @@ private:
 
 	// Draw Lists for Renderer to draw per frame 
 	// Draw Prims
-	std::vector<Primitive*> prims;
+	std::vector<Mesh*> prims;
 	// Draw Lights
 	std::vector<Light*> lights;
 
 	// Renderers own prims 
 	GroundPlane* ground;
-	Mesh*        test_mesh;
-	Primitive*   axis;
+	Mesh_OBJ*    test_mesh;
+	Mesh*        axis;
 
 	// Framebuffer
 	Texture* col_tex; 

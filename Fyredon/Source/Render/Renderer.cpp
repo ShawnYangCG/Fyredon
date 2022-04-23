@@ -8,6 +8,7 @@
 #include "Fyredon/Render/Renderer.h"
 
 // Project Headers
+#include "Fyredon/Render/Texture.h"
 #include "Fyredon/Render/Framebuffer.h"
 #include "Fyredon/Render/Light.h"
 
@@ -83,7 +84,7 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context)
 }
 
 // Info : Public exposed function to pass primtives to internal draw array of Primitives.
-void Fyredon::Renderer::submit_primitive(Primitive* prim)
+void Fyredon::Renderer::submit_primitive(Mesh* prim)
 {
 	prims.push_back(std::move(prim));
 }
@@ -167,7 +168,7 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 	if (prims.size())
 	{
-		for (Primitive *p : prims)
+		for (Mesh *p : prims)
 		{
 			// Update Uniforms
 			p->shader.setVec("camPos_world",   cam_ref.position);
@@ -206,7 +207,7 @@ void Fyredon::Renderer::get_GLError(const char* file, int32_t line)
 
 void Fyredon::Renderer::create_test_mesh()
 {
-	test_mesh = new Mesh("test_pig", "..//Assets//Mesh//pighead.obj");
+	test_mesh = new Mesh_OBJ("test_pig", "..//Assets//Mesh//pighead.obj");
 	test_mesh->load_obj();
 	test_mesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	test_mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
@@ -223,7 +224,7 @@ void Fyredon::Renderer::create_test_prims()
 	ground->set_tile(2.f);
 
 	// Axis
-	axis = new Primitive("axis", false);
+	axis = new Mesh("axis", false);
 	std::vector<Vert> verts; 
 	verts.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
 	verts.emplace_back(glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));

@@ -5,8 +5,8 @@ NavigationSystem::NavigationSystem(World* world)
 {
 	this->world = world;
 
-	wall = new Fyredon::Mesh("wall", "./wall.obj");
-	wall->load_obj(false);
+	wall = new Fyredon::Mesh_OBJ("wall", "./wall.obj");
+	wall->load_obj();
 	wall->set_shader("../../shaders/mesh4.vert", "../../shaders/mesh4.frag");
 	wall->set_colour(glm::vec3(0.0f, 0.0f, 1.0f));
 	wall->mode = Fyredon::Render_Mode::RENDER_MESH;
