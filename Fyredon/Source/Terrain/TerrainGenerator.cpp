@@ -7,8 +7,7 @@
 
 #include "Fyredon/Terrain/TerrainGenerator.h"
 //#define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"
-#include "Fyredon/Debug/Logger.h"
+
 
 TerrainGenerator::TerrainGenerator(const char* name, const char* filePath){
 	//read_height_map("Heightmap.png");
@@ -19,6 +18,11 @@ TerrainGenerator::~TerrainGenerator() {
 };
 
 void TerrainGenerator::load_obj(bool has_tex) {
+
+}
+
+
+void TerrainGenerator::write_obj(std::string path) {
 
 }
 
@@ -152,12 +156,17 @@ void TerrainGenerator::generate_mesh(int res) {
 	//std::cout << "z res " << image_height/((float)image_height / (float)res) << "\n";
 	//std::cout << "x res " << image_width/((float)image_width / (float)res) << "\n";
 
+	terrain_res = res;
+
 	for (float z = 0; z < image_height; z += ((float) image_height / (float) res)) {
 		for (float x = 0; x < image_width; x += ((float) image_width / (float) res)) {
-			glm::vec3 position = glm::vec3(x/10.0, (triangle_plane(x,z) /500.0 ) , z/10.0);
+			glm::vec3 position = glm::vec3(x/10.0, (triangle_plane(x,z) /400.0 ) , z/10.0);
 			vertices.push_back(position);
 		}
 	}
+	std::cout << vertices.size() << " vert size\n";
+
+	//smooth_normals();
 
 
 	//std::cout << "verts" << " image size" << "\n";
@@ -196,6 +205,15 @@ void TerrainGenerator::generate_mesh(int res) {
 			vertex3.uv = glm::vec2(u_text_1, v_text_1);;
 			vertex3.col = glm::vec3(1.f, 1.f, 1.f);
 
+			
+			Fyredon::vert vertex4;
+			Fyredon::vert vertex5;
+			Fyredon::vert vertex6;
+			Fyredon::vert vertex7;
+			Fyredon::vert vertex8;
+			Fyredon::vert vertex9;
+
+
 			//Set Vector U to(Triangle.p2 minus Triangle.p1)
 			//	Set Vector V to(Triangle.p3 minus Triangle.p1)
 			//	Set Normal.x to(multiply U.y by V.z) minus(multiply U.z by V.y)
@@ -232,9 +250,155 @@ void TerrainGenerator::generate_mesh(int res) {
 	//std::cout << TerrainMesh.obj_data.verts.size() << " size\n";
 	//std::cout << "verts " << vertices.size() << "\n";
 
+	std::filesystem::path file = std::filesystem::current_path() / "..\\Assets\\Images\\Terrain\\grass.jpg";
+	std::string file_as_string = file.string();
+	
+
+	//grass = Fyredon::TextureImage(file_as_string.c_str(), "grass", 1);
+	TerrainMesh.load_texture(file_as_string.c_str(),0);
+	
 	TerrainMesh.set_data_mesh(TerrainMesh.obj_data.verts);
+
 	//std::cout << "set mesh \n";
 }
+
+
+void TerrainGenerator::smooth_normals() {
+	normals.clear();
+
+	// assume terrain is square
+	int sqrt_res = sqrt(terrain_res);
+
+	/// UL	U	UR
+	/// L	M	R
+	/// LL	L	LR
+	int LL = 0;
+	int LR = terrain_res ;
+	int UR = terrain_res * terrain_res - 1; 
+	int UL = UR - terrain_res;
+
+	std::cout << terrain_res << " terrain res \n";
+
+	for (size_t i = 0; i < vertices.size(); i++){
+		//std::cout << i << " ";
+		//lower left
+		if (i == 0) {
+			//std::cout << "LL\n";
+			glm::vec3 A = vertices[i];
+			glm::vec3 B = vertices[i + terrain_res];
+			glm::vec3 C = vertices[i + terrain_res + 1];
+			glm::vec3 D = vertices[i + 1];
+
+			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A));
+			normals.push_back(n);
+		}
+		//lower right
+		else if (i == LR) {
+			//std::cout << "LR\n";
+
+			glm::vec3 A = vertices[i];
+			glm::vec3 B = vertices[i + terrain_res];
+			glm::vec3 C = vertices[i - 1];
+
+			glm::vec3 n = glm::normalize((B - A) + (C - A) );
+			normals.push_back(n);
+		}
+		// upper left
+		else if (i == UL) {
+			//std::cout << "UL\n";
+
+			glm::vec3 A = vertices[i];
+			glm::vec3 B = vertices[i + 1];
+			glm::vec3 C = vertices[i - terrain_res];
+		
+			glm::vec3 n = glm::normalize((B - A) + (C - A));
+			normals.push_back(n);
+		}
+		// upper right
+		else if (i == UR) {
+			//std::cout << "UR\n";
+
+			glm::vec3 A = vertices[i];
+			glm::vec3 B = vertices[i - terrain_res];
+			glm::vec3 C = vertices[i - terrain_res - 1];
+			glm::vec3 D = vertices[i - 1];
+
+			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A));
+			normals.push_back(n);
+		}
+		//lower
+		else if (i > LL && i < LR) {
+			//std::cout << "L\n";
+
+			glm::vec3 A = vertices[i];
+			glm::vec3 B = vertices[i + terrain_res];
+			glm::vec3 C = vertices[i + terrain_res + 1];
+			glm::vec3 D = vertices[i + 1];
+			glm::vec3 E = vertices[i - 1];
+
+			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A) + (E - A));
+			normals.push_back(n);
+		}
+		//left
+		else if (i % terrain_res == 0 && i > LL && i < UL) {
+			//std::cout << "L\n";
+
+			
+			glm::vec3 A = vertices[i];
+			glm::vec3 B = vertices[i + terrain_res];
+			glm::vec3 C = vertices[i + terrain_res + 1];
+			glm::vec3 D = vertices[i + 1];
+			glm::vec3 E = vertices[i - terrain_res];
+
+			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A) + (E - A));
+			normals.push_back(n);
+		}
+		//right
+		else if (i % terrain_res == terrain_res - 1 && i > LR && i != UR  ) {
+			//std::cout << "R\n";
+
+			glm::vec3 A = vertices[i];
+			glm::vec3 B = vertices[i + terrain_res];
+			glm::vec3 C = vertices[i - terrain_res];
+			glm::vec3 D = vertices[i - terrain_res - 1];
+			glm::vec3 E = vertices[i - 1];
+
+			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A));
+			normals.push_back(n);
+		}
+		// upper
+		else if (i > UL && i < UR) {
+			//std::cout << "U\n";
+
+			glm::vec3 A = vertices[i];
+			glm::vec3 B = vertices[i + 1];
+			glm::vec3 C = vertices[i - terrain_res];
+			glm::vec3 D = vertices[i - terrain_res - 1];
+			glm::vec3 E = vertices[i - 1];
+
+			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A));
+			normals.push_back(n);
+		}
+		//mids
+		else {
+			//std::cout << "M\n";
+
+			glm::vec3 A = vertices[i];
+			glm::vec3 B = vertices[i + terrain_res];
+			glm::vec3 C = vertices[i + terrain_res + 1];
+			glm::vec3 D = vertices[i + 1];
+			glm::vec3 E = vertices[i - terrain_res];
+			glm::vec3 F = vertices[i - terrain_res - 1];
+			glm::vec3 G = vertices[i - 1];
+
+			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A) + (E - A) + (F - A) + (G - A));
+			normals.push_back(n);
+		}
+	}
+	std::cout << vertices.size() << " verts size \n";
+	std::cout << normals.size() << " normals size \n";
+}
+
 
 
 float TerrainGenerator::heightFromIndex(int index) {
@@ -280,6 +444,17 @@ void TerrainGenerator::draw_water_quad() {
 //TODO return height from given (x,z)
 
 //TODO apply textures
+void TerrainGenerator::load_terrain_image(std::string path) {
+	std::filesystem::path file = std::filesystem::current_path() / "..\\Assets\\Images\\grass.jpg" / path;
+
+	const char* file_as_string = file.string().c_str();
+
+	//grass = Fyredon::TextureImage(file_as_string, "grass", 1);
+
+	//grass.load();
+	//std::cout << grass.valid_state << " valid state\n";
+
+}
 
 //TODO move verts based on (x,z) and radius
 

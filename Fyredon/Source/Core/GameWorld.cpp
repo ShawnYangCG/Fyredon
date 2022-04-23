@@ -131,7 +131,7 @@ void Fyredon::GameWorld::create_terrain() {
 	terrain_generator = new TerrainGenerator("heightmap1", "./assets/heightmap/Heightmap.png");
 	terrain_generator->read_height_map("Heightmap.png");
 	terrain_generator->generate_mesh(257*2);
-	terrain_generator->TerrainMesh.use_tex = false;
+	terrain_generator->TerrainMesh.use_tex = true;
 	terrain_generator->TerrainMesh.create_buffers();
 	terrain_generator->TerrainMesh.set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	terrain_generator->TerrainMesh.set_colour(glm::vec3(1.f, 0.f, 0.f));
@@ -139,28 +139,34 @@ void Fyredon::GameWorld::create_terrain() {
 	terrain_generator->TerrainMesh.scale(glm::vec3(1.0f));
 	terrain_generator->TerrainMesh.mode = Render_Mode::RENDER_MESH;
 
+
+
 	terrain_generator->TerrainMesh.name = "terrain";
 	prims.push_back(std::move(terrain_generator->TerrainMesh));
 	Primitive* mesh_p = &prims.back();
 	prims_map[std::string("terrain")] = mesh_p;
+
+
+	
+	
 	Renderer::get_renderer().submit_primitive(mesh_p);
 
-	////TerrainGenerator* terrain_generator2 = new TerrainGenerator("heightmap12", "./assets/heightmap/Heightmap.png");
-	////terrain_generator2->read_height_map("Heightmap.png");
-	////terrain_generator2->generate_mesh(257 );
-	////terrain_generator2->TerrainMesh.use_tex = false;
-	////terrain_generator2->TerrainMesh.create_buffers();
-	////terrain_generator2->TerrainMesh.set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
-	////terrain_generator2->TerrainMesh.set_colour(glm::vec3(1.f, 1.f, 0.f));
-	////terrain_generator2->TerrainMesh.translate(glm::vec3(0.f, 0.f, 0.f));
-	////terrain_generator2->TerrainMesh.scale(glm::vec3(0.02f));
-	////terrain_generator2->TerrainMesh.mode = Render_Mode::RENDER_MESH;
+	//TerrainGenerator* terrain_generator2 = new TerrainGenerator("heightmap12", "./assets/heightmap/Heightmap.png");
+	//terrain_generator2->read_height_map("Heightmap.png");
+	//terrain_generator2->generate_mesh(257 );
+	//terrain_generator2->TerrainMesh.use_tex = false;
+	//terrain_generator2->TerrainMesh.create_buffers();
+	//terrain_generator2->TerrainMesh.set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	//terrain_generator2->TerrainMesh.set_colour(glm::vec3(1.f, 1.f, 0.f));
+	//terrain_generator2->TerrainMesh.translate(glm::vec3(0.f, 0.f, 0.f));
+	//terrain_generator2->TerrainMesh.scale(glm::vec3(0.02f));
+	//terrain_generator2->TerrainMesh.mode = Render_Mode::RENDER_MESH;
 
-	////terrain_generator2->TerrainMesh.name = "terrainn";
-	////prims.push_back(std::move(terrain_generator2->TerrainMesh));
-	////Primitive* mesh_p2 = &prims.back();
-	////prims_map[std::string("terrainn")] = mesh_p2;
-	////Renderer::get_renderer().submit_primitive(mesh_p2);
+	//terrain_generator2->TerrainMesh.name = "terrainn";
+	//prims.push_back(std::move(terrain_generator2->TerrainMesh));
+	//Primitive* mesh_p2 = &prims.back();
+	//prims_map[std::string("terrainn")] = mesh_p2;
+	//Renderer::get_renderer().submit_primitive(mesh_p2);
 
 	//terrain_generator->draw_water_quad();
 	//terrain_generator->water_quad.use_tex = false;
@@ -177,5 +183,5 @@ void Fyredon::GameWorld::create_terrain() {
 	//prims_map[std::string("water")] = mesh_water;
 	//Renderer::get_renderer().submit_primitive(mesh_water);
 
-	terrain_loaded = true;
+	terrain_generator->terrain_loaded = true;
 }
