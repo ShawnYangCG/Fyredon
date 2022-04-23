@@ -28,8 +28,8 @@ public:
 
 	void load_obj(bool has_tex = false);
 
-	Fyredon::Mesh TerrainMesh;
-	Fyredon::Mesh water_quad;
+	Fyredon::Primitive *TerrainMesh;
+	Fyredon::Primitive *water_quad;
 
 	int image_width, image_height, image_n_channels;
 

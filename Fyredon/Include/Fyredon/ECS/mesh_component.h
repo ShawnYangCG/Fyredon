@@ -8,12 +8,12 @@ class mesh_component : public Component
 public:
 	// 2. 
 	// rewrite Constructor (give a name to this component)
-	mesh_component(Fyredon::Mesh* mesh);
+	mesh_component(Fyredon::Primitive* mesh);
 	// 3.
 	// when you create your own component you need to inherit this class and 
 	// add your own variable here
 	// == variable ==
-	Fyredon::Mesh* mesh;
+	Fyredon::Primitive* mesh;
 	// ==============
 
 	// 4.

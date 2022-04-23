@@ -1,7 +1,7 @@
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/ECS/mesh_component.h"
 
-mesh_component::mesh_component(Fyredon::Mesh* mesh)
+mesh_component::mesh_component(Fyredon::Primitive* mesh)
 {
 	this->componentName = "Mesh";
 	this->mesh = mesh;
@@ -10,7 +10,7 @@ mesh_component::mesh_component(Fyredon::Mesh* mesh)
 
 void mesh_component::GUI_struct()
 {
-	std::string vector = "Vector: " + std::to_string(this->mesh->obj_data.v_n.size());
+	std::string vector = "Vector: " + std::to_string(this->mesh->vert_data.size());
 	std::string edge = "Edge:";
 	std::string face = "Face:";
 	ImGui::Text(vector.data());
