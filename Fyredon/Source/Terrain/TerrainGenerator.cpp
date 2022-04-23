@@ -254,7 +254,7 @@ void TerrainGenerator::generate_mesh(int res) {
 	std::string file_as_string = file.string();
 	
 
-	grass = Fyredon::TextureImage(file_as_string.c_str(), "grass", 1);
+	//grass = Fyredon::TextureImage(file_as_string.c_str(), "grass", 1);
 	TerrainMesh.load_texture(file_as_string.c_str(),0);
 	
 	TerrainMesh.set_data_mesh(TerrainMesh.obj_data.verts);
@@ -449,10 +449,10 @@ void TerrainGenerator::load_terrain_image(std::string path) {
 
 	const char* file_as_string = file.string().c_str();
 
-	grass = Fyredon::TextureImage(file_as_string, "grass", 1);
+	//grass = Fyredon::TextureImage(file_as_string, "grass", 1);
 
-	grass.load();
-	std::cout << grass.valid_state << " valid state\n";
+	//grass.load();
+	//std::cout << grass.valid_state << " valid state\n";
 
 }
 

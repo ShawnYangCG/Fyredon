@@ -51,7 +51,7 @@ public:
 
 
 
-	Fyredon::TextureImage grass;
+	//Fyredon::TextureImage grass;
 	unsigned char* image_data;
 	
 	bool terrain_loaded = false;
