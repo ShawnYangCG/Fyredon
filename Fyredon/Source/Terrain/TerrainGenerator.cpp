@@ -166,7 +166,7 @@ void TerrainGenerator::generate_mesh(int res) {
 	}
 	std::cout << vertices.size() << " vert size\n";
 
-	smooth_normals();
+	//smooth_normals();
 
 
 	//std::cout << "verts" << " image size" << "\n";
