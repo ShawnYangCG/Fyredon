@@ -1,10 +1,18 @@
 #pragma once
+
 #include <filesystem>
 #include <iostream>
 #include <vector>
+
+// External
 #include "glm/glm.hpp"
+#include "stb/stb_image.h"
+
+// Fyredon headers
 #include "Fyredon/Render/Mesh.h"
 #include "Fyredon/Debug/Logger.h"
+#include "Fyredon/Render/Texture.h"
+
 
 
 //TODO change namespace
@@ -21,23 +29,32 @@ public:
 
 	void draw_water_quad();
 	float bilinear_interpolation(float x, float z);
+	float heightFromXZ(int x, int y);
+
+	void generate_mesh(int res);
+	float triangle_plane(float x, float z);
+	void load_terrain_image(std::string path);
+	void write_obj(std::string path);
+	void smooth_normals();
+	void load_obj(bool has_tex = false);
 
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 
-	void load_obj(bool has_tex = false);
+	int terrain_res;
 
 	Fyredon::Mesh TerrainMesh;
 	Fyredon::Mesh water_quad;
 
 	int image_width, image_height, image_n_channels;
 
-	float heightFromXZ(int x , int y);
 
+
+	Fyredon::TextureImage grass;
 	unsigned char* image_data;
-	void generate_mesh(int res);
-	float triangle_plane(float x, float z);
+	
+	bool terrain_loaded = false;
 
 private:
 
