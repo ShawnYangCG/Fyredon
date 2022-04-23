@@ -48,6 +48,11 @@ project "Fyredon"
 			"FD_ROOT"
 		}
 
+		-- Post build step: copy DLLs generated into other project binaries
+		postbuildcommands{
+			("{COPY} ../bin/" .. outdir .. "/%{prj.name}/*.dll ../bin/" .. outdir .. "/Client"),
+		}
+
 	-- Debug configuration
 	filter "configurations:Debug"
 		defines{

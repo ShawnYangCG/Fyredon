@@ -14,11 +14,14 @@ public:
 	// add your own variable here
 	// == variable ==
 	float matrixTranslation[3] = { 0,0,0 }, matrixRotation[3] = { 0,0,0 }, matrixScale[3] = { 1,1,1 };
+	float matrixTranslation_check[3] = { 0,0,0 }, matrixRotation_check[3] = { 0,0,0 }, matrixScale_check[3] = { 1,1,1 };
+	bool isChanged = false;
 	// ==============
 	
 	// 4.
 	// rewrite this function to create your own component GUI
 	virtual void GUI_struct() override;
+	void checkChanged();
 	// virtual void tick() override;
 	// virtual void render() override;
 };

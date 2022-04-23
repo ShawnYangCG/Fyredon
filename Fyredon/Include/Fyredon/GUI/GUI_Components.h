@@ -12,6 +12,7 @@
 #include "Fyredon/ECS/World.h"
 #include "Fyredon/GUI/GUIConfig.h"
 #include "Fyredon/GUI/GUI_EntityList.h"
+#include "Fyredon/Action/AddComponentButtonAction.h"
 // Extern Includes
 #include "dearimgui/imgui.h"
 
@@ -36,5 +37,8 @@ namespace Fyredon
 		int height = 0;
 		int posX = 0;
 		int posY = 0;
+
+		Entity* selectedEntity = nullptr;
+		AddComponentButtonAction* actionButton = nullptr;
 	};
 }

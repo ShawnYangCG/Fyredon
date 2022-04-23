@@ -15,6 +15,7 @@ class GUI_Panel
 {
 public:
 	GUI_Panel() : title("\0") {}
+	GUI_Panel(const char *Title) : title(Title) {}
 	virtual ~GUI_Panel() = default;
 
 	void set_title(const char* str) { title = str; }

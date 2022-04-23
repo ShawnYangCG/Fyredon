@@ -13,7 +13,10 @@ void World::addEntity(Entity* entity)
         this->entities.push_back(entity);
     }
     else {
-        std::cout << "Error: World already contain entity [" << entity->getName() << "]" << std::endl;
+        //std::cout << "Error: World already contain entity [" << entity->getName() << "]" << std::endl;
+        entity->setName(entity->getName() +" "+ std::to_string(this->entities.size()));
+        this->entityList[entity->getName()] = this->entities.size();
+        this->entities.push_back(entity);
     }
 }
 

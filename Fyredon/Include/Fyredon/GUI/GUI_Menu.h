@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_Menu.h: Top Window GUI Menu
+	GUI_Menu.h: Top Window GUI Menu : Niall, Shawn
 =============================================================================*/
 #pragma once
 
@@ -30,16 +30,9 @@ protected:
 	void about_popout();
 	void main_menu();
 	void play_buttons();
-	void new_project();
+	void saved_state();
 
 private: 
-	struct
-	{
-		int8_t open, save, close : 1; // File menu
-		int8_t play, pause, stop : 1; // Play menu
-		int8_t about : 1;             // About menu
-	} menu_state;
-
 	config cfg; 
 	int8_t pad_y; 
 	GUIConfig* gui_config;
@@ -47,7 +40,17 @@ private:
 	// new project
 	GUI_NewProjectWindow* newProject;
 	bool isNext = false;
-	bool IsNew = false;
+
+public:
+	struct
+	{
+		int8_t IsNew, open, save, saveAs : 1; // File menu
+		int8_t play, pause, reset : 1; // Play menu
+		int8_t about : 1;             // About menu
+		int8_t savestate : 1;		  // Save state
+		int8_t createTerrain, pigHead, createDoll : 1;	  // GameObject menu
+	} menu_state;
+	void new_project();
 };
 
 }

@@ -2,7 +2,6 @@
 #include "dearimgui/imgui.h"
 #include "Fyredon/ECS/Entity.h"
 #include <string>
-class Component_GUI;
 class Entity;
 class Component
 {

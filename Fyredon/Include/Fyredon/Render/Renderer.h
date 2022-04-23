@@ -21,7 +21,6 @@
 #define RENDER_RES_X 768
 #define RENDER_RES_Y 512
 
-
 struct GLFWwindow;
 
 namespace Fyredon {
@@ -49,11 +48,11 @@ private:
 	void get_GLError(const char *file, int32_t line);
 
 	void render_prep();
+	void render_entity(Camera& cam_ref);
 
 	// Debug
 	void create_test_mesh();
 	void create_test_prims();
-
 
 public:
 	// Exposed to Engine
@@ -84,10 +83,6 @@ private:
 	Mesh* test_mesh;
 	Primitive* axis;
 
-
-
-
-
 	// rm me later... need to support multiple lights first. 
 	std::vector<Light*> lights; 
 
@@ -95,11 +90,8 @@ private:
 	Texture* col_tex; 
 	Framebuffer* framebuffer; 
 
-
 	GLFWwindow* ogl_wincontext; 
 	bool is_init; 
-
-	
 };
 
 }
