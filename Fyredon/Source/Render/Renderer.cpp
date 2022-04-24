@@ -75,7 +75,7 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context)
 	if (!has_testprims)
 	{
 		create_test_prims();
-		create_test_mesh();
+		//create_test_mesh();
 		has_testprims = true; 
 	}
 	GL_ERROR();
@@ -126,14 +126,13 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	// Enforce base renderer flags
 	render_prep();
 
+	/* ///////////////////////////////
 	// Update Test Mesh
 	{
-		//glm::vec3 old = test_mesh->model[3];
-		//test_mesh->translate(*flags.test_pos - old);
 		test_mesh->shader.setVec("camPos_world", cam_ref.position);
 		test_mesh->shader.setVec("lightPos_world", *flags.light_pos);
 		test_mesh->shader.setFloat("lightStr", *flags.light_str);
-	} 
+	} */
 
 	// Bind Renderer Framebuffer
 	framebuffer->bind_clear(); 
@@ -141,11 +140,13 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 	// ==================== Render Viewer Primtivies ====================
 	// Draw Grid 
+	/*
 	if (*flags.draw_grid)
 	{
 		ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		ground->render();
-	}
+	} */
+
 
 	// Draw Axis
 	if (*flags.draw_axis)
@@ -155,11 +156,12 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		axis->render();
 	}
 
+	/* /////////////////////////
 	if (*flags.draw_test_prims)
 	{
 		test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		test_mesh->render();
-	}
+	} */
 
 	// Draw Primtivies
 	GL_ERROR();
@@ -218,10 +220,13 @@ void Fyredon::Renderer::create_test_mesh()
 // Info : Contain these test render prims here for now.
 void Fyredon::Renderer::create_test_prims()
 {
+	/*
 	// Ground Plane (1281 debug)
 	ground = new GroundPlane;
 	ground->set_size(4.f);
-	ground->set_tile(2.f);
+	ground->set_tile(2.f); */
+
+	
 
 	// Axis
 	axis = new Mesh("axis", false);
@@ -235,6 +240,6 @@ void Fyredon::Renderer::create_test_prims()
 	axis->set_data_mesh(verts);
 	axis->translate(glm::vec3(0.f, 0.01f, 0.f));
 	axis->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
-	axis->mode = Render_Mode::RENDER_LINES; 
+	axis->mode = Render_Mode::RENDER_LINES;  
 }
 

@@ -25,7 +25,7 @@
 // ================================== Mesh Class Implementation ==================================
 
 Fyredon::Mesh::Mesh(const char *Name, bool Indexed)
-	: name(Name), indexed(Indexed), vert_count(0), mode(Render_Mode::RENDER_MESH), tex(nullptr), use_tex(false)
+	: name(Name), indexed(Indexed), vert_count(0), mode(Render_Mode::RENDER_MESH), tex(nullptr), use_tex(false), wireframe(false)
 {
 	flags.buffers_set   = 0;
 	flags.vert_data_set = 0; 
@@ -132,6 +132,7 @@ void Fyredon::Mesh::render()
 					glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
 					glDrawArrays(GL_TRIANGLES, 0, vert_count);
 					glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
+					break; 
 				}
 				glDrawArrays(GL_LINES, 0, vert_count);
 				break;
@@ -278,7 +279,7 @@ void Fyredon::Mesh::update_data_position(const std::vector<glm::vec3>& pos_data)
 // Info : Only sets colour of vertcies (allows for updating colours per tick)
 void Fyredon::Mesh::update_data_colour(const std::vector<glm::vec3> &col_data)
 {
-	assert(vert_count == col_data.size() == vert_data.size());
+	assert(vert_count == col_data.size());
 	assert(flags.vert_data_set && flags.buffers_set);
 
 	for (std::size_t v = 0; v < vert_count; ++v)

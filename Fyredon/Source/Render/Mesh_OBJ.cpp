@@ -80,60 +80,33 @@ void Fyredon::Mesh_OBJ::load_obj()
 		// Faces / Indices
 		if (str == "f")
 		{
-			if (use_tex) // Get each face vertex (w/ texture coords)
+			int breakme = 0;
+
+			for (int i = 0; i < 3; ++i)
 			{
-				for (int i = 0; i < 3; ++i)
-				{
-					// Vert Postion & Normal Indices. 
-					int32_t i_vp, i_vn, i_vt;
-					char c; // scratch write
+				// Vert Postion & Normal Indices. 
+				int32_t i_vp, i_vn, i_vt;
+				char c; // scratch write
 
-					// Face Vertex Data
-					ss >> i_vp; // v_p index
-					ss >> c; // '/'
-					ss >> c; // '/'
-					ss >> i_vt; // 'v_t' index
-					ss >> c; // '/'
-					ss >> c; // '/'
-					ss >> i_vn; // 'v_n' index
+				// Face Vertex Data
+				ss >> i_vp; // v_p index
+				ss >> c; // '/'
+				ss >> c; // '/'
+				ss >> i_vt; // 'v_t' index
+				ss >> c; // '/'
+				ss >> c; // '/'
+				ss >> i_vn; // 'v_n' index
 
-					// Create Vertex
-					Vert vertex;
-					// neg 1 offset for obj indices '1' based. 
-					vertex.pos    = obj_data.v_p[i_vp - 1];
-					vertex.normal = obj_data.v_n[i_vn - 1];
-					vertex.uv     = obj_data.v_t[i_vt - 1];
-					vertex.col    = glm::vec3(1.f, 1.f, 1.f);
+				// Create Vertex
+				Vert vertex;
+				// neg 1 offset for obj indices '1' based. 
+				vertex.pos = obj_data.v_p[i_vp - 1];
+				vertex.normal = obj_data.v_n[i_vn - 1];
+				vertex.uv = obj_data.v_t[i_vt - 1];
+				vertex.col = glm::vec3(1.f, 1.f, 1.f);
 
-					// Append to vert array
-					vert_data.push_back(vertex);
-				}
-			}
-			else // Get each face vertex (wo/ texture coords)
-			{
-				for (int i = 0; i < 3; ++i)
-				{
-					// Vert Postion & Normal Indices. 
-					int32_t i_vp, i_vn;
-					char c; // scratch write
-
-					// Face Vertex Data
-					ss >> i_vp; // v_p index
-					ss >> c; // '/'
-					ss >> c; // '/'
-					ss >> i_vn; // 'v_n' index
-
-					// Create Vertex
-					Vert vertex;
-					// neg 1 offset for obj indices '1' based. 
-					vertex.pos    = obj_data.v_p[i_vp - 1];
-					vertex.normal = obj_data.v_n[i_vn - 1];
-					vertex.uv     = glm::vec3(0.f, 0.f, 0.f);
-					vertex.col    = glm::vec3(1.f, 1.f, 1.f);
-
-					// Append to vert array
-					vert_data.push_back(vertex);
-				}
+				// Append to vert array
+				vert_data.push_back(vertex);
 			}
 		}
 

@@ -112,7 +112,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	renderer.flags.light_str = &(ren_set->state.light_strength);
 	renderer.flags.test_pos = &(ren_set->state.test_mesh_pos);
 
-	GameWorld::get_world().create_terrain();
+	//GameWorld::get_world().create_terrain();
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
@@ -190,20 +190,17 @@ void Fyredon::EditorApplication::tick_engine()
 	// Tick Renderer
 	Renderer::get_renderer().render(camera);
 
+	
 	// Tick state update (if save state requested)
 	if (SaveState::getInstance().update) {
 		SaveState::getInstance().tick(camera.position, camera.yaw, camera.pitch);
-	}
+	} 
 }
 
 // Info : All operations done within the editor application for a single tick
 void Fyredon::EditorApplication::tick_editor()
 {
 	paint_begin();
-
-	// GUI Tick
-	guiConfig.AppHeight = height;
-	guiConfig.AppWidth = width;
 
 	tick_gui();
 
@@ -237,6 +234,10 @@ void Fyredon::EditorApplication::paint_begin()
 	glClearColor(0.15f, 0.15f, 0.15f, 1.0);
 	glDisable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Set GUI Dims
+	guiConfig.AppHeight = height;
+	guiConfig.AppWidth = width;
 
 	// GUI new frame, todo wrap im ImGui wrapper class...
 	ImGui_ImplOpenGL3_NewFrame();
