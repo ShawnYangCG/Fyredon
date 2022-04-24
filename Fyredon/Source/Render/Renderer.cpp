@@ -74,8 +74,8 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context)
 	// Create Test Primitives
 	if (!has_testprims)
 	{
-		create_test_prims();
-		//create_test_mesh();
+		create_render_prims();
+		create_test_mesh();
 		has_testprims = true; 
 	}
 	GL_ERROR();
@@ -126,13 +126,16 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	// Enforce base renderer flags
 	render_prep();
 
-	/* ///////////////////////////////
-	// Update Test Mesh
+	if(test_mesh) // Update Test Mesh
 	{
 		test_mesh->shader.setVec("camPos_world", cam_ref.position);
 		test_mesh->shader.setVec("lightPos_world", *flags.light_pos);
 		test_mesh->shader.setFloat("lightStr", *flags.light_str);
-	} */
+
+		idx->shader.setVec("camPos_world", cam_ref.position);
+		idx->shader.setVec("lightPos_world", *flags.light_pos);
+		idx->shader.setFloat("lightStr", *flags.light_str);
+	} 
 
 	// Bind Renderer Framebuffer
 	framebuffer->bind_clear(); 
@@ -155,15 +158,17 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		axis->render();
 	}
 
-	/* /////////////////////////
 	if (*flags.draw_test_prims)
 	{
-		test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
-		test_mesh->render();
-	} */
+		//test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
+		//test_mesh->render();
+
+		idx->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
+		idx->render();
+	} 
 
 	// Draw Primtivies
-	GL_ERROR();
+	//GL_ERROR();
 
 	framebuffer->bind(); // Not remaining bound for some reason ...
 
@@ -217,9 +222,8 @@ void Fyredon::Renderer::create_test_mesh()
 }
 
 // Info : Contain these test render prims here for now.
-void Fyredon::Renderer::create_test_prims()
+void Fyredon::Renderer::create_render_prims()
 {
-	
 	// Ground Plane (1281 debug)
 	ground = new GroundPlane;
 	ground->set_size(4.f);
@@ -238,5 +242,16 @@ void Fyredon::Renderer::create_test_prims()
 	axis->translate(glm::vec3(0.f, 0.01f, 0.f));
 	axis->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
 	axis->mode = Render_Mode::RENDER_LINES;  
+
+	idx = new Mesh("idx_mesh", true);
+	std::vector<Vert> vertsb;
+	vertsb.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
+	vertsb.emplace_back(glm::vec3(5.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
+	vertsb.emplace_back(glm::vec3(5.f, 5.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
+	vertsb.emplace_back(glm::vec3(0.f, 5.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
+	std::vector<GLuint>inds = { 1, 2, 3, 1, 0, 3 };
+	idx->set_data_mesh(vertsb);
+	idx->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	idx->set_data_indices(inds);
 }
 

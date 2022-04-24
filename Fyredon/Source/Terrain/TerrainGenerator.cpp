@@ -33,7 +33,6 @@ void TerrainGenerator::read_height_map(std::string path) {
 
 	image_data = stbi_load(file.string().c_str(), &image_width, &image_height, &image_n_channels, 1);
 
-
 	int x_res = image_width;
 	int z_res = image_height;
 
@@ -41,8 +40,6 @@ void TerrainGenerator::read_height_map(std::string path) {
 	//std::cout << z_res << " z_res" << "\n";
 	//std::cout << image_n_channels << " chan" << "\n";
 	//std::cout << image_width * image_height * image_n_channels << " image size" << "\n";
-
-
 }
 
 

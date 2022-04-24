@@ -52,7 +52,7 @@ private:
 
 	// Debug
 	void create_test_mesh();
-	void create_test_prims();
+	void create_render_prims();
 
 public:
 	// Exposed to Engine
@@ -83,8 +83,9 @@ private:
 
 	// Renderers own prims 
 	GroundPlane* ground;
-	Mesh_OBJ*    test_mesh;
 	Mesh*        axis;
+	Mesh_OBJ*    test_mesh;
+	Mesh* idx;
 
 	// Framebuffer
 	Texture* col_tex; 

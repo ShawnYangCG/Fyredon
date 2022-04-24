@@ -85,7 +85,6 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	title += " :: Default Game Project";
 	width = Width, height = Height, window_title = title.c_str();
 
-
 	// ======== setup a ECS world ======== 
 	this->ECSworld = new World(this->gui_org);
 
@@ -112,6 +111,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	renderer.flags.light_str = &(ren_set->state.light_strength);
 	renderer.flags.test_pos = &(ren_set->state.test_mesh_pos);
 
+	// Test terrain
 	//GameWorld::get_world().create_terrain();
 }
 

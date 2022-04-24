@@ -105,7 +105,7 @@ void Fyredon::Mesh::render()
 			case (RENDER_MESH):
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-				glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
+				glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
 				break;
 			}
 		}
@@ -237,12 +237,12 @@ void Fyredon::Mesh::create_vertex_buffers(const std::vector<float> &serial_verts
 void Fyredon::Mesh::create_index_buffer()
 {
 	if (!indexed) {
-		std::cerr << "Trying to create index buffer on triangle soup primitive\n";
+		std::cerr << "WARNING::Trying to create index buffer on triangle soup primitive" << std::endl;
 		return; 
 	}
 
 	if (index_count == 0 || inds_data.size() == 0) {
-		std::cerr << "No Indices Provided\n";
+		std::cerr << "WARNING::No Indices Provided" << std::endl;
 		return;
 	}
 
