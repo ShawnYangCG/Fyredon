@@ -70,7 +70,10 @@ void Fyredon::Mesh_OBJ::load_obj()
 		// Vertex Texture
 		if (str == "vt")
 		{
-			has_texcoords = true; 
+			// Set texture state if 'vt' found. 
+			has_texcoords |= true; 
+			use_tex |= true; 
+
 			float uu, vv;
 			ss >> uu;
 			ss >> vv;
@@ -90,11 +93,11 @@ void Fyredon::Mesh_OBJ::load_obj()
 
 				// Face Vertex Data
 				ss >> i_vp; // v_p index
-				ss >> c; // '/'
-				ss >> c; // '/'
+				ss.get(); // '/'
+				ss.get(); // '/'
 				ss >> i_vt; // 'v_t' index
-				ss >> c; // '/'
-				ss >> c; // '/'
+				ss.get(); // '/'
+				ss.get(); // '/'
 				ss >> i_vn; // 'v_n' index
 
 				// Create Vertex

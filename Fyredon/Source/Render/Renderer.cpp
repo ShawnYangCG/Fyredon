@@ -140,13 +140,12 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 	// ==================== Render Viewer Primtivies ====================
 	// Draw Grid 
-	/*
+
 	if (*flags.draw_grid)
 	{
 		ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		ground->render();
-	} */
-
+	} 
 
 	// Draw Axis
 	if (*flags.draw_axis)
@@ -220,13 +219,11 @@ void Fyredon::Renderer::create_test_mesh()
 // Info : Contain these test render prims here for now.
 void Fyredon::Renderer::create_test_prims()
 {
-	/*
+	
 	// Ground Plane (1281 debug)
 	ground = new GroundPlane;
 	ground->set_size(4.f);
-	ground->set_tile(2.f); */
-
-	
+	ground->set_tile(2.f); 
 
 	// Axis
 	axis = new Mesh("axis", false);
