@@ -49,7 +49,6 @@ Fyredon::Mesh::~Mesh()
 
 // ============= Rendering =============
 
-/*
 void Fyredon::Mesh::render()
 {
 	// Check for state to render
@@ -151,60 +150,7 @@ void Fyredon::Mesh::render()
 	glUseProgram(0);
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-} */
-
-
-void Fyredon::Mesh::render()
-{
-	// Check for state to render
-	if (!check_state())
-	{
-		std::cerr << "ERROR::Primitive::" << name << "::Render called, with incorrectly set state." << std::endl;
-		std::terminate();
-	}
-
-	// Bind Primitive State
-	shader.use();
-
-	// Activate and Bind Texture
-	if (use_tex)
-	{
-		tex->activate();
-		tex->bind();
-	}
-
-	// Update Modfied Uniforms
-	shader.setMat4("model", model);
-
-	// Render in set mode
-	glBindVertexArray(VAO);
-	switch (mode)
-	{
-	case (RENDER_POINTS):
-	{
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-		//glDrawArrays(GL_TRIANGLES, 0, vert_count);
-		glDrawArrays(GL_POINTS, 0, vert_count);
-		break;
-	}
-	case (RENDER_LINES):
-	{
-		glDrawArrays(GL_LINES, 0, vert_count);
-		break;
-	}
-	case (RENDER_MESH):
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glDrawArrays(GL_TRIANGLES, 0, vert_count);
-		break;
-	}
-	}
-
-	// Clear State
-	glUseProgram(0);
-	glBindVertexArray(0);
-}
-
+} 
 
 // ===================== Mesh Data Setters =====================
 // 
