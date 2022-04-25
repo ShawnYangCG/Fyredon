@@ -112,7 +112,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	renderer.flags.test_pos = &(ren_set->state.test_mesh_pos);
 
 	// Test terrain
-	//GameWorld::get_world().create_terrain();
+	GameWorld::get_world().create_terrain();
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
@@ -183,6 +183,7 @@ void Fyredon::EditorApplication::tick_engine()
 {
 	get_dt();
 
+	// ToDo : Put into engine class
 	// Tick World when game run
 	GameWorld::get_world().tick(dt);
 	update_camera();

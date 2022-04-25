@@ -84,9 +84,18 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context)
 }
 
 // Info : Public exposed function to pass primtives to internal draw array of Primitives.
-void Fyredon::Renderer::submit_primitive(Mesh* prim)
+void Fyredon::Renderer::submit_mesh(Mesh* mesh, const std::function<void()>& command)
 {
-	prims.push_back(std::move(prim));
+	meshes.push_back(std::move(mesh));
+	// Store Render command
+	commands[mesh->name] = command; 
+}
+
+void Fyredon::Renderer::submit_mesh(Mesh* mesh)
+{
+	meshes.push_back(std::move(mesh));
+	// No Render command passes, use empty lambda. 
+	commands[mesh->name] = [&]() {return;};
 }
 
 void Fyredon::Renderer::submit_light(Light* light)
@@ -104,7 +113,7 @@ void Fyredon::Renderer::resize(int width, int height)
 // Initalize Render State (abstract these calls later)
 void Fyredon::Renderer::render_prep()
 {
-	if (!is_init) throw std::runtime_error("Renderer Not Initalized");
+	if (!is_init) throw std::runtime_error("ERROR::Renderer Not Initalized");
 
 	// Multisampling (Disabled for iteration 1, needs multi-sampled texture + fbo setup)
 	//glEnable(GL_MULTISAMPLE);
@@ -131,10 +140,6 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 		test_mesh->shader.setVec("camPos_world", cam_ref.position);
 		test_mesh->shader.setVec("lightPos_world", *flags.light_pos);
 		test_mesh->shader.setFloat("lightStr", *flags.light_str);
-
-		idx->shader.setVec("camPos_world", cam_ref.position);
-		idx->shader.setVec("lightPos_world", *flags.light_pos);
-		idx->shader.setFloat("lightStr", *flags.light_str);
 	} 
 
 	// Bind Renderer Framebuffer
@@ -160,26 +165,26 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 	if (*flags.draw_test_prims)
 	{
-		//test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
-		//test_mesh->render();
-
-		idx->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
-		idx->render();
+		test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
+		test_mesh->render();
 	} 
 
-	// Draw Primtivies
+	// ==================== Render Game Meshes ====================
 	//GL_ERROR();
 
 	framebuffer->bind(); // Not remaining bound for some reason ...
 
-	if (prims.size())
+	if (meshes.size())
 	{
-		for (Mesh *p : prims)
+		for (Mesh *p : meshes)
 		{
-			// Update Uniforms
+			// Set Shared Uniforms
 			p->shader.setVec("camPos_world",   cam_ref.position);
 			p->shader.setVec("lightPos_world", *flags.light_pos);
 			p->shader.setFloat("lightStr",     *flags.light_str);
+
+			// Execute Render Command (to set pre-draw state of mesh)
+			commands[p->name](); 
 
 			p->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 			p->render();
@@ -242,16 +247,5 @@ void Fyredon::Renderer::create_render_prims()
 	axis->translate(glm::vec3(0.f, 0.01f, 0.f));
 	axis->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
 	axis->mode = Render_Mode::RENDER_LINES;  
-
-	idx = new Mesh("idx_mesh", true);
-	std::vector<Vert> vertsb;
-	vertsb.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
-	vertsb.emplace_back(glm::vec3(5.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
-	vertsb.emplace_back(glm::vec3(5.f, 5.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
-	vertsb.emplace_back(glm::vec3(0.f, 5.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
-	std::vector<GLuint>inds = { 1, 2, 3, 1, 0, 3 };
-	idx->set_data_mesh(vertsb);
-	idx->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
-	idx->set_data_indices(inds);
 }
 

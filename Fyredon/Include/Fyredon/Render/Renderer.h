@@ -7,6 +7,7 @@
 
 // Std Includes
 #include <string>
+#include <functional>
 
 // Project Headers
 #include "Fyredon/Render/Camera.h"
@@ -56,7 +57,8 @@ private:
 
 public:
 	// Exposed to Engine
-	void submit_primitive(Mesh* prim);
+	void submit_mesh(Mesh* mesh, const std::function<void()> &command);
+	void submit_mesh(Mesh* mesh);
 	void submit_light(Light* light);
 	void resize(int width, int height);
 
@@ -75,21 +77,19 @@ public:
 private:
 	static Renderer renderer; 
 
-	// Draw Lists for Renderer to draw per frame 
-	// Draw Prims
-	std::vector<Mesh*> prims;
-	// Draw Lights
+	// ===== Draw Lists to render per frame =====
+	std::vector<Mesh*>  meshes;
 	std::vector<Light*> lights;
+	std::unordered_map<std::string, std::function<void()>> commands;
 
-	// Renderers own prims 
+	// Game Viewer Prims 
 	GroundPlane* ground;
 	Mesh*        axis;
 	Mesh_OBJ*    test_mesh;
-	Mesh* idx;
 
-	// Framebuffer
-	Texture* col_tex; 
+	// Primary Framebuffer
 	Framebuffer* framebuffer; 
+	Texture* col_tex;
 
 	GLFWwindow* ogl_wincontext; 
 	bool is_init; 

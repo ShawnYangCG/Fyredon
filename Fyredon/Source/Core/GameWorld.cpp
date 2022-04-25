@@ -13,6 +13,8 @@
 #include "Fyredon/Debug/Logger.h"
 #include "Fyredon/Core/RandomGenerator.h"
 
+#include "GLEW/glew.h"
+
 Fyredon::GameWorld Fyredon::GameWorld::world; 
 
 Fyredon::GameWorld& Fyredon::GameWorld::get_world()
@@ -61,7 +63,7 @@ void Fyredon::GameWorld::create_mesh_obj(const char* name, const char* file_path
 	prims_map[std::string(name)] = mesh_p;
 
 	// Submit to renderer
-	Renderer::get_renderer().submit_primitive(mesh_p);
+	Renderer::get_renderer().submit_mesh(mesh_p);
 }
 
 /*
@@ -142,7 +144,7 @@ void Fyredon::GameWorld::create_terrain() {
 	prims.push_back(std::move(*(terrain_generator->TerrainMesh)));
 	Mesh* mesh_p = &prims.back();
 	prims_map[std::string("terrain")] = mesh_p;
-	Renderer::get_renderer().submit_primitive(mesh_p);
+	Renderer::get_renderer().submit_mesh(mesh_p);
 
 	////TerrainGenerator* terrain_generator2 = new TerrainGenerator("heightmap12", "./assets/heightmap/Heightmap.png");
 	////terrain_generator2->read_height_map("Heightmap.png");
