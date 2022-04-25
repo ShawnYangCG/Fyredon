@@ -148,7 +148,7 @@ float TerrainGenerator::triangle_plane(float x, float z){
 void TerrainGenerator::generate_mesh(int res) {
 	
 	// Allocate Primitive members 
-	TerrainMesh = new Fyredon::Mesh("Terrain_Mesh", true); 
+	TerrainMesh = new Fyredon::Mesh("Terrain_Mesh", false); 
 
 	// Temp storage
 	std::vector<Fyredon::Vert> verts; 
@@ -215,7 +215,7 @@ void TerrainGenerator::generate_mesh(int res) {
 			glm::vec3 n2 = glm::normalize(glm::cross(u2, v2));
 
 
-			/*
+			
 			vertex0.normal = n1;
 			vertex1.normal = n1;
 			vertex3.normal = n1;
@@ -231,8 +231,8 @@ void TerrainGenerator::generate_mesh(int res) {
 			verts.push_back(vertex3);
 			//std::cout << "n1 " << n1.x << " " << n1.y << " " << n1.z << "\n";
 			//std::cout << "n2 " << n2.x << " " << n2.y << " " << n2.z << "\n";
-			*/
 
+			/*
 			// ======= Indexing Test (Currently assuming col, normal, uv are all same) =======
 			vertex0.normal = n1, vertex1.normal = n1, vertex2.normal = n1, vertex3.normal = n1;
 			// Store Verts
@@ -240,7 +240,7 @@ void TerrainGenerator::generate_mesh(int res) {
 			verts.push_back(vertex0), verts.push_back(vertex1), verts.push_back(vertex2), verts.push_back(vertex3);
 			// Store Indices
 			inds.push_back(i0), inds.push_back(i0 + 3), inds.push_back(i0 + 1);
-			inds.push_back(i0), inds.push_back(i0 + 2), inds.push_back(i0 + 3);
+			inds.push_back(i0), inds.push_back(i0 + 2), inds.push_back(i0 + 3); */
 		}
 	}
 
@@ -248,7 +248,7 @@ void TerrainGenerator::generate_mesh(int res) {
 	//std::cout << "verts " << vertices.size() << "\n";
 
 	// Set Primtivie Data
-	TerrainMesh->set_data_indices(inds);
+	//TerrainMesh->set_data_indices(inds);
 	TerrainMesh->set_data_mesh(verts);
 	//std::cout << "set mesh \n";
 }

@@ -35,6 +35,10 @@ struct Vert
 	Vert(const glm::vec3& P, const glm::vec3& N, const glm::vec3& C, glm::vec3& U)
 		: pos(P), normal(N), col(C), uv(U) {}
 
+	bool operator== (const Vert& b) const {
+		return (pos == b.pos && normal == b.pos && col == b.col && uv == b.uv);
+	}
+
 	Vert() = default; 
 };
 
@@ -65,6 +69,7 @@ public:
 
 	// Setters
 	void set_data_mesh(const std::vector<Vert> &data);
+	void set_data_mesh(const std::vector<Vert>& data, bool indexed);
 
 	void set_data_indices(const std::vector<GLuint>& indices);
 

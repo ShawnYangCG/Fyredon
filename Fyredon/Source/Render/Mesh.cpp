@@ -159,17 +159,18 @@ void Fyredon::Mesh::render()
 // Stride :  0         3         6         9
 // Data   : (x,y,z) | (x,y,z) | (r,g,b) | (u,v,w) */
 
-void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data)
+// Non Indexed Version 
+void Fyredon::Mesh::set_data_mesh(const std::vector<Vert>& data)
 {
 	// Copy/Replace Vertex Mesh Data
 	vert_data = data;
 	vert_count = data.size();
 
 	// Serailize into float array
-	std::vector<float> serial_data; 
+	std::vector<float> serial_data;
 	for (std::size_t v = 0; v < vert_count; ++v)
 	{
-		const Vert &vert = data[v];
+		const Vert& vert = data[v];
 		// Position 
 		serial_data.emplace_back(vert.pos.x), serial_data.emplace_back(vert.pos.y), serial_data.emplace_back(vert.pos.z);
 		// Normal
@@ -183,6 +184,70 @@ void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data)
 
 	// Setup Buffers
 	create_vertex_buffers(serial_data);
+	return;
+}
+
+void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data, bool indexed)
+{
+	// rm duplicates of all same vert attributes (linear search or map based hash ideally)
+	// replace with indices of orginal/existing vert. 
+	// Only add to new array if unique.
+
+	std::vector<Vert> unqiue_verts; // Probs also write directly to vert array oppose to local copy
+	//std::vector<GLuint> inds; 
+
+	for (std::size_t v = 0; v < data.size(); ++v)
+	{
+		const Vert& vert_i = data[v];
+		bool is_dupe = false; 
+		std::size_t idx = -1; 
+
+		// Search unique_verts to see if vertex exists within it already, where all attributes match.  
+		// Find first dupe only. 
+		for (std::size_t uv = 0; uv < unqiue_verts.size(); ++uv)
+		{
+			const Vert &vert_j = unqiue_verts[uv];
+			if (vert_i == vert_j) {
+				is_dupe |= true;
+				idx = uv; 
+				break; 
+			}
+		}
+
+		if (is_dupe) // Store idx to existing vert
+		{
+			inds_data.push_back(idx);
+		}
+		else // Doesn't already exist in unique verts, so append it and store idx. 
+		{
+			unqiue_verts.push_back(vert_i);
+			inds_data.push_back(unqiue_verts.size() - 1);
+		}
+	}
+
+	// Copy/Replace Vertex Mesh Data
+	vert_data = unqiue_verts;
+	vert_count = unqiue_verts.size();
+
+	// Serailize into float array
+	std::vector<float> serial_data; 
+	for (std::size_t v = 0; v < vert_count; ++v)
+	{
+		const Vert &vert = unqiue_verts[v];
+		// Position 
+		serial_data.emplace_back(vert.pos.x), serial_data.emplace_back(vert.pos.y), serial_data.emplace_back(vert.pos.z);
+		// Normal
+		serial_data.emplace_back(vert.normal.x), serial_data.emplace_back(vert.normal.y), serial_data.emplace_back(vert.normal.z);
+		// Colour
+		serial_data.emplace_back(vert.col.r), serial_data.emplace_back(vert.col.g), serial_data.emplace_back(vert.col.b);
+		// UV
+		serial_data.emplace_back(vert.uv.x), serial_data.emplace_back(vert.uv.y), serial_data.emplace_back(vert.uv.z);
+	}
+	flags.vert_data_set = 1;
+
+	// Setup Buffers
+	create_vertex_buffers(serial_data);
+	create_index_buffer();
 }
 
 void Fyredon::Mesh::set_data_indices(const std::vector<GLuint>& data)
