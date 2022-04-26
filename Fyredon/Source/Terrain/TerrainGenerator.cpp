@@ -148,7 +148,7 @@ float TerrainGenerator::triangle_plane(float x, float z){
 void TerrainGenerator::generate_mesh(int res) {
 	
 	// Allocate Primitive members 
-	TerrainMesh = new Fyredon::Mesh("Terrain_Mesh", true); 
+	TerrainMesh = new Fyredon::Mesh("Terrain_Mesh"); 
 
 	// Temp storage
 	std::vector<Fyredon::Vert> verts; 
@@ -247,7 +247,7 @@ void TerrainGenerator::generate_mesh(int res) {
 
 	// Set Primtivie Data
 	//TerrainMesh->set_data_indices(inds);
-	TerrainMesh->set_data_mesh(verts, true);
+	TerrainMesh->set_data_mesh(verts);
 	//std::cout << "set mesh \n";
 }
 
@@ -270,7 +270,7 @@ float TerrainGenerator::heightFromXZ(int x, int z) {
 
 void TerrainGenerator::draw_water_quad() {
 
-	water_quad  = new Fyredon::Mesh("Water Quad", false); // Not indexed for now
+	water_quad  = new Fyredon::Mesh("Water Quad");
 	std::vector<Fyredon::Vert> verts; 
 
 	int res = 513;

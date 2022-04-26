@@ -16,18 +16,18 @@
 // Project Headers
 #include "Fyredon/Render/Mesh.h"
 
-
-/* Info : Primitive derived class for rendering meshes based on loaded.obj file.
-* Vertex Attribute layout same as Primitive (P(x,y,z), N(x,y,z), C(r,g,b), UV(u,v,w))
-* This does not use indexing. 
-* Only use this class for OBJ based mesh files, for manual vertex/index specifcation, use Primitive. */
+/* 
+* Info : Primitive derived class for rendering meshes based on loaded.obj file.
+* Vertex Attribute layout same as Primitive (P(x,y,z), N(x,y,z), C(r,g,b), UV(u,v,w)).
+* Only use this class for OBJ based mesh files, for manual vertex/index specifcation, use Primitive. 
+*/
 
 namespace Fyredon
 {
 class Mesh_OBJ : public Mesh
 {
 public:
-	Mesh_OBJ() : Mesh("", false) {}
+	Mesh_OBJ() : Mesh("") {}
 	Mesh_OBJ(const char *name, const char *filePath);
 	virtual ~Mesh_OBJ() = default; 
 

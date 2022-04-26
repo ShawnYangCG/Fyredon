@@ -19,8 +19,10 @@
 // Project Headers
 #include "Fyredon/Render/Shader.h"
 
-/* Info : Base Mesh object for rendering within the viewer app.
-*  Supports both indexed and non-indexed (Tri-Soup) meshes.
+/* 
+*  Info: Base Mesh object for rendering within the viewer app.
+*  Mesh format: (P(x,y,z), N(x,y,z), C(r,g,b), UV(u,v,w)). 
+*  User defines mesh as tri-soup format, using indexing internally to opitmize memory usage. 
 */ 
 	
 namespace Fyredon {
@@ -38,11 +40,10 @@ struct Vert
 	// To allow for emplace_back()
 	Vert(const glm::vec3& P, const glm::vec3& N, const glm::vec3& C, glm::vec3& U)
 		: pos(P), normal(N), col(C), uv(U) {}
-
+	// Equality for hashing
 	bool operator== (const Vert& b) const {
 		return (pos == b.pos && normal == b.normal && col == b.col && uv == b.uv);
 	}
-
 	Vert() = default; 
 };
 
@@ -58,17 +59,12 @@ struct VertHash
 };
 
 // ======================== Mesh Class ========================
-enum Render_Mode
-{
-	RENDER_MESH = 0,
-	RENDER_LINES,
-	RENDER_POINTS
-};
+enum Render_Mode { RENDER_MESH = 0, RENDER_LINES, RENDER_POINTS };
 
 class Mesh
 {
 public:
-	Mesh(const char *Name, bool Indexed);
+	explicit Mesh(const char *Name);
 	Mesh() = delete;
 	virtual ~Mesh();
 
@@ -80,9 +76,7 @@ public:
 	virtual bool check_state() const;
 
 	// Setters
-	void set_data_mesh(const std::vector<Vert> &data);
-	void set_data_mesh(const std::vector<Vert>& data, bool indexed);
-
+	void set_data_mesh(const std::vector<Vert>& data);
 
 	void set_colour(const glm::vec3& col);
 
@@ -104,15 +98,15 @@ public:
 	void rotate      (float d_ang, const glm::vec3 &axis);
 	void local_rotate(float x_ang, float y_ang, float z_ang);
 
+	// Debug
+	float get_vertindex_ratio();
+
 private:
 	virtual void create_vertex_buffers(const std::vector<float>& serial_verts);
 
-	virtual void create_index_buffer();
-
-	void set_data_indices(const std::vector<GLuint>& indices);
+	virtual void create_index_buffer(const std::vector<GLuint>& indices);
 
 public:
-
 	// ------- Vertex Data -------
 	std::vector<Vert>   vert_data; 
 	std::vector<GLuint> inds_data;
@@ -125,7 +119,7 @@ public:
 
 	// ------- State -------
 	Render_Mode mode;
-	bool indexed, wireframe;
+	bool wireframe;
 	// Required state for rendering
 	struct
 	{

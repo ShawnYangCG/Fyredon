@@ -24,8 +24,8 @@
 
 // ================================== Mesh Class Implementation ==================================
 
-Fyredon::Mesh::Mesh(const char *Name, bool Indexed)
-	: name(Name), indexed(Indexed), vert_count(0), mode(Render_Mode::RENDER_MESH), tex(nullptr), use_tex(false), wireframe(false)
+Fyredon::Mesh::Mesh(const char *Name)
+	: name(Name), vert_count(-1), index_count(-1), tex(nullptr), use_tex(false), wireframe(false)
 {
 	flags.buffers_set   = 0;
 	flags.vert_data_set = 0; 
@@ -35,6 +35,8 @@ Fyredon::Mesh::Mesh(const char *Name, bool Indexed)
 	flags.texture_set   = 0;
 
 	model = glm::mat4(1.f);
+
+	mode = Render_Mode::RENDER_MESH; 
 }
 
 Fyredon::Mesh::~Mesh()
@@ -71,84 +73,47 @@ void Fyredon::Mesh::render()
 	// Update Modfied Uniforms
 	shader.setMat4("model", model);
 
-	// Render in set mode
 	glBindVertexArray(VAO);
-	if (indexed)  // ---- Indexed Based Drawing of Data
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+	switch (mode)
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		switch (mode)
+		case (RENDER_POINTS):
 		{
-			case (RENDER_POINTS):
-			{
-				if (wireframe) {
-					glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-					glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
-					glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES); // Restore state
-					break; 
-				}
+			if (wireframe) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+				glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
+				glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES); // Restore state
+				break;
+			}
 
-				glDrawElements(GL_POINTS, index_count, GL_UNSIGNED_INT, 0);
-				break;
-			}
-			case (RENDER_LINES):
-			{
-				if (wireframe) {
-					glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
-					glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
-					glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
-					break;
-				}
-
-				glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
-				break;
-			}
-			case (RENDER_MESH):
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-				glDrawElements(GL_TRIANGLES, inds_data.size(), GL_UNSIGNED_INT, 0);
-				break;
-			}
+			glDrawElements(GL_POINTS, index_count, GL_UNSIGNED_INT, 0);
+			break;
 		}
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
-	else  // ---- TriSoup Based Drawing of Data
-	{
-		switch (mode)
+		case (RENDER_LINES):
 		{
-			case (RENDER_POINTS):
-			{
-				if (wireframe) {
-					glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-					glDrawArrays(GL_TRIANGLES, 0, vert_count);
-					glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
-					break;
-				}
-				glDrawArrays(GL_POINTS, 0, vert_count);
+			if (wireframe) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
+				glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
+				glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
 				break;
 			}
-			case (RENDER_LINES):
-			{
-				if (wireframe) {
-					glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
-					glDrawArrays(GL_TRIANGLES, 0, vert_count);
-					glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
-					break; 
-				}
-				glDrawArrays(GL_LINES, 0, vert_count);
-				break;
-			}
-			case (RENDER_MESH):
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-				glDrawArrays(GL_TRIANGLES, 0, vert_count);
-				break;
-			}
+
+			glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
+			break;
+		}
+		case (RENDER_MESH):
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
+			break;
 		}
 	}
 
 	// Clear State
 	glUseProgram(0);
 	glBindVertexArray(0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 } 
 
@@ -159,37 +124,12 @@ void Fyredon::Mesh::render()
 // Stride :  0         3         6         9
 // Data   : (x,y,z) | (x,y,z) | (r,g,b) | (u,v,w) */
 
-// Non Indexed Version 
-void Fyredon::Mesh::set_data_mesh(const std::vector<Vert>& data)
+// Info : Takes in mesh as array of vertices (tri-soup) like, and computes indices for unqiue vertices across all attributes. 
+void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data)
 {
-	// Copy/Replace Vertex Mesh Data
-	vert_data = data;
-	vert_count = data.size();
+	if (data.size() > 1e05) std::cout << "Info:: Auto-Indexing taking place on large mesh: " << name << "\n";
 
-	// Serailize into float array
-	std::vector<float> serial_data;
-	for (std::size_t v = 0; v < vert_count; ++v)
-	{
-		const Vert& vert = data[v];
-		// Position 
-		serial_data.emplace_back(vert.pos.x), serial_data.emplace_back(vert.pos.y), serial_data.emplace_back(vert.pos.z);
-		// Normal
-		serial_data.emplace_back(vert.normal.x), serial_data.emplace_back(vert.normal.y), serial_data.emplace_back(vert.normal.z);
-		// Colour
-		serial_data.emplace_back(vert.col.r), serial_data.emplace_back(vert.col.g), serial_data.emplace_back(vert.col.b);
-		// UV
-		serial_data.emplace_back(vert.uv.x), serial_data.emplace_back(vert.uv.y), serial_data.emplace_back(vert.uv.z);
-	}
-	flags.vert_data_set = 1;
-
-	// Setup Buffers
-	create_vertex_buffers(serial_data);
-	return;
-}
-
-void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data, bool indexed)
-{
-	std::vector<Vert> unqiue_verts; // Probs also write directly to vert array oppose to local copy
+	std::vector<Vert> unqiue_verts; 
 	std::vector<GLuint> inds; 
 
 	std::unordered_map<Vert, std::size_t, VertHash> vert_map; 
@@ -201,29 +141,28 @@ void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data, bool indexed)
 		// Does vertex exist in map ? 
 		auto found = vert_map.find(vert_i);
 
-		if (found == vert_map.end()) // Vertex not in map so append to uniq verts, store ind val
+		if (found == vert_map.end()) // Not in map, add uniq_vert
 		{
 			unqiue_verts.push_back(vert_i);
 			// Get idx and store as value
 			std::size_t idx = unqiue_verts.size() - 1;
 			vert_map[vert_i] = idx; 
 			inds.push_back(idx);
-
 		}
-		else // Vertex is in map, so get index
+		else // In map, get ind
 		{
 			inds.push_back(found->second);
 		}
 	}
+	flags.inds_data_set = 1;
 
-	// Copy/Replace Vertex Mesh Data and Indices Data
-	vert_data  = unqiue_verts;
-	vert_count = unqiue_verts.size();
-
+	// Copy Vertex Data and Indices Data
+	vert_data   = unqiue_verts;
+	vert_count  = unqiue_verts.size();
 	inds_data   = inds; 
 	index_count = inds.size(); 
 
-	// Serailize into float array
+	// Serailize Vertex Data into float array
 	std::vector<float> serial_data; 
 	for (std::size_t v = 0; v < vert_count; ++v)
 	{
@@ -238,22 +177,10 @@ void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data, bool indexed)
 		serial_data.emplace_back(vert.uv.x), serial_data.emplace_back(vert.uv.y), serial_data.emplace_back(vert.uv.z);
 	}
 	flags.vert_data_set = 1;
-	flags.inds_data_set = 1;
 
 	// Setup Buffers
 	create_vertex_buffers(serial_data);
-	create_index_buffer();
-}
-
-void Fyredon::Mesh::set_data_indices(const std::vector<GLuint>& data)
-{
-	inds_data = data;
-	index_count = data.size();
-
-	flags.inds_data_set = 1;
-
-	// Setup Index Buffer
-	create_index_buffer();
+	create_index_buffer(inds_data);
 }
 
 // ===================== Buffer Creation =====================
@@ -294,13 +221,8 @@ void Fyredon::Mesh::create_vertex_buffers(const std::vector<float> &serial_verts
 	flags.buffers_set = 1;
 }
 
-void Fyredon::Mesh::create_index_buffer()
+void Fyredon::Mesh::create_index_buffer(const std::vector<GLuint>& indices)
 {
-	if (!indexed) {
-		std::cerr << "WARNING::Trying to create index buffer on triangle soup primitive" << std::endl;
-		return; 
-	}
-
 	if (index_count == 0 || inds_data.size() == 0) {
 		std::cerr << "WARNING::No Indices Provided" << std::endl;
 		return;
@@ -314,7 +236,7 @@ void Fyredon::Mesh::create_index_buffer()
 
 	// Fill Index Buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, inds_data.size() * sizeof(GLuint), inds_data.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_count * sizeof(GLuint), inds_data.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
@@ -384,8 +306,7 @@ void Fyredon::Mesh::set_cameraTransform(const glm::mat4x4 &view, const glm::mat4
 // Flags that need to be set for rendering to be valid
 bool Fyredon::Mesh::check_state() const
 {
-	if (indexed) return flags.buffers_set & flags.camera_set & flags.vert_data_set & flags.inds_data_set & flags.shader_set;
-	return flags.buffers_set & flags.camera_set & flags.vert_data_set & flags.shader_set;
+	return flags.buffers_set & flags.camera_set & flags.vert_data_set & flags.inds_data_set & flags.shader_set;
 }
 
 // ===================== Model Matrix Transformations =====================
@@ -431,7 +352,7 @@ void Fyredon::Mesh::debug() const
 	// Check for correct mesh_data size to vertex count with attributes. (11 * sizeof(float) per vert).
 	assert((vert_data.size() * sizeof(float)) == (vert_count * sizeof(float) * 11));
 
-	std::cout << "======== DEBUG::Camera::Mesh_" << name << "::Vertex_Data::BEGIN ========\n";
+	std::cout << "======== DEBUG::Mesh_" << name << "::Vertex_Data::BEGIN ========\n";
 	std::size_t i = 0; 
 	for (const Vert& vert : vert_data)
 	{
@@ -442,5 +363,10 @@ void Fyredon::Mesh::debug() const
 			<< "Tex =  [" << vert.uv.x     << ", " << vert.uv.y     << ", " << vert.uv.z     << "\n";
 		i++;
 	}
-	std::cout << "======== DEBUG::Camera::Mesh_" << name << "::Vertex_Data::END ========\n";
+	std::cout << "======== DEBUG::Mesh_" << name << "::Vertex_Data::END ========\n";
+}
+
+float Fyredon::Mesh::get_vertindex_ratio()
+{
+	return (float)vert_count / (float)index_count;
 }

@@ -4,7 +4,7 @@
 	FBXMesh.h: Xiaoyuan Yang
 =============================================================================*/
 #pragma once
-#include "Fyredon/Render/Mesh.h"
+#include "Fyredon/Render/Mesh_OBJ.h"
 #include "FBXLoader.h"
 
 class fbxObjectData { // 
@@ -21,7 +21,7 @@ public:
 	mesh_data fbx_obj_data_backup;
 };
 
-class fbx_mesh : public Fyredon::Mesh
+class fbx_mesh : public Fyredon::Mesh_OBJ
 {
 public:
 	fbx_mesh(const char* name, const char* filePath);

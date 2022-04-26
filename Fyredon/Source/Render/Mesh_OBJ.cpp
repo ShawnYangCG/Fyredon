@@ -19,7 +19,7 @@
 // =================== Mesh Implementation ===================
 
 Fyredon::Mesh_OBJ::Mesh_OBJ(const char* name, const char* filePath)
-	: Mesh(name, true), file_path(filePath) {}
+	: Mesh(name), file_path(filePath), has_texcoords(false) {}
 
 // Info : Load Obj, assuming triangle based meshes with indices. 
 void Fyredon::Mesh_OBJ::load_obj()
@@ -145,8 +145,8 @@ void Fyredon::Mesh_OBJ::load_obj()
 
 	dbg << "Vert Count = " << vert_data.size() << "\n";
 
-	// Pass verts to primitive::mesh_data
-	set_data_mesh(vert_data, true);
+	// Pass Mesh Data for indexing and buffer creation
+	set_data_mesh(vert_data);
 
 	// Check Primitive is correct.
 	//debug();

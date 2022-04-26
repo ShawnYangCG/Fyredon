@@ -235,7 +235,7 @@ void Fyredon::Renderer::create_render_prims()
 	ground->set_tile(2.f); 
 
 	// Axis
-	axis = new Mesh("axis", false);
+	axis = new Mesh("axis");
 	std::vector<Vert> verts; 
 	verts.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
 	verts.emplace_back(glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));

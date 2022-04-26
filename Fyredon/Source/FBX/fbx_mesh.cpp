@@ -2,7 +2,7 @@
 #include "Fyredon/FBX/fbx_mesh.h"
 
 fbx_mesh::fbx_mesh(const char* name, const char* filePath)
-	:Mesh(name, filePath)
+	:Mesh_OBJ(name, filePath)
 {
 	this->fbxloader = new FBXLoader(filePath);
 	this->fbxloader->LoadFile();
