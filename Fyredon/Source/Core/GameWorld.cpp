@@ -96,7 +96,7 @@ void Fyredon::GameWorld::create_light(const char* name, glm::vec3 Pos, float Str
 void Fyredon::GameWorld::delete_mesh(const char* name)
 {
 	auto found = prims_map.find(std::string(name));
-	if (found != prims_map.end())
+	if (found == prims_map.end())
 	{
 		FD_DEBUG_BLOCK_MSG("Tried to delete non existing mesh: ", "s", name);
 		return; 
@@ -114,7 +114,7 @@ void Fyredon::GameWorld::delete_mesh(const char* name)
 void Fyredon::GameWorld::delete_light(const char* name)
 {
 	auto found = lights_map.find(std::string(name));
-	if (found != lights_map.end())
+	if (found == lights_map.end())
 	{
 		FD_DEBUG_BLOCK_MSG("Tried to delete non existing light: ", "s", name);
 		return;

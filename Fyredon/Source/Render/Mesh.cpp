@@ -189,46 +189,39 @@ void Fyredon::Mesh::set_data_mesh(const std::vector<Vert>& data)
 
 void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data, bool indexed)
 {
-	// rm duplicates of all same vert attributes (linear search or map based hash ideally)
-	// replace with indices of orginal/existing vert. 
-	// Only add to new array if unique.
-
 	std::vector<Vert> unqiue_verts; // Probs also write directly to vert array oppose to local copy
-	//std::vector<GLuint> inds; 
+	std::vector<GLuint> inds; 
+
+	std::unordered_map<Vert, std::size_t, VertHash> vert_map; 
 
 	for (std::size_t v = 0; v < data.size(); ++v)
 	{
 		const Vert& vert_i = data[v];
-		bool is_dupe = false; 
-		std::size_t idx = -1; 
 
-		// Search unique_verts to see if vertex exists within it already, where all attributes match.  
-		// Find first dupe only. 
-		for (std::size_t uv = 0; uv < unqiue_verts.size(); ++uv)
-		{
-			const Vert &vert_j = unqiue_verts[uv];
-			if (vert_i == vert_j) {
-				//std::cout << "Duplicate Found Vertex : " << v << " With Vertex : " << uv << "\n";
-				is_dupe |= true;
-				idx = uv; 
-				break; 
-			}
-		}
+		// Does vertex exist in map ? 
+		auto found = vert_map.find(vert_i);
 
-		if (is_dupe) // Store idx to existing vert
-		{
-			inds_data.push_back(idx);
-		}
-		else // Doesn't already exist in unique verts, so append it and store idx. 
+		if (found == vert_map.end()) // Vertex not in map so append to uniq verts, store ind val
 		{
 			unqiue_verts.push_back(vert_i);
-			inds_data.push_back(unqiue_verts.size() - 1);
+			// Get idx and store as value
+			std::size_t idx = unqiue_verts.size() - 1;
+			vert_map[vert_i] = idx; 
+			inds.push_back(idx);
+
+		}
+		else // Vertex is in map, so get index
+		{
+			inds.push_back(found->second);
 		}
 	}
 
-	// Copy/Replace Vertex Mesh Data
-	vert_data = unqiue_verts;
+	// Copy/Replace Vertex Mesh Data and Indices Data
+	vert_data  = unqiue_verts;
 	vert_count = unqiue_verts.size();
+
+	inds_data   = inds; 
+	index_count = inds.size(); 
 
 	// Serailize into float array
 	std::vector<float> serial_data; 

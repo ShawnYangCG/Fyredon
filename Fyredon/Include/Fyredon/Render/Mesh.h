@@ -8,9 +8,13 @@
 // Std Headers
 #include <string>
 #include <vector>
+#include <functional>
 
 // GLM
 #include "glm/glm.hpp"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/hash.hpp"
 
 // Project Headers
 #include "Fyredon/Render/Shader.h"
@@ -42,6 +46,18 @@ struct Vert
 	Vert() = default; 
 };
 
+// Hash Functor for Vertex
+struct VertHash 
+{
+	std::size_t operator() (const Vert& key) const
+	{
+		return (v_hash(key.pos) ^ ( v_hash(key.normal) << 1) >> 1) 
+			^ (v_hash(key.col) ^ (v_hash(key.uv) << 1) >> 1);
+	}
+	std::hash<glm::vec3> v_hash; 
+};
+
+// ======================== Mesh Class ========================
 enum Render_Mode
 {
 	RENDER_MESH = 0,
