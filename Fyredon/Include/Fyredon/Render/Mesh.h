@@ -36,7 +36,7 @@ struct Vert
 		: pos(P), normal(N), col(C), uv(U) {}
 
 	bool operator== (const Vert& b) const {
-		return (pos == b.pos && normal == b.pos && col == b.col && uv == b.uv);
+		return (pos == b.pos && normal == b.normal && col == b.col && uv == b.uv);
 	}
 
 	Vert() = default; 

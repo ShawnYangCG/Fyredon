@@ -148,7 +148,7 @@ float TerrainGenerator::triangle_plane(float x, float z){
 void TerrainGenerator::generate_mesh(int res) {
 	
 	// Allocate Primitive members 
-	TerrainMesh = new Fyredon::Mesh("Terrain_Mesh", false); 
+	TerrainMesh = new Fyredon::Mesh("Terrain_Mesh", true); 
 
 	// Temp storage
 	std::vector<Fyredon::Vert> verts; 
@@ -214,8 +214,6 @@ void TerrainGenerator::generate_mesh(int res) {
 			glm::vec3 v2 = vertex3.pos - vertex0.pos;
 			glm::vec3 n2 = glm::normalize(glm::cross(u2, v2));
 
-
-			
 			vertex0.normal = n1;
 			vertex1.normal = n1;
 			vertex3.normal = n1;
@@ -249,7 +247,7 @@ void TerrainGenerator::generate_mesh(int res) {
 
 	// Set Primtivie Data
 	//TerrainMesh->set_data_indices(inds);
-	TerrainMesh->set_data_mesh(verts);
+	TerrainMesh->set_data_mesh(verts, true);
 	//std::cout << "set mesh \n";
 }
 

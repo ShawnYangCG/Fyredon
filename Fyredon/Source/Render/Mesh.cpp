@@ -105,7 +105,7 @@ void Fyredon::Mesh::render()
 			case (RENDER_MESH):
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-				glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
+				glDrawElements(GL_TRIANGLES, inds_data.size(), GL_UNSIGNED_INT, 0);
 				break;
 			}
 		}
@@ -208,6 +208,7 @@ void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data, bool indexed)
 		{
 			const Vert &vert_j = unqiue_verts[uv];
 			if (vert_i == vert_j) {
+				//std::cout << "Duplicate Found Vertex : " << v << " With Vertex : " << uv << "\n";
 				is_dupe |= true;
 				idx = uv; 
 				break; 
@@ -244,6 +245,7 @@ void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data, bool indexed)
 		serial_data.emplace_back(vert.uv.x), serial_data.emplace_back(vert.uv.y), serial_data.emplace_back(vert.uv.z);
 	}
 	flags.vert_data_set = 1;
+	flags.inds_data_set = 1;
 
 	// Setup Buffers
 	create_vertex_buffers(serial_data);
@@ -319,7 +321,7 @@ void Fyredon::Mesh::create_index_buffer()
 
 	// Fill Index Buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_count * sizeof(GLuint), inds_data.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, inds_data.size() * sizeof(GLuint), inds_data.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
