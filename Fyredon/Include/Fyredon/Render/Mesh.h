@@ -75,10 +75,6 @@ public:
 	// Virtual Methods 
 	virtual void render();
 
-	virtual void create_vertex_buffers(const std::vector<float>& serial_verts);
-
-	virtual void create_index_buffer();
-
 	virtual void debug()       const;
 
 	virtual bool check_state() const;
@@ -87,7 +83,6 @@ public:
 	void set_data_mesh(const std::vector<Vert> &data);
 	void set_data_mesh(const std::vector<Vert>& data, bool indexed);
 
-	void set_data_indices(const std::vector<GLuint>& indices);
 
 	void set_colour(const glm::vec3& col);
 
@@ -108,6 +103,13 @@ public:
 	void translate   (const glm::vec3 &offs);
 	void rotate      (float d_ang, const glm::vec3 &axis);
 	void local_rotate(float x_ang, float y_ang, float z_ang);
+
+private:
+	virtual void create_vertex_buffers(const std::vector<float>& serial_verts);
+
+	virtual void create_index_buffer();
+
+	void set_data_indices(const std::vector<GLuint>& indices);
 
 public:
 

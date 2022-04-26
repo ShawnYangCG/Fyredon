@@ -112,7 +112,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	renderer.flags.test_pos = &(ren_set->state.test_mesh_pos);
 
 	// Test terrain
-	//GameWorld::get_world().create_terrain();
+	GameWorld::get_world().create_terrain();
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
