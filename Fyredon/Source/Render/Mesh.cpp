@@ -41,11 +41,12 @@ Fyredon::Mesh::Mesh(const char *Name)
 
 Fyredon::Mesh::~Mesh()
 {
-	if (!flags.buffers_set) return; 
+	// Dealloc GPU Buffers
 	if (VAO) glDeleteVertexArrays(1, &VAO);
 	if (VBO) glDeleteBuffers(1, &VBO);
 	if (EBO) glDeleteBuffers(1, &EBO);
 
+	// Dealloc Dynamic members
 	if (tex) delete tex;
 }
 
@@ -125,6 +126,8 @@ void Fyredon::Mesh::render()
 // Data   : (x,y,z) | (x,y,z) | (r,g,b) | (u,v,w) */
 
 // Info : Takes in mesh as array of vertices (tri-soup) like, and computes indices for unqiue vertices across all attributes. 
+// This should ONLY be called on the creation of the mesh, or if the mesh topology changes as it will re-calc indices.
+// For passing updated vertex arrays, use update_data_mesh(). 
 void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data)
 {
 	if (data.size() > 1e05) std::cout << "Info:: Auto-Indexing taking place on large mesh: " << name << "\n";
@@ -181,6 +184,45 @@ void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data)
 	// Setup Buffers
 	create_vertex_buffers(serial_data);
 	create_index_buffer(inds_data);
+
+	// Debug only
+	std::cout << "Info::Mesh: " << name << "Vertex | Index Ratio : " << get_vertindex_ratio() << "\n";
+}
+
+// Info : Assumes vertex data has been changed, so vertex buffer is re-created 
+//        then re-serialized and Vertex Buffers are updated. Indices remain the same. 
+void Fyredon::Mesh::update_data_mesh(const std::vector<Vert>& data)
+{
+	assert(data.size() == vert_data.size()); // Ensure (unique) vert count matches. 
+	if (!flags.buffers_set || !flags.vert_data_set)
+	{
+		std::cerr << "ERROR::Trying to update vertex data, without creating data and buffers first." << std::endl; 
+		throw std::runtime_error("VertexBufferError");
+	}
+
+	// Rebuild serialised vert array
+	flags.vert_data_set = 0; 
+	flags.buffers_set   = 0;
+	std::vector<float> serial_data;
+	for (std::size_t v = 0; v < vert_count; ++v)
+	{
+		const Vert& vert = data[v];
+		// Position 
+		serial_data.emplace_back(vert.pos.x), serial_data.emplace_back(vert.pos.y), serial_data.emplace_back(vert.pos.z);
+		// Normal
+		serial_data.emplace_back(vert.normal.x), serial_data.emplace_back(vert.normal.y), serial_data.emplace_back(vert.normal.z);
+		// Colour
+		serial_data.emplace_back(vert.col.r), serial_data.emplace_back(vert.col.g), serial_data.emplace_back(vert.col.b);
+		// UV
+		serial_data.emplace_back(vert.uv.x), serial_data.emplace_back(vert.uv.y), serial_data.emplace_back(vert.uv.z);
+	}
+	flags.vert_data_set = 1;
+
+	// Update Vertex Buffer Data
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, (vert_count * 12 * sizeof(float)), serial_data.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	flags.buffers_set = 1;
 }
 
 // ===================== Buffer Creation =====================
@@ -241,7 +283,7 @@ void Fyredon::Mesh::create_index_buffer(const std::vector<GLuint>& indices)
 }
 
 // ===================== Mesh Data Update =====================
-// Assumes Data has been set and buffers created.
+// Info : Assumes vertex data has been set and buffers created.
 
 // Info : Only sets position of vertices (allows for updating positions per tick)
 void Fyredon::Mesh::update_data_position(const std::vector<glm::vec3>& pos_data)
@@ -253,9 +295,8 @@ void Fyredon::Mesh::update_data_position(const std::vector<glm::vec3>& pos_data)
 	{
 		vert_data[v].pos = pos_data[v];
 	}
-
-	// Kinda slow, but saves storing multiple data arrays in memory
-	set_data_mesh(vert_data);
+	// Re-serialize and update buffer data
+	update_data_mesh(vert_data);
 }
 
 // Info : Only sets colour of vertcies (allows for updating colours per tick)
@@ -268,7 +309,7 @@ void Fyredon::Mesh::update_data_colour(const std::vector<glm::vec3> &col_data)
 	{
 		vert_data[v].col = col_data[v];
 	}
-	set_data_mesh(vert_data);
+	update_data_mesh(vert_data);
 }
 
 void Fyredon::Mesh::set_colour(const glm::vec3 &col)
@@ -321,6 +362,7 @@ void Fyredon::Mesh::rotate(float d_ang, const glm::vec3 &axis)
 	model = glm::rotate(model, glm::radians(d_ang), axis);
 }
 
+// Assumes (x,y,z) rotation order
 void Fyredon::Mesh::local_rotate(float x_ang, float y_ang, float z_ang)
 {
 	model = glm::rotate(model, glm::radians(x_ang), glm::vec3(1, 0, 0));
@@ -368,5 +410,6 @@ void Fyredon::Mesh::debug() const
 
 float Fyredon::Mesh::get_vertindex_ratio()
 {
+	if (!flags.vert_data_set || !flags.inds_data_set) return 0.f; 
 	return (float)vert_count / (float)index_count;
 }

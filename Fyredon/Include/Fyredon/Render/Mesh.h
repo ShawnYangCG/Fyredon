@@ -84,7 +84,10 @@ public:
 
 	void set_shader(const char* vert_path, const char* frag_path);
 
-	// Update single vertex attribute only
+	// Update
+	void update_data_mesh(const std::vector<Vert>& data);
+
+	// Single vertex attribute only
 	void update_data_position(const std::vector<glm::vec3> &pos_data);
 
 	void update_data_colour  (const std::vector<glm::vec3> &col_data);

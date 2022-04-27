@@ -35,8 +35,8 @@ void Fyredon::GroundPlane::set_size(float Size)
 	{
 		v.pos *= size; 
 	}
-	// Reset Mesh with scaled pos
-	set_data_mesh(vert_data);
+	// Update Mesh with scaled Position
+	update_data_mesh(vert_data);
 }
 
 void Fyredon::GroundPlane::set_tile(float Tile)
@@ -46,6 +46,6 @@ void Fyredon::GroundPlane::set_tile(float Tile)
 	{
 		v.uv *= tile;
 	}
-	// Reset Mesh with scaled pos
-	set_data_mesh(vert_data);
+	// Update Mesh with scaled UV's.
+	update_data_mesh(vert_data);
 }
