@@ -219,11 +219,12 @@ void Fyredon::EditorApplication::tick_engine()
 	if (SaveState::getInstance().loaded) {			// -- State loaded
 		SaveState::getInstance().load();
 		// Inject state
+		// Camera state
 		camera.position = SaveState::getInstance().cam_pos;
 		camera.yaw = SaveState::getInstance().yaw;
 		camera.pitch = SaveState::getInstance().pitch;
 		camera.calc_basis();
-
+		// 
 	}
 
 }
