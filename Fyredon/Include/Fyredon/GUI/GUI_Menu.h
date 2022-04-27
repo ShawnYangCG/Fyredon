@@ -31,6 +31,7 @@ protected:
 	void main_menu();
 	void play_buttons();
 	void saved_state();
+	void loaded_state();
 
 private: 
 	config cfg; 
@@ -44,10 +45,10 @@ private:
 public:
 	struct
 	{
-		int8_t IsNew, open, save, saveAs : 1; // File menu
-		int8_t play, pause, reset : 1; // Play menu
-		int8_t about : 1;             // About menu
-		int8_t savestate : 1;		  // Save state
+		int8_t IsNew, open, save, saveAs : 1;		// File menu
+		int8_t play, pause, reset : 1;				// Play menu
+		int8_t about : 1;							// About menu
+		int8_t savestate, loadstate : 1;			// Save/Load state
 		int8_t createTerrain, pigHead, createDoll, createCamera : 1;	  // GameObject menu
 	} menu_state;
 	void new_project();

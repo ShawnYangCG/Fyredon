@@ -212,10 +212,20 @@ void Fyredon::EditorApplication::tick_engine()
 	// Tick Renderer
 	Renderer::get_renderer().render(camera);
 
-	// Tick state update (if save state requested)
-	if (SaveState::getInstance().update) {
+	// Tick state update (if save/load state requested)
+	if (SaveState::getInstance().update) {			// -- State saved
 		SaveState::getInstance().tick(camera.position, camera.yaw, camera.pitch);
 	}
+	if (SaveState::getInstance().loaded) {			// -- State loaded
+		SaveState::getInstance().load();
+		// Inject state
+		camera.position = SaveState::getInstance().cam_pos;
+		camera.yaw = SaveState::getInstance().yaw;
+		camera.pitch = SaveState::getInstance().pitch;
+		camera.calc_basis();
+
+	}
+
 }
 
 void Fyredon::EditorApplication::tick_play()

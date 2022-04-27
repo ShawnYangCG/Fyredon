@@ -49,7 +49,7 @@ glm::mat4 Fyredon::Camera::get_proj_matrix()
 void Fyredon::Camera::update_camera(GLFWwindow *Window, float Camera_Speed, float Dt, float Yaw, float Pitch)
 {
 	// ========== Camera Direction Update ==========
-	if (free_look && (glfwGetMouseButton(Window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS))
+	if (free_look && (glfwGetMouseButton(Window, GLFW_MOUSE_BUTTON_5) == GLFW_PRESS))
 	{
 		yaw   += Yaw   * sensitvity;
 		pitch += Pitch * sensitvity;
