@@ -102,14 +102,6 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// ---- Renderer Subsystem Setup
 	Renderer& renderer = Renderer::get_renderer();
 	renderer.init(window);
-	GUI_RendererSettings* ren_set = static_cast<GUI_RendererSettings*>(gui_org->gui_panels["setting"]);
-
-	renderer.flags.draw_axis = &(ren_set->state.draw_axis);
-	renderer.flags.draw_grid = &(ren_set->state.draw_grid);
-	renderer.flags.draw_test_prims = &(ren_set->state.draw_testmesh);
-	renderer.flags.light_pos = &(ren_set->state.light_pos);
-	renderer.flags.light_str = &(ren_set->state.light_strength);
-	renderer.flags.test_pos = &(ren_set->state.test_mesh_pos);
 
 	// Test terrain
 	GameWorld::get_world().create_terrain();
@@ -244,7 +236,6 @@ void Fyredon::EditorApplication::paint_begin()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-
 }
 
 // End of Application paint operations (within Tick())

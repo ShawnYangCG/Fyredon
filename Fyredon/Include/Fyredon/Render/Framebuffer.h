@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Framebuffer.h: Basic Framebuffer with Colour Attachment only : Niall
+	Framebuffer.h: .... : Niall
 =============================================================================*/
 #pragma once
 
