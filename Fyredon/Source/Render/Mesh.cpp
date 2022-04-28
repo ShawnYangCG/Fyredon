@@ -130,7 +130,7 @@ void Fyredon::Mesh::render()
 // For passing updated vertex arrays, use update_data_mesh(). 
 void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data)
 {
-	if (data.size() > 1e05) std::cout << "Info:: Auto-Indexing taking place on large mesh: " << name << "\n";
+	if (data.size() > 1e05) std::cout << "Info:: Auto-Indexing taking place on large mesh: " << name << ".\n";
 
 	std::vector<Vert> unqiue_verts; 
 	std::vector<GLuint> inds; 
@@ -186,7 +186,7 @@ void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data)
 	create_index_buffer(inds_data);
 
 	// Debug only
-	std::cout << "Info::Mesh: " << name << "Vertex | Index Ratio : " << get_vertindex_ratio() << "\n";
+	std::cout << "Info::Mesh: " << name << " Vertex | Index Ratio : " << get_vertindex_ratio() << "\n";
 }
 
 // Info : Assumes vertex data has been changed, so vertex buffer is re-created 

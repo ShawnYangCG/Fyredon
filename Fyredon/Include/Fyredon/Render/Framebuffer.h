@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Framebuffer.h: .... : Niall
+	Framebuffer.h: Standard and Multisampled Framebuffers for OpenGL : Niall
 =============================================================================*/
 #pragma once
 
@@ -26,6 +26,7 @@ public:
 
 	bool check() const; 
 
+public:
 	GLuint FBO_ID, RBO_ID;
 };
 
@@ -45,6 +46,7 @@ public:
 	virtual void unbind()      override;
 	virtual void bind_clear()  override;
 
+public:
 	Texture* colour_texture;
 };
 
@@ -66,6 +68,7 @@ public:
 
 	void blit_to_framebuffer_s(Framebuffer_S* target_fbo);
 
+public:
 	Texture_MultiSample* colour_texture;
 	std::size_t sample_count; 
 };
