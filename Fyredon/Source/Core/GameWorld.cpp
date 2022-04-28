@@ -128,9 +128,9 @@ void Fyredon::GameWorld::delete_light(const char* name)
 }
 
 void Fyredon::GameWorld::create_terrain() {
-	terrain_generator = new TerrainGenerator("heightmap1", "./assets/heightmap/Heightmap.png");
-	terrain_generator->read_height_map("Heightmap.png");
-	terrain_generator->generate_mesh(257*2);
+	terrain_generator = new TerrainGenerator("heightmap1", "./assets/heightmap/ai.png");
+	terrain_generator->read_height_map("ai.png");
+	terrain_generator->generate_mesh(256*2);
 	terrain_generator->TerrainMesh.use_tex = true;
 	terrain_generator->TerrainMesh.create_buffers();
 	terrain_generator->TerrainMesh.set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");

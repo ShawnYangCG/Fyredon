@@ -3,9 +3,9 @@
 
 terrain_entity::terrain_entity()
 {
-	this->terrain_generator = new TerrainGenerator("heightmap1", "./assets/heightmap/Heightmap.png");
-	terrain_generator->read_height_map("Heightmap.png");
-	terrain_generator->generate_mesh(257 * 2);
+	this->terrain_generator = new TerrainGenerator("heightmap1", "./assets/heightmap/ai.png");
+	terrain_generator->read_height_map("ai.png");
+	terrain_generator->generate_mesh(512);
 	terrain_generator->TerrainMesh.use_tex = false;
 	terrain_generator->TerrainMesh.create_buffers();
 	terrain_generator->TerrainMesh.set_shader("..//Shaders//terrain.vert", "..//Shaders//terrain.frag");

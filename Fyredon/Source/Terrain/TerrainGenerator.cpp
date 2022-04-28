@@ -31,18 +31,59 @@ void TerrainGenerator::read_height_map(std::string path) {
 
 	std::filesystem::path file = std::filesystem::current_path() / "..\\Assets\\Images\\Heightmaps" / path;
 
-	//std::cout << file.string().c_str() << "\n";
+	std::cout << file.string().c_str() << "\n";
 
 	std::filesystem::path file2 = std::filesystem::current_path() / "..\\Assets\\heightmap" / "rewrite.png";
-
+	
+	stbi_set_flip_vertically_on_load(0);
 	image_data = stbi_load(file.string().c_str(), &image_width, &image_height, &image_n_channels, 1);
 
 
 	int x_res = image_width;
 	int z_res = image_height;
 
-	//std::cout << x_res << " x_res" << "\n";
-	//std::cout << z_res << " z_res" << "\n";
+	for (size_t x = 0; x < image_width ; x++){
+		for (size_t z = 0; z < image_height; z++){
+			int avg_counter = 1;
+
+			int i = z * image_height + x;
+			int up_i = getUp(i, image_width);
+			int up = 0;
+			if (up_i != NULL) {
+				up = image_data[getUp(i, image_width)];
+				avg_counter++;
+			}
+
+			int down_i = getDown(i, image_width);
+			int down = 0;
+			if (down_i != NULL) {
+				down = image_data[getDown(i, image_width)];
+				avg_counter++;
+			}
+
+			int left_i = getLeft(i, image_width);
+			int left = 0;
+			if (left_i != NULL) {
+				left = image_data[getLeft(i, image_width)];
+				avg_counter++;
+			}
+
+			int right_i = getRight(i, image_width);
+			int right = 0;
+			if (right_i != NULL) {
+				right = image_data[getRight(i, image_width)];
+				avg_counter++;
+			}
+
+			int avg = (up + down + left + right) / avg_counter;
+			image_data_sample.push_back(avg);
+		}
+	}
+
+
+
+	std::cout << x_res << " x_res" << "\n";
+	std::cout << z_res << " z_res" << "\n";
 	//std::cout << image_n_channels << " chan" << "\n";
 	//std::cout << image_width * image_height * image_n_channels << " image size" << "\n";
 
@@ -107,47 +148,36 @@ float TerrainGenerator::triangle_plane(float x, float z){
 	// on center. return pixel value
 	if (x_fraction == 0 && z_fraction == 0) {
 	
-		return  image_data[i];
+		return  image_data_sample[i];
 	}
 
 	if (x_whole == image_width || z_whole == image_height) {
-		return  image_data[i];
+		return  image_data_sample[i];
 	}
 
 
 	//left bot
-	glm::vec3 A = glm::vec3(x_whole, image_data[i], z_whole);
+	glm::vec3 A = glm::vec3(x_whole, image_data_sample[i], z_whole);
 
 	// right
-	glm::vec3 B = glm::vec3(x_whole + 1, image_data[i + 1], z_whole);
+	glm::vec3 B = glm::vec3(x_whole + 1, image_data_sample[i + 1], z_whole);
 
 	// left up
-	glm::vec3 B2 = glm::vec3(x_whole, image_data[i + image_width], z_whole + 1);
+	glm::vec3 B2 = glm::vec3(x_whole, image_data_sample[i + image_width], z_whole + 1);
 
 	// up and right
-	glm::vec3 C = glm::vec3(x_whole + 1, image_data[i + image_width + 1], z_whole + 1);
+	glm::vec3 C = glm::vec3(x_whole + 1, image_data_sample[i + image_width + 1], z_whole + 1);
 
 	glm::vec3 normal;
 
 	if (x_fraction >= z_fraction) {
-		normal = glm::cross((C - A), (B - A));
-
 		return  B.y + (1 - x_fraction) * (A - B).y + (z_fraction) * (C - B).y;
-
 	}
 	else {
 		return  B2.y + (x_fraction) * (C - B2).y + (1-z_fraction) * (A - B2).y;
-
 	}
 
-
-	//glm::vec3 v01 = glm::vec3(x, (vertex0.y * x_fraction) + (vertex1.y * (1 - x_fraction)), z_whole);
-	//glm::vec3 v23 = glm::vec3(x, (vertex2.y * x_fraction) + (vertex3.y * (1 - x_fraction)), z_whole + 1);
-	//glm::vec3 v0123 = glm::vec3(x, (v01.y * z_fraction) + (v23.y * (1 - z_fraction)), z);
-
-
-
-	return 0;// (v01.y * z_fraction) + (v0123.y * (1 - z_fraction));
+	return 0;
 }
 
 
@@ -160,7 +190,8 @@ void TerrainGenerator::generate_mesh(int res) {
 
 	for (float z = 0; z < image_height; z += ((float) image_height / (float) res)) {
 		for (float x = 0; x < image_width; x += ((float) image_width / (float) res)) {
-			glm::vec3 position = glm::vec3(x/10.0, (triangle_plane(x,z) /400.0 ) , z/10.0);
+			glm::vec3 position = glm::vec3(x* terrain_coverage_size, (triangle_plane(x,z) * terrain_height_scale ) , z* terrain_coverage_size);
+
 			vertices.push_back(position);
 		}
 	}
@@ -457,4 +488,31 @@ void TerrainGenerator::load_terrain_image(std::string path) {
 }
 
 //TODO move verts based on (x,z) and radius
+
+int TerrainGenerator::getUp(int index, int res) {
+	if(index + res > res * res - 1)
+		return NULL;
+	return index + res;
+}
+
+int TerrainGenerator::getDown(int index, int res) {
+	if (index < res)
+		return NULL;
+	return index - res;
+
+}
+
+int TerrainGenerator::getRight(int index, int res) {
+	if (index % (res - 1) == 0 && index != 0)
+		return NULL;
+	return index + 1;
+
+}
+
+int TerrainGenerator::getLeft(int index, int res) {
+	if (index % res == 0)
+		return NULL;
+	return index - 1;
+
+}
 

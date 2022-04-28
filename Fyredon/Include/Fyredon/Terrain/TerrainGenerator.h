@@ -50,11 +50,21 @@ public:
 	int image_width, image_height, image_n_channels;
 
 
+	int getUp(int index, int res);
+	int getDown(int index, int res);
+	int getRight(int index, int res);
+	int getLeft(int index, int res);
+
 
 	//Fyredon::TextureImage grass;
 	unsigned char* image_data;
+
+	std::vector<unsigned char> image_data_sample;
 	
 	bool terrain_loaded = false;
+
+	float terrain_height_scale = 0.02;
+	float terrain_coverage_size = 0.1;
 
 private:
 

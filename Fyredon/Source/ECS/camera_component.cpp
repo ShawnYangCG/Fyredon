@@ -36,7 +36,7 @@ camera_component::camera_component(Fyredon::Camera* camera)
 	this->outlook->scale(glm::vec3(1.f));
 	this->outlook->translate(glm::vec3(0.f, 0.f, 0.f));
 
-	this->outlook->set_shader("..//Shaders//camera.vert", "..//Shaders//camera.frag");
+	this->outlook->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	this->outlook->set_colour(glm::vec3(0.8f, 0.8f, 0.8f));
 
 	this->outlook->mode = Fyredon::Render_Mode::RENDER_LINES;
