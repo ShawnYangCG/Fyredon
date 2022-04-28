@@ -42,7 +42,10 @@
 #define GL_VERSION_MAJOR 4
 #define GL_VERSION_MINOR 5
 #define EDITOR_WINDOW_RESIZE
-#define MSAA_SAMPLES 4
+#define MSAA_SAMPLES 12 // Just testing, lower for release ! 
+
+//#define GL_DETAILED_DEBUGGING 
+#define GL_DETAILED_ERROR_CHECK
 
 //#define EDITOR_FULLSCREEN 
 //#define ENABLE_CREATE_NEW_PROJECT
@@ -350,6 +353,11 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	FD_DEBUG_BLOCK_MSG("DEVICE VERSION", "s", render_device.version);
 	FD_DEBUG_BLOCK_MSG("DEVICE SL VERSION", "s", render_device.sl_version);
 	FD_DEBUG_BLOCK_END();
+
+	// ============= Setup Debug Messages =============
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(message_callback, 0);
+
 }
 
 GLFWwindow* Fyredon::EditorApplication::get_ogl_context()
@@ -427,6 +435,25 @@ void Fyredon::EditorApplication::shutdown_gui()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
+}
+
+// ============= GL DEBUG Callbacks Implementation =============
+
+void Fyredon::message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* msg, const void* userParm)
+{
+#ifdef GL_DETAILED_ERROR_CHECK
+	if (type == GL_DEBUG_TYPE_ERROR)
+	{
+		std::cerr << "GL_ERROR:: " << "type: " << type << " severity: " << severity << " message: " << msg << std::endl;
+		return; 
+	}
+#endif
+#ifdef GL_DETAILED_DEBUGGING
+	if (type != GL_DEBUG_TYPE_ERROR)
+	{
+		std::cerr << "GL_INFO:: " << "type: " << type << " severity: " << severity << " message: " << msg << std::endl;
+	}
+#endif
 }
 
 // ============= GLFW Callbacks Implementation =============

@@ -124,7 +124,7 @@ void Fyredon::Framebuffer_MS::blit_to_framebuffer_s(Framebuffer_S* target_fbo)
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO_ID);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, target_fbo->FBO_ID);
 	glBlitFramebuffer(0, 0, colour_texture->width, colour_texture->height, 0, 0, target_fbo->colour_texture->width, target_fbo->colour_texture->height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-	glBlitFramebuffer(0, 0, colour_texture->width, colour_texture->height, 0, 0, target_fbo->colour_texture->width, target_fbo->colour_texture->height, GL_DEPTH_BUFFER_BIT, GL_LINEAR);
+	glBlitFramebuffer(0, 0, colour_texture->width, colour_texture->height, 0, 0, target_fbo->colour_texture->width, target_fbo->colour_texture->height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 	// Clear all bound FBO state
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);

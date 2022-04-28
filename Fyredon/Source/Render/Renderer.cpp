@@ -64,15 +64,21 @@ Fyredon::Renderer::~Renderer()
 // Info : Get OGL Context and do intalization setup with creation of framebuffer to draw to.  
 void Fyredon::Renderer::init(GLFWwindow* ogl_context, int8_t sample_count)
 {
-	if (is_init) {
-		std::cout << "WARNING::Init already called on Renderer Singleton\n";
-		return; 
-	}
 	// Assume we are on the same thread as OGL Context creation
 	ogl_wincontext = ogl_context;
 	msaa_samples = sample_count;
 
-	// Allocate Render Framebuffer Resources
+	// Dealloc previous Framebuffer resources
+	if (is_init)
+	{
+		if (framebuffers.render_framebuffer_s)  delete (framebuffers.render_framebuffer_s);
+		if (framebuffers.render_framebuffer_ms) delete (framebuffers.render_framebuffer_ms);
+		if (framebuffers.render_col_tex_s)      delete (framebuffers.render_col_tex_s);
+		if (framebuffers.render_col_tex_ms)     delete (framebuffers.render_col_tex_ms);
+	}
+	is_init = false; 
+
+	// Allocate Render Framebuffer resources
 	framebuffers.render_col_tex_s      = new Texture("Viewport Colour Attachment S", 0, width, height);
 	framebuffers.render_col_tex_ms     = new Texture_MultiSample("Viewport Colour Attachment MS", 0, width, height, msaa_samples);
 	framebuffers.render_framebuffer_s  = new Framebuffer_S(framebuffers.render_col_tex_s);

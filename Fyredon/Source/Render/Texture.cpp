@@ -113,29 +113,10 @@ Fyredon::Texture_MultiSample::Texture_MultiSample(const char* Tex_Name, GLuint T
 	set_params(filter);
 }
 
+// Info : Multisampled textures have no supported params. 
 void Fyredon::Texture_MultiSample::set_params(filter_type filter)
 {
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, ID);
-	switch (filter)
-	{
-	case 0:
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		break;
-
-	case 1:
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		break;
-
-	default:
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	}
-	// Enforce mirrored repat. 
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_REPEAT); // X (S)
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_REPEAT); // Y (T)
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+	return;
 }
 
 // ====================== TextureImage Class Implementation ======================
