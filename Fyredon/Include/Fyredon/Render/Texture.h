@@ -46,6 +46,21 @@ public:
 
 };
 
+// ========== Multisample Texture (only for use with FBO) ==========
+
+class Texture_MultiSample : public Texture
+{
+public:
+	Texture_MultiSample(const char* Tex_Name, GLuint Tex_Unit, std::size_t Width, std::size_t Height, std::size_t Samples);
+	Texture_MultiSample() = delete; 
+	virtual ~Texture_MultiSample() = default;
+
+	virtual void set_params(filter_type filter) override;
+
+	std::size_t sample_count; 
+};
+
+
 // ========== Texture Image class (from file) ==========
 
 class TextureImage : public Texture
@@ -63,9 +78,6 @@ public:
 	bool flip;
 	std::string file_path;
 };
-
-
-
 
 
 }

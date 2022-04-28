@@ -42,9 +42,10 @@
 #define GL_VERSION_MAJOR 4
 #define GL_VERSION_MINOR 5
 #define EDITOR_WINDOW_RESIZE
-//#define EDITOR_FULLSCREEN 
+#define MSAA_SAMPLES 4
 
-// #define ENABLE_CREATE_NEW_PROJECT
+//#define EDITOR_FULLSCREEN 
+//#define ENABLE_CREATE_NEW_PROJECT
 
 // ================ Init Singleton Instance + Static Data ================
 Fyredon::EditorApplication Fyredon::EditorApplication::app;
@@ -101,7 +102,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// ToDo: A Susbsystem manager class, for now just create renderer instance within EditorApp
 	// ---- Renderer Subsystem Setup
 	Renderer& renderer = Renderer::get_renderer();
-	renderer.init(window);
+	renderer.init(window, MSAA_SAMPLES);
 
 	// Test terrain
 	GameWorld::get_world().create_terrain();
@@ -291,7 +292,7 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_VERSION_MAJOR);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	//	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
+	glfwWindowHint(GLFW_SAMPLES, MSAA_SAMPLES);
 #ifdef EDITOR_WINDOW_RESIZE
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 #else

@@ -26,10 +26,15 @@ struct GLFWwindow;
 
 namespace Fyredon {
 
-class Framebuffer;
+// Forward Decls 
+class Framebuffer_S;
+class Framebuffer_MS;
 class Light; 
 class Texture; 
+class Texture_MultiSample;
 struct GLFWState;
+
+// ================ Renderer Class ================
 
 class Renderer
 {
@@ -37,7 +42,7 @@ public:
 	~Renderer();
 
 	static Renderer& get_renderer();
-	void init(GLFWwindow* ogl_context);
+	void init(GLFWwindow* ogl_context, int8_t sample_count);
 
 	// Rendering
 	void render(Camera& cam_ref); // Single Tick of renderer 
@@ -62,7 +67,7 @@ public:
 	void submit_light(Light* light);
 	void resize(int width, int height);
 
-	// Public Renderer flags (to hook from GUI) 
+	// Public Renderer flags (to hook from GUI) (Rename to params)
 	struct
 	{
 		glm::vec3 *light_pos, *test_pos; 
@@ -71,8 +76,9 @@ public:
 		float *light_str; 
 	} flags;
 
-	int width  = RENDER_RES_X;
-	int height = RENDER_RES_Y;
+	int32_t width  = RENDER_RES_X;
+	int32_t height = RENDER_RES_Y;
+	int8_t msaa_samples;
 
 private:
 	static Renderer renderer; 
@@ -82,14 +88,20 @@ private:
 	std::vector<Light*> lights;
 	std::unordered_map<std::string, std::function<void()>> commands;
 
-	// Game Viewer Prims 
-	GroundPlane* ground;
-	Mesh*        axis;
-	Mesh_OBJ*    test_mesh;
+	struct
+	{
+		GroundPlane* ground;
+		Mesh* axis;
+		Mesh_OBJ* test_mesh;
+	} viewer_prims;
 
-	// Primary Framebuffer
-	Framebuffer* framebuffer; 
-	Texture* col_tex;
+	struct
+	{
+		Framebuffer_S*       render_framebuffer_s;
+		Framebuffer_MS*      render_framebuffer_ms; 
+		Texture*             render_col_tex_s;
+		Texture_MultiSample* render_col_tex_ms; 
+	} framebuffers;
 
 	GLFWwindow* ogl_wincontext; 
 	bool is_init; 

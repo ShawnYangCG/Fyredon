@@ -20,6 +20,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 //#define DEBUG_RENDERER
+#define DEBUG_FRAMEBUFFER_CHECKS
 #define GL_ERROR() get_GLError(__FILE__, __LINE__)
 
 // =========================================== Renderer Class Implementation ===========================================
@@ -49,29 +50,41 @@ Fyredon::Renderer::Renderer()
 Fyredon::Renderer::~Renderer()
 {
 	// Dealloc FB Resources
-	delete col_tex; 
-	delete framebuffer; 
+	if (framebuffers.render_framebuffer_s)  delete (framebuffers.render_framebuffer_s);
+	if (framebuffers.render_framebuffer_ms) delete (framebuffers.render_framebuffer_ms);
+	if (framebuffers.render_col_tex_s)      delete (framebuffers.render_col_tex_s);
+	if (framebuffers.render_col_tex_ms)     delete (framebuffers.render_col_tex_ms);
 
-	// Dealloc Test Prims
-	delete ground;
-	delete test_mesh;
-	delete axis; 
+	// Dealloc Viewer Prims
+	if (viewer_prims.ground)    delete viewer_prims.ground;
+	if (viewer_prims.axis)      delete viewer_prims.axis;
+	if (viewer_prims.test_mesh) delete viewer_prims.test_mesh;
 }
 
 // Info : Get OGL Context and do intalization setup with creation of framebuffer to draw to.  
-void Fyredon::Renderer::init(GLFWwindow* ogl_context)
+void Fyredon::Renderer::init(GLFWwindow* ogl_context, int8_t sample_count)
 {
+	if (is_init) {
+		std::cout << "WARNING::Init already called on Renderer Singleton\n";
+		return; 
+	}
 	// Assume we are on the same thread as OGL Context creation
 	ogl_wincontext = ogl_context;
+	msaa_samples = sample_count;
 
-	// Allocate Texture and Framebuffer
-	if (col_tex)     delete col_tex; 
-	if (framebuffer) delete framebuffer; 
-	col_tex     = new Texture("ColorAttachment", 0, width, height);
-	framebuffer = new Framebuffer(col_tex);
+	// Allocate Render Framebuffer Resources
+	framebuffers.render_col_tex_s      = new Texture("Viewport Colour Attachment S", 0, width, height);
+	framebuffers.render_col_tex_ms     = new Texture_MultiSample("Viewport Colour Attachment MS", 0, width, height, msaa_samples);
+	framebuffers.render_framebuffer_s  = new Framebuffer_S(framebuffers.render_col_tex_s);
+	framebuffers.render_framebuffer_ms = new Framebuffer_MS(framebuffers.render_col_tex_ms, msaa_samples);
 	GL_ERROR();
 
-	// Create Test Primitives
+	#ifdef DEBUG_FRAMEBUFFER_CHECKS
+	framebuffers.render_framebuffer_s->check();
+	framebuffers.render_framebuffer_ms->check();
+	#endif 
+
+	// Create Viewer Primitives
 	if (!has_testprims)
 	{
 		create_render_prims();
@@ -107,7 +120,7 @@ void Fyredon::Renderer::resize(int width, int height)
 {
 	this->width  = width;
 	this->height = height;
-	init(ogl_wincontext);
+	init(ogl_wincontext, msaa_samples);
 }
 
 // Initalize Render State (abstract these calls later)
@@ -135,15 +148,15 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	// Enforce base renderer flags
 	render_prep();
 
-	if(test_mesh) // Update Test Mesh
+	if(viewer_prims.test_mesh) // Update Test Mesh
 	{
-		test_mesh->shader.setVec("camPos_world", cam_ref.position);
-		test_mesh->shader.setVec("lightPos_world", *flags.light_pos);
-		test_mesh->shader.setFloat("lightStr", *flags.light_str);
+		viewer_prims.test_mesh->shader.setVec("camPos_world", cam_ref.position);
+		viewer_prims.test_mesh->shader.setVec("lightPos_world", *flags.light_pos);
+		viewer_prims.test_mesh->shader.setFloat("lightStr", *flags.light_str);
 	} 
 
-	// Bind Renderer Framebuffer
-	framebuffer->bind_clear(); 
+	// Bind Renderer MS Framebuffer
+	framebuffers.render_framebuffer_ms->bind_clear();
 	GL_ERROR();
 
 	// ==================== Render Viewer Primtivies ====================
@@ -151,28 +164,29 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 
 	if (*flags.draw_grid)
 	{
-		ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
-		ground->render();
+		viewer_prims.ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
+		viewer_prims.ground->render();
 	} 
 
 	// Draw Axis
 	if (*flags.draw_axis)
 	{
-		axis->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
+		viewer_prims.axis->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		glLineWidth(2.5f); // Reset for axis width.
-		axis->render();
+		viewer_prims.axis->render();
 	}
 
 	if (*flags.draw_test_prims)
 	{
-		test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
-		test_mesh->render();
+		viewer_prims.test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
+		viewer_prims.test_mesh->render();
 	} 
 
 	// ==================== Render Game Meshes ====================
 	//GL_ERROR();
 
-	framebuffer->bind(); // Not remaining bound for some reason ...
+	 // Not remaining bound for some reason ...
+	framebuffers.render_framebuffer_ms->bind();
 
 	if (meshes.size())
 	{
@@ -192,6 +206,9 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	}
 	GL_ERROR(); 
 
+	// Blind to S framebuffer
+	framebuffers.render_framebuffer_ms->blit_to_framebuffer_s(framebuffers.render_framebuffer_s);
+
 	// Unbind Framebuffers
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); 
 
@@ -203,8 +220,9 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 #endif
 }
 
+// Info : Return Renderer primary colour attachement (resolved from multisampled-->standard texture)
 Fyredon::Texture* Fyredon::Renderer::get_colour_attachment()
-{ return col_tex; }
+{ return framebuffers.render_col_tex_s; }
 
 // =========================================== DEBUG CODE ===========================================
 
@@ -218,24 +236,24 @@ void Fyredon::Renderer::get_GLError(const char* file, int32_t line)
 
 void Fyredon::Renderer::create_test_mesh()
 {
-	test_mesh = new Mesh_OBJ("test_pig", "..//Assets//Mesh//pighead.obj");
-	test_mesh->load_obj();
-	test_mesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
-	test_mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
-	test_mesh->scale(glm::vec3(2.f));
-	test_mesh->mode = Render_Mode::RENDER_MESH;
+	viewer_prims.test_mesh = new Mesh_OBJ("test_pig", "..//Assets//Mesh//pighead.obj");
+	viewer_prims.test_mesh->load_obj();
+	viewer_prims.test_mesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	viewer_prims.test_mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
+	viewer_prims.test_mesh->scale(glm::vec3(2.f));
+	viewer_prims.test_mesh->mode = Render_Mode::RENDER_MESH;
 }
 
 // Info : Contain these test render prims here for now.
 void Fyredon::Renderer::create_render_prims()
 {
 	// Ground Plane (1281 debug)
-	ground = new GroundPlane;
-	ground->set_size(4.f);
-	ground->set_tile(2.f); 
+	viewer_prims.ground = new GroundPlane;
+	viewer_prims.ground->set_size(4.f);
+	viewer_prims.ground->set_tile(2.f);
 
 	// Axis
-	axis = new Mesh("axis");
+	viewer_prims.axis = new Mesh("axis");
 	std::vector<Vert> verts; 
 	verts.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
 	verts.emplace_back(glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
@@ -243,9 +261,9 @@ void Fyredon::Renderer::create_render_prims()
 	verts.emplace_back(glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
 	verts.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
 	verts.emplace_back(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
-	axis->set_data_mesh(verts);
-	axis->translate(glm::vec3(0.f, 0.01f, 0.f));
-	axis->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
-	axis->mode = Render_Mode::RENDER_LINES;  
+	viewer_prims.axis->set_data_mesh(verts);
+	viewer_prims.axis->translate(glm::vec3(0.f, 0.01f, 0.f));
+	viewer_prims.axis->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
+	viewer_prims.axis->mode = Render_Mode::RENDER_LINES;
 }
 
