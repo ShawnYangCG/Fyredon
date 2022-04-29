@@ -14,16 +14,20 @@ layout (location = 3) in vec2 v_UV;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
+uniform mat3 model_normal; 
 
 out vec3 colour; 
 out vec2 uv; 
 out vec3 poscol; 
+out vec3 normal_world; 
+
 
 void main()
 {
 	vec4 pos = proj * view * model * vec4(v_P, 1.0);
 	gl_Position = pos; 
 	
+	normal_world = model_normal * v_N; 
 	poscol = vec3(pos.x, pos.y, pos.z);
 	colour = v_C;
 	uv = v_UV;

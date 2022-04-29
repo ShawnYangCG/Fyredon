@@ -105,49 +105,79 @@ void Fyredon::Shader::use()
 // ========================== Set Uniform Member Functions ========================== 
 void Fyredon::Shader::setBool(const std::string &name, bool value) const
 {
+	static std::size_t count = 0; 
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (!id){ std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return;}
+	if (!id){ 
+		if (count > 1) return;
+		count++;
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n";
+		return;}
 	glUniform1i(id, (int)value); 
 }
 
 void Fyredon::Shader::setInt(const std::string &name, int value) const
 {
+	static std::size_t count = 0;
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (id == -1) { std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
+	if (id == -1) { 
+		if (count > 1) return;
+		count++;
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n";
+		return; }
 	glUniform1i(id, value);
 }
 
 void Fyredon::Shader::setFloat(const std::string &name, float value) const
 {
+	static std::size_t count = 0;
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (id == -1) { std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
+	if (id == -1) { 
+		if (count > 1) return;
+		count++;
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; 
+		return; }
 	glUniform1f(id, value);
 }
 
 void Fyredon::Shader::setVec(const std::string &name, const glm::vec3 value) const
 {
+	static std::size_t count = 0;
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (id == -1) { std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
+	if (id == -1) { 
+		if (count > 1) return;
+		count++;
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n";
+		return; }
 	glUniform3fv(id, 1, glm::value_ptr(value));
 }
 
 void Fyredon::Shader::setMat3(const std::string &name, const glm::mat3x3 value) const
 {
+	static std::size_t count = 0; 
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (id == -1) { std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
+	if (id == -1) { 
+		if (count > 1) return;
+		count++;
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; 
+		return; }
 	glUniformMatrix3fv(id, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Fyredon::Shader::setMat4(const std::string &name, const glm::mat4x4 value) const
 {
+	static std::size_t count = 0; 
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
-	if (id == -1) { std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; return; }
+	if (id == -1) {
+		if (count > 1) return;
+		count++;
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n"; 
+		return; }
 	glUniformMatrix4fv(id, 1, GL_FALSE, glm::value_ptr(value));
 }
 

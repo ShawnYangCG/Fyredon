@@ -74,6 +74,11 @@ void Fyredon::Mesh::render()
 	// Update Modfied Uniforms
 	shader.setMat4("model", model);
 
+	// Calc model_normal
+	glm::mat3 nmodel(model);
+	nmodel = glm::transpose(glm::inverse(nmodel));
+	shader.setMat3("model_normal", nmodel);
+
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 

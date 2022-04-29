@@ -21,6 +21,7 @@ out vec3 normal_world;
 uniform mat4 model; 
 uniform mat4 view; 
 uniform mat4 proj; 
+uniform mat3 model_normal; 
 
 void main()
 {
@@ -30,7 +31,7 @@ void main()
 
 	// World Space transforms
 	pos_world    = vec3(model * vec4(v_P, 1.0));
-	normal_world = transpose(inverse(mat3(model))) * v_N; // Should precompute on host. 
+	normal_world = model_normal * v_N; 
 
 	// Pos
 	gl_Position = proj * view * model * vec4(v_P, 1.0); 
