@@ -6,11 +6,11 @@
 #pragma once
 
 // Project Headers
-#include "Fyredon/Render/Mesh.h"
+#include "Fyredon/Render/Mesh_OBJ.h"
 
 namespace Fyredon
 {
-class GroundPlane : public Mesh
+class GroundPlane : public Mesh_OBJ
 {
 public:
 	GroundPlane();

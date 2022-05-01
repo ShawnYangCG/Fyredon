@@ -1,19 +1,9 @@
-//////////////////////////////////////////////////////////////////////
-//
-//  University of Leeds
-//  Fyirdon
-//  RTS Game Engine Development
-// 
-//  Xiaoyuan Yang 
-//  March, 2022
-//
-//  ------------------------
-//  FBXLoader.h
-//  ------------------------
-//  
-//  Used to load a fbx file and show animations
-//  
-//////////////////////////////////////////////////////////////////////
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	FBXLoader.h: Used to load a fbx file and show animations: Xiaoyuan Yang 
+=============================================================================*/
+
 #pragma once
 // GLEW
 #include "GLEW/glew.h"

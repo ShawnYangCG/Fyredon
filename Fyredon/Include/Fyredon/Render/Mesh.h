@@ -1,58 +1,143 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Mesh.h: .obj based mesh : Niall
+	Mesh.h: Base primtive class for rendering meshes : Niall
 =============================================================================*/
 #pragma once
-
+ 
 // Std Headers
 #include <string>
 #include <vector>
+#include <functional>
 
-// Ext Headers 
 // GLM
 #include "glm/glm.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/hash.hpp"
+
 // Project Headers
-#include "primitive.h"
-#include "texture.h"
+#include "Fyredon/Render/Shader.h"
 
-// Info : Primitive based class for rendering meshes based on loaded .obj file, along with textures. 
-// Vertex Attribute layout same as Primitive (P(x,y,z), N(x,y,z), C(r,g,b), UV(u,v))
+/* 
+*  Info: Base Mesh object for rendering within the viewer app.
+*  Mesh format: (P(x,y,z), N(x,y,z), C(r,g,b), UV(u,v,w)). 
+*  User defines mesh as tri-soup format, using indexing internally to opitmize memory usage. 
+*/ 
+	
+namespace Fyredon {
 
-namespace Fyredon
+class TextureImage;
+
+// 48 Byte (16 Byte Aligned) Vertex 
+struct Vert
 {
-class Mesh : public Primitive
+	glm::vec3 pos;
+	glm::vec3 normal;
+	glm::vec3 col;
+	glm::vec3 uv;
+
+	// To allow for emplace_back()
+	Vert(const glm::vec3& P, const glm::vec3& N, const glm::vec3& C, glm::vec3& U)
+		: pos(P), normal(N), col(C), uv(U) {}
+	// Equality for hashing
+	bool operator== (const Vert& b) const {
+		return (pos == b.pos && normal == b.normal && col == b.col && uv == b.uv);
+	}
+	Vert() = default; 
+};
+
+// Hash Functor for Vertex
+struct VertHash 
+{
+	std::size_t operator() (const Vert& key) const
+	{
+		return (v_hash(key.pos) ^ ( v_hash(key.normal) << 1) >> 1) 
+			^ (v_hash(key.col) ^ (v_hash(key.uv) << 1) >> 1);
+	}
+	std::hash<glm::vec3> v_hash; 
+};
+
+// ======================== Mesh Class ========================
+enum Render_Mode { RENDER_MESH = 0, RENDER_LINES, RENDER_POINTS };
+
+class Mesh
 {
 public:
-	Mesh() : Primitive("") {}
-	Mesh(const char *name, const char *filePath);
-	~Mesh();
+	explicit Mesh(const char *Name);
+	Mesh() = delete;
+	virtual ~Mesh();
 
-	virtual void render()            override; 
-	virtual bool check_state() const override;
+	// Virtual Methods 
+	virtual void render();
 
-	void load_obj(bool has_tex = false);
-	void load_texture(const char *filepath, GLuint unit = 0);
+	virtual void debug()       const;
+
+	virtual bool check_state() const;
+
+	// Setters
+	void set_data_mesh(const std::vector<Vert>& data);
+
+	void set_colour(const glm::vec3& col);
+
+	void set_cameraTransform(const glm::mat4x4& view, const glm::mat4x4& persp);
+
+	void set_shader(const char* vert_path, const char* frag_path);
+
+	// Update
+	void update_data_mesh(const std::vector<Vert>& data);
+
+	// Single vertex attribute only
+	void update_data_position(const std::vector<glm::vec3> &pos_data);
+
+	void update_data_colour  (const std::vector<glm::vec3> &col_data);
+
+	// Mesh now supports textures
+	void load_texture(const char* filepath, GLuint unit = 0);
+
+	// Model Transforms
+	void scale       (const glm::vec3 &scale);
+	void translate   (const glm::vec3 &offs);
+	void rotate      (float d_ang, const glm::vec3 &axis);
+	void local_rotate(float x_ang, float y_ang, float z_ang);
+
+	// Debug
+	float get_vertindex_ratio();
+
+private:
+	virtual void create_vertex_buffers(const std::vector<float>& serial_verts);
+
+	virtual void create_index_buffer(const std::vector<GLuint>& indices);
 
 public:
-	std::string file_path; 
+	// ------- Vertex Data -------
+	std::vector<Vert>   vert_data; 
+	std::vector<GLuint> inds_data;
+	std::size_t vert_count, index_count;
+
+	// ------- GL Resources -------
+	GLuint VBO, VAO, EBO; 
+	glm::mat4 model;
+	Shader shader;
+
+	// ------- State -------
+	Render_Mode mode;
+	bool wireframe;
+	// Required state for rendering
 	struct
 	{
-		std::vector<glm::vec3> v_p;
-		std::vector<glm::vec3> v_n;
-		std::vector<glm::vec2> v_t; 
-		std::vector<vert> verts;
-	} obj_data;
-
-	// State
-	bool has_tex;
-	bool wireframe; 
-
-	// Texture 
+		uint8_t vert_data_set : 1;
+		uint8_t inds_data_set : 1;
+		uint8_t buffers_set   : 1;
+		uint8_t shader_set    : 1;
+		uint8_t camera_set    : 1;
+		uint8_t texture_set   : 1;
+	} flags;
+	// Texture State
 	bool use_tex;
-	TextureImage *tex; 
+	TextureImage* tex;
+
+	std::string name;
 };
+
 }
-
-

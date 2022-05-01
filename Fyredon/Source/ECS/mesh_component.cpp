@@ -14,7 +14,8 @@ mesh_component::mesh_component(Fyredon::Mesh* mesh)
 
 void mesh_component::GUI_struct()
 {
-	std::string vertex = "Vertex: " + std::to_string(this->mesh_render->obj_data.verts.size());
+	std::string vertex = "Vertex: " + std::to_string(this->mesh->vert_data.size());
+	
 	std::string edge = "Edge:";
 	std::string face = "Face:";
 	ImGui::Text(vertex.data());

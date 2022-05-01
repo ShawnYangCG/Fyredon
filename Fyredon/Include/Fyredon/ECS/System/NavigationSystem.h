@@ -1,9 +1,12 @@
 #pragma once
-#include "Fyredon/ECS/World.h"
 #include <ctime>
+
+#include "Fyredon/ECS/World.h"
+#include "Fyredon/Render/Mesh_OBJ.h"
 #include "Fyredon/ECS/test_move_component.h"
 #include "Fyredon/ECS/navigation_component.h"
 #include "Fyredon/ECS/System/EngineRenderSystem.h"
+
 class NavigationSystem
 {
 public:
@@ -11,7 +14,7 @@ public:
 	EngineRenderSystem* enrenSys;
 	clock_t lastTime;
 	std::vector<Entity*> entities;
-	Fyredon::Mesh* wall;
+	Fyredon::Mesh_OBJ* wall;
 	Entity* destPoint;
 	glm::vec3 targetPosition;
 	Entity* map;

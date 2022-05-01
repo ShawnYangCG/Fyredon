@@ -44,8 +44,8 @@ public:
 
 	int terrain_res;
 
-	Fyredon::Mesh TerrainMesh;
-	Fyredon::Mesh water_quad;
+	Fyredon::Mesh *TerrainMesh;
+	Fyredon::Mesh *water_quad;
 
 	int image_width, image_height, image_n_channels;
 

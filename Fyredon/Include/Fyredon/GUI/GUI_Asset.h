@@ -52,7 +52,7 @@ private:
 	std::filesystem::directory_entry* selected; 
 
 	std::filesystem::path path; 
-	std::string cur_path, prev_path;
+	std::string cur_path;
 	bool path_changed; 
 };
 
