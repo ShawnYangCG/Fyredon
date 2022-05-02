@@ -19,6 +19,7 @@
 // Ext Headers
 #include "glm/glm.hpp"
 
+// Inital render res
 #define RENDER_RES_X 768
 #define RENDER_RES_Y 504
 
@@ -55,6 +56,7 @@ private:
 	void get_GLError(const char *file, int32_t line);
 
 	void render_prep();
+
 
 	void render_camera(Camera& cam_ref);
 

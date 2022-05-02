@@ -5,21 +5,23 @@ mesh_component::mesh_component(Fyredon::Mesh* mesh)
 {
 	this->componentName = "Mesh";
 	this->mesh = mesh;
-	Fyredon::Mesh* mesh2 = (Fyredon::Mesh*)malloc(sizeof(Fyredon::Mesh));
-	memcpy((void*)mesh2, (void*)this->mesh, sizeof(Fyredon::Mesh));
-	this->mesh_render = mesh2;
+	this->mesh_render = new Fyredon::Mesh(*mesh);
 	Fyredon::Renderer::get_renderer().submit_mesh(this->mesh_render);
 	this->memmory_size = sizeof(mesh_component);
 }
 
+// Remove mesh from render_list if component deleted
+mesh_component::mesh_component::~mesh_component()
+{
+	//auto& ren = Fyredon::Renderer::get_renderer();
+	//ren.delete_mesh ...;
+}
+
 void mesh_component::GUI_struct()
 {
-	std::string vertex = "Vertex: " + std::to_string(this->mesh->vert_data.size());
-	
-	std::string edge = "Edge:";
-	std::string face = "Face:";
+	std::string vertex = "Vertex: " + std::to_string(this->mesh->vert_count);
+	std::string face = "Face: " + std::to_string(this->mesh->index_count / 3);
 	ImGui::Text(vertex.data());
-	ImGui::Text(edge.data());
 	ImGui::Text(face.data());
 }
 

@@ -134,7 +134,7 @@ void Fyredon::GameWorld::create_terrain() {
 	terrain_generator->read_height_map("Heightmap.png");
 	terrain_generator->generate_mesh(257*2);
 	
-	terrain_generator->TerrainMesh->use_tex = true;
+	//terrain_generator->TerrainMesh->use_tex = true; // Disable Tex
 	terrain_generator->TerrainMesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	terrain_generator->TerrainMesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
 	terrain_generator->TerrainMesh->translate(glm::vec3(0.f, 0.f, 0.f));

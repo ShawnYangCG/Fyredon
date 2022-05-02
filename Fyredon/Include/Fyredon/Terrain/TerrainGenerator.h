@@ -13,8 +13,6 @@
 #include "Fyredon/Debug/Logger.h"
 #include "Fyredon/Render/Texture.h"
 
-
-
 //TODO change namespace
 
 class TerrainGenerator
@@ -38,7 +36,6 @@ public:
 	void smooth_normals();
 	void load_obj(bool has_tex = false);
 
-
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 
@@ -48,8 +45,6 @@ public:
 	Fyredon::Mesh *water_quad;
 
 	int image_width, image_height, image_n_channels;
-
-
 
 	//Fyredon::TextureImage grass;
 	unsigned char* image_data;

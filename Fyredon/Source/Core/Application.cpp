@@ -105,6 +105,9 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	Renderer& renderer = Renderer::get_renderer();
 	renderer.init(window, MSAA_SAMPLES);
 
+	// Test terrain (bypass ECS)
+	//GameWorld::get_world().create_terrain();
+
 	// ========== setup system ===============
 	// render system
 	this->renderSys = new EngineRenderSystem(this->ECSworld, &renderer);

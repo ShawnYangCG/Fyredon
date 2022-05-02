@@ -152,36 +152,29 @@ float TerrainGenerator::triangle_plane(float x, float z){
 void TerrainGenerator::generate_mesh(int res) {
 	
 	// Allocate Primitive members 
-	TerrainMesh = new Fyredon::Mesh("Terrain_Mesh"); 
+	TerrainMesh = new Fyredon::Mesh("Terrain_Mesh");
 
 	// Temp storage
-	std::vector<Fyredon::Vert> verts; 
+	std::vector<Fyredon::Vert> verts;
 	std::vector<Fyredon::GLuint> inds;
-	
+
 	//std::cout << "z res " << image_height/((float)image_height / (float)res) << "\n";
 	//std::cout << "x res " << image_width/((float)image_width / (float)res) << "\n";
 
-	terrain_res = res;
-
-	for (float z = 0; z < image_height; z += ((float) image_height / (float) res)) {
-		for (float x = 0; x < image_width; x += ((float) image_width / (float) res)) {
-			glm::vec3 position = glm::vec3(x/10.0, (triangle_plane(x,z) /400.0 ) , z/10.0);
+	for (float z = 0; z < image_height; z += ((float)image_height / (float)res)) {
+		for (float x = 0; x < image_width; x += ((float)image_width / (float)res)) {
+			glm::vec3 position = glm::vec3(x / 10.0, (triangle_plane(x, z) / 500.0), z / 10.0);
 			vertices.push_back(position);
 		}
 	}
-	std::cout << vertices.size() << " vert size\n";
-
-	//smooth_normals();
-
-	//std::cout << "verts" << " image size" << "\n";
 
 	for (size_t z = 0; z < (res - ((float)res / (float)image_height)); z++) {
 		for (size_t x = 0; x < (res - ((float)res / (float)image_width)); x++) {
 			//UVs
 			float u_text_0 = ((float)x) / res;
 			float v_text_0 = ((float)z) / res;
-			float u_text_1 = ((float)x+1) / res;
-			float v_text_1 = ((float)z+1) / res;
+			float u_text_1 = ((float)x + 1) / res;
+			float v_text_1 = ((float)z + 1) / res;
 
 			// Verts
 			//current
@@ -208,15 +201,6 @@ void TerrainGenerator::generate_mesh(int res) {
 			vertex3.pos = this->vertices[i + res + 1];
 			vertex3.uv = glm::vec3(0.f, 0.f, 0.f);
 			vertex3.col = glm::vec3(1.f, 1.f, 1.f);
-
-			
-			Fyredon::Vert vertex4;
-			Fyredon::Vert vertex5;
-			Fyredon::Vert vertex6;
-			Fyredon::Vert vertex7;
-			Fyredon::Vert vertex8;
-			Fyredon::Vert vertex9;
-
 
 			//Set Vector U to(Triangle.p2 minus Triangle.p1)
 			//	Set Vector V to(Triangle.p3 minus Triangle.p1)
@@ -245,21 +229,14 @@ void TerrainGenerator::generate_mesh(int res) {
 			verts.push_back(vertex0);
 			verts.push_back(vertex2);
 			verts.push_back(vertex3);
-			//std::cout << "n1 " << n1.x << " " << n1.y << " " << n1.z << "\n";
-			//std::cout << "n2 " << n2.x << " " << n2.y << " " << n2.z << "\n";
 		}
 	}
 
 	//std::cout << TerrainMesh.obj_data.verts.size() << " size\n";
 	//std::cout << "verts " << vertices.size() << "\n";
 
-	std::filesystem::path file = std::filesystem::current_path() / "..\\Assets\\Images\\Terrain\\grass.jpg";
-	std::string file_as_string = file.string();
-	
-	//grass = Fyredon::TextureImage(file_as_string.c_str(), "grass", 1);
-	TerrainMesh->load_texture(file_as_string.c_str(), 0);
-	
-	TerrainMesh->set_data_mesh(TerrainMesh->vert_data);
+	// Set Primtivie Data
+	TerrainMesh->set_data_mesh(verts);
 }
 
 
