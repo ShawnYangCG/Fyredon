@@ -210,12 +210,12 @@ void TerrainGenerator::generate_mesh(int res) {
 			vertex3.col = glm::vec3(1.f, 1.f, 1.f);
 
 			
-			Fyredon::vert vertex4;
-			Fyredon::vert vertex5;
-			Fyredon::vert vertex6;
-			Fyredon::vert vertex7;
-			Fyredon::vert vertex8;
-			Fyredon::vert vertex9;
+			Fyredon::Vert vertex4;
+			Fyredon::Vert vertex5;
+			Fyredon::Vert vertex6;
+			Fyredon::Vert vertex7;
+			Fyredon::Vert vertex8;
+			Fyredon::Vert vertex9;
 
 
 			//Set Vector U to(Triangle.p2 minus Triangle.p1)
@@ -256,11 +256,10 @@ void TerrainGenerator::generate_mesh(int res) {
 	std::filesystem::path file = std::filesystem::current_path() / "..\\Assets\\Images\\Terrain\\grass.jpg";
 	std::string file_as_string = file.string();
 	
-
 	//grass = Fyredon::TextureImage(file_as_string.c_str(), "grass", 1);
-	TerrainMesh.load_texture(file_as_string.c_str(),0);
+	TerrainMesh->load_texture(file_as_string.c_str(), 0);
 	
-	TerrainMesh.set_data_mesh(TerrainMesh.obj_data.verts);
+	TerrainMesh->set_data_mesh(TerrainMesh->vert_data);
 }
 
 

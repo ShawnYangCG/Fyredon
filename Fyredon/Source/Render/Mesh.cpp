@@ -50,6 +50,21 @@ Fyredon::Mesh::~Mesh()
 	if (tex) delete tex;
 }
 
+// Info : Copy Ctor
+
+Fyredon::Mesh::Mesh(const Mesh& copy)
+{
+	*this = copy; 
+
+	// Explict deep copies 
+	this->vert_data = copy.vert_data;
+	this->vert_count = copy.vert_count;
+	this->inds_data = copy.inds_data;
+	this->index_count = copy.index_count; 
+
+	if (copy.tex) this->tex = new TextureImage(*copy.tex);
+}
+
 // ============= Rendering =============
 
 void Fyredon::Mesh::render()

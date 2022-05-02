@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Mesh.h: Base primtive class for rendering meshes : Niall
+	Mesh.h: Key class used for handling all mesh data : Niall
 =============================================================================*/
 #pragma once
  
@@ -12,7 +12,6 @@
 
 // GLM
 #include "glm/glm.hpp"
-
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/hash.hpp"
 
@@ -40,6 +39,11 @@ struct Vert
 	// To allow for emplace_back()
 	Vert(const glm::vec3& P, const glm::vec3& N, const glm::vec3& C, glm::vec3& U)
 		: pos(P), normal(N), col(C), uv(U) {}
+	// Allow for float based data
+	Vert(float P_x, float P_y, float P_z, float N_x, float N_y, float N_z,
+		float C_r, float C_g, float C_b, float T_u, float T_v, float T_w)
+		: pos(P_x, P_y, P_z), normal(N_x, N_y, N_z), col(C_r, C_g, C_b), uv(T_u, T_v, T_w) {}
+
 	// Equality for hashing
 	bool operator== (const Vert& b) const {
 		return (pos == b.pos && normal == b.normal && col == b.col && uv == b.uv);
@@ -66,7 +70,10 @@ class Mesh
 public:
 	explicit Mesh(const char *Name);
 	Mesh() = delete;
+
 	virtual ~Mesh();
+
+	Mesh(const Mesh& copy); 
 
 	// Virtual Methods 
 	virtual void render();

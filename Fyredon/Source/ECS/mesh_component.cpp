@@ -8,7 +8,7 @@ mesh_component::mesh_component(Fyredon::Mesh* mesh)
 	Fyredon::Mesh* mesh2 = (Fyredon::Mesh*)malloc(sizeof(Fyredon::Mesh));
 	memcpy((void*)mesh2, (void*)this->mesh, sizeof(Fyredon::Mesh));
 	this->mesh_render = mesh2;
-	Fyredon::Renderer::get_renderer().submit_primitive(this->mesh_render);
+	Fyredon::Renderer::get_renderer().submit_mesh(this->mesh_render);
 	this->memmory_size = sizeof(mesh_component);
 }
 

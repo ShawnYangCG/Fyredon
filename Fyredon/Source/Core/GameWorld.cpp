@@ -134,20 +134,21 @@ void Fyredon::GameWorld::create_terrain() {
 	terrain_generator->read_height_map("Heightmap.png");
 	terrain_generator->generate_mesh(257*2);
 	
-	terrain_generator->TerrainMesh.use_tex = true;
-	terrain_generator->TerrainMesh.create_buffers();
-	terrain_generator->TerrainMesh.set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
-	terrain_generator->TerrainMesh.set_colour(glm::vec3(1.f, 0.f, 0.f));
-	terrain_generator->TerrainMesh.translate(glm::vec3(0.f, 0.f, 0.f));
-	terrain_generator->TerrainMesh.scale(glm::vec3(1.0f));
-	terrain_generator->TerrainMesh.mode = Render_Mode::RENDER_MESH;
+	terrain_generator->TerrainMesh->use_tex = true;
+	terrain_generator->TerrainMesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	terrain_generator->TerrainMesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	terrain_generator->TerrainMesh->translate(glm::vec3(0.f, 0.f, 0.f));
+	terrain_generator->TerrainMesh->scale(glm::vec3(1.0f));
+	terrain_generator->TerrainMesh->mode = Render_Mode::RENDER_MESH;
+	terrain_generator->TerrainMesh->name = "terrain";
 
-	terrain_generator->TerrainMesh.name = "terrain";
-	prims.push_back(std::move(terrain_generator->TerrainMesh));
-	Primitive* mesh_p = &prims.back();
+	// Ownership issue as TerrainMesh exists within terrain_generator...
+	prims.push_back(*(terrain_generator->TerrainMesh));
+	Mesh* mesh_p = &prims.back();
 	prims_map[std::string("terrain")] = mesh_p;
 
-	Renderer::get_renderer().submit_primitive(mesh_p);
+	// Submit to renderer
+	Renderer::get_renderer().submit_mesh(mesh_p);
 
 
 	//TerrainGenerator* terrain_generator2 = new TerrainGenerator("heightmap12", "./assets/heightmap/Heightmap.png");
