@@ -12,6 +12,7 @@
 // Extern Includes
 #include "dearimgui/imgui.h"
 #include "Fyredon/Core/SaveState.h"
+#include "Fyredon/GUI/GUI_RendererSettings.h"
 
 Fyredon::GUI_Menu::GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y_pad)
 	: GUI_Panel(), cfg(menu_config), pad_y(y_pad) ,gui_config(gui_config)
@@ -94,7 +95,7 @@ void Fyredon::GUI_Menu::main_menu()
 				}
 				if (ImGui::BeginMenu("View"))
 				{
-					if (ImGui::MenuItem("PlaceHolder 1")) {}
+					if (ImGui::MenuItem("Renderer Settings")) { menu_state.view_renderer = true; }
 					if (ImGui::MenuItem("PlaceHolder 2")) {}
 					ImGui::EndMenu(); // End View Menu
 				}

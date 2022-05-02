@@ -45,7 +45,7 @@ public:
 	void init(GLFWwindow* ogl_context, int8_t sample_count);
 
 	// Rendering
-	void render(Camera& cam_ref); // Single Tick of renderer 
+	void render(); // Single Tick of renderer 
 
 	Texture* get_colour_attachment();
 
@@ -55,7 +55,8 @@ private:
 	void get_GLError(const char *file, int32_t line);
 
 	void render_prep();
-	void render_entity(Camera& cam_ref);
+
+	void render_camera(Camera& cam_ref);
 
 	// Debug
 	void create_test_mesh();
@@ -81,12 +82,16 @@ public:
 	int32_t height = RENDER_RES_Y;
 	int8_t msaa_samples;
 
+	// Camera references 
+	Camera* game_cam;
+
 private:
 	static Renderer renderer; 
 
 	// ===== Draw Lists to render per frame =====
 	std::vector<Mesh*>  meshes;
 	std::vector<Light*> lights;
+
 	std::unordered_map<std::string, std::function<void()>> commands;
 
 	struct

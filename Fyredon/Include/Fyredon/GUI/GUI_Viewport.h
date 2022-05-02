@@ -8,7 +8,7 @@
 #include "Fyredon/GUI/GUIConfig.h"
 #include "Fyredon/Render/Texture.h"
 #include "Fyredon/Render/Renderer.h"
-// include file_dialog ...
+
 
 namespace Fyredon
 {
@@ -21,9 +21,12 @@ namespace Fyredon
 
 		virtual void tick() override;
 		virtual void resize() override;
+
 	protected:
 		virtual void draw() override;
 		const char* title;
+
+	protected:
 		GUIConfig* guiConfig;
 		int width = 0;
 		int height = 0;

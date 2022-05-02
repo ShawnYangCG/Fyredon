@@ -200,7 +200,8 @@ void Fyredon::EditorApplication::tick_engine()
 	this->renderSys->tick();
 
 	// Tick Renderer
-	Renderer::get_renderer().render(camera);
+	Renderer::get_renderer().game_cam = &this->camera; 
+	Renderer::get_renderer().render();
 
 	// Tick state update (if save/load state requested)
 	if (SaveState::getInstance().update) {			// -- State saved

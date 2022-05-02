@@ -3,6 +3,7 @@
 #include "Fyredon/Action/MenuAction.h"
 
 #include "Fyredon/Render/Mesh_OBJ.h"
+#include "Fyredon/GUI/GUI_RendererSettings.h"
 
 Fyredon::MenuAction::MenuAction(GUI_PanelOrgnizer* panelOrgnizer, World* world)
 {
@@ -34,6 +35,11 @@ void Fyredon::MenuAction::tick()
 	if (menuPanel->menu_state.createCamera) {
 		createCamera();
 		menuPanel->menu_state.createCamera = false;
+	}
+	if (menuPanel->menu_state.view_renderer)
+	{
+		render_settings();
+		menuPanel->menu_state.view_renderer = false; 
 	}
 }
 
@@ -83,4 +89,12 @@ void Fyredon::MenuAction::createCamera()
 {
 	camera_entity* entity = new camera_entity();
 	this->world->addCamera(entity);
+}
+
+void Fyredon::MenuAction::render_settings()
+{
+	if (panelOrgnizer->gui_panels.find("render_settings") == panelOrgnizer->gui_panels.end()) {
+		panelOrgnizer->gui_panels["render_settings"] = new GUI_RendererSettings;
+	}
+	else delete panelOrgnizer->gui_panels["render_settings"];
 }

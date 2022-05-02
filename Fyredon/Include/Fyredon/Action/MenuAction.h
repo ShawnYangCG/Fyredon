@@ -19,5 +19,6 @@ namespace Fyredon
 		void createPigHead();
 		void createDoll();
 		void createCamera();
+		void render_settings();
 	};
 }

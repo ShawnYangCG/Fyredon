@@ -147,8 +147,13 @@ void Fyredon::Renderer::render_prep()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-// Info : Basic forward rendering pipeline, render to framebuffer.
-void Fyredon::Renderer::render(Camera &cam_ref)
+void Fyredon::Renderer::render()
+{
+	render_camera(*game_cam);
+}
+
+// Info : Basic forward rendering pipeline from some camera, render to framebuffer.
+void Fyredon::Renderer::render_camera(Camera &cam_ref)
 {
 	// ==================== Render State ====================
 	// Enforce base renderer flags
@@ -189,7 +194,6 @@ void Fyredon::Renderer::render(Camera &cam_ref)
 	} 
 
 	// ==================== Render Game Meshes ====================
-	//GL_ERROR();
 
 	 // Not remaining bound for some reason ...
 	framebuffers.render_framebuffer_ms->bind();
