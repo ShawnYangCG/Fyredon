@@ -28,7 +28,7 @@ camera_component::camera_component(Fyredon::Camera* camera)
 		Vert(.5f, -.5f, .5f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f)
 	};
 	outlook->set_data_mesh(data);
-	outlook->set_shader("..//Shaders//camera.vert", "..//Shaders//camera.frag");
+	outlook->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
 	outlook->set_colour(glm::vec3(0.8f, 0.8f, 0.8f));
 	outlook->scale(glm::vec3(1.f));
 	outlook->translate(glm::vec3(0.f, 0.f, 0.f));
