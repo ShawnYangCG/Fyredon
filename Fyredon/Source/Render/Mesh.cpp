@@ -110,6 +110,7 @@ void Fyredon::Mesh::load_obj(bool has_tex)
 					ss >> c; // '/'
 					ss >> i_vn; // 'v_n' index
 
+					
 					// Create Vertex
 					vert vertex;
 					// neg 1 offset for obj indices '1' based. 
@@ -135,6 +136,9 @@ void Fyredon::Mesh::load_obj(bool has_tex)
 					ss >> c; // '/'
 					ss >> c; // '/'
 					ss >> i_vn; // 'v_n' index
+
+					//std::cout << i_vp - 1 << " " << i_vn - 1 << " " << i_vt - 1 << "\n";
+
 
 					// Create Vertex
 					vert vertex;

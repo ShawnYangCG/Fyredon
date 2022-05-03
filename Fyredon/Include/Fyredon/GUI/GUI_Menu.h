@@ -48,7 +48,7 @@ public:
 		int8_t play, pause, reset : 1; // Play menu
 		int8_t about : 1;             // About menu
 		int8_t savestate : 1;		  // Save state
-		int8_t createTerrain, pigHead, createDoll, createCamera : 1;	  // GameObject menu
+		int8_t createTerrain, pigHead, createDoll, createCamera, tree1 : 1;	  // GameObject menu
 	} menu_state;
 	void new_project();
 };

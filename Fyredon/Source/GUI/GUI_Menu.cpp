@@ -19,7 +19,7 @@ Fyredon::GUI_Menu::GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y
 	menu_state.IsNew = 0, menu_state.open = 0, menu_state.save = 0, menu_state.saveAs = 0;
 	menu_state.play = 0, menu_state.pause = 0, menu_state.reset = 0;
 	menu_state.about = 0,
-	menu_state.createTerrain = 0, menu_state.pigHead = 0, menu_state.createDoll = 0, menu_state.createCamera = 0;
+	menu_state.createTerrain = 0, menu_state.pigHead = 0, menu_state.createDoll = 0, menu_state.createCamera = 0, menu_state.tree1 = 0;
 	newProject = new GUI_NewProjectWindow(this->gui_config->AppWidth, this->gui_config->AppHeight);
 	set_title("Fyredon Engine Version 0.0.0");
 }
@@ -81,6 +81,7 @@ void Fyredon::GUI_Menu::main_menu()
 					if (ImGui::BeginMenu("3D Object"))
 					{
 						if (ImGui::MenuItem("Pig Head")) { menu_state.pigHead = true; }
+						if (ImGui::MenuItem("Tree1")) { menu_state.tree1 = true; }
 						ImGui::EndMenu();
 					}
 					if (ImGui::MenuItem("Doll")) { menu_state.createDoll = true; }

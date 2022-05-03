@@ -18,4 +18,11 @@ terrain_entity::terrain_entity()
 	this->addTransformComponent();
 	Component* terrainMesh = new mesh_component(&terrain_generator->TerrainMesh);
 	this->addComponent(terrainMesh);
+
+	/*std::cout << "loading tree\n";
+	terrain_generator->load_terrain_tree("tree1.obj");
+	Component* tree_mesh = new mesh_component(&terrain_generator->tree1);
+	addComponent(tree_mesh);*/
+
+
 }

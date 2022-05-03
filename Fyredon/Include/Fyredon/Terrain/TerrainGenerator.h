@@ -46,6 +46,7 @@ public:
 
 	Fyredon::Mesh TerrainMesh;
 	Fyredon::Mesh water_quad;
+	Fyredon::Mesh tree1;
 
 	int image_width, image_height, image_n_channels;
 
@@ -66,6 +67,8 @@ public:
 	float terrain_height_scale = 0.02;
 	float terrain_coverage_size = 0.1;
 
+
+	void load_terrain_tree(std::string path);
 private:
 
 };

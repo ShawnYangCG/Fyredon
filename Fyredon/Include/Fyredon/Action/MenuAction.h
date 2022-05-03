@@ -17,6 +17,7 @@ namespace Fyredon
 		void tick();
 		void createTerrainEntity();
 		void createPigHead();
+		void createTree1();
 		void createDoll();
 		void createCamera();
 	};

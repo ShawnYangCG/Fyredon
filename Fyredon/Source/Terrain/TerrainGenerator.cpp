@@ -33,8 +33,6 @@ void TerrainGenerator::read_height_map(std::string path) {
 
 	std::cout << file.string().c_str() << "\n";
 
-	std::filesystem::path file2 = std::filesystem::current_path() / "..\\Assets\\heightmap" / "rewrite.png";
-	
 	stbi_set_flip_vertically_on_load(0);
 	image_data = stbi_load(file.string().c_str(), &image_width, &image_height, &image_n_channels, 1);
 
@@ -516,3 +514,12 @@ int TerrainGenerator::getLeft(int index, int res) {
 
 }
 
+void TerrainGenerator::load_terrain_tree(std::string path) {
+
+	std::filesystem::path file = std::filesystem::current_path() / "..\\Assets\\Mesh\\" / path;
+
+	tree1 = Fyredon::Mesh("tree1", file.string().c_str());
+
+	tree1.load_obj(1);
+
+}

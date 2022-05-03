@@ -24,6 +24,10 @@ void Fyredon::MenuAction::tick()
 		createPigHead();
 		menuPanel->menu_state.pigHead = false;
 	}
+	if (menuPanel->menu_state.tree1) {
+		createTree1();
+		menuPanel->menu_state.tree1 = false;
+	}
 	if (menuPanel->menu_state.createDoll) {
 		createDoll();
 		menuPanel->menu_state.createDoll = false;
@@ -51,6 +55,22 @@ void Fyredon::MenuAction::createPigHead()
 	mesh->scale(glm::vec3(2.f));
 	mesh->mode = Render_Mode::RENDER_MESH;
 	Entity* entity = new Entity("Pig Head");
+	entity->addTransformComponent();
+	mesh_component* meshCom = new mesh_component(mesh);
+	entity->addComponent(meshCom);
+	this->world->addEntity(entity);
+}
+
+void Fyredon::MenuAction::createTree1()
+{
+	Mesh* mesh = new Mesh("tree1", "..//Assets//Mesh//tree1.obj");
+	mesh->load_obj(0);
+	mesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
+	mesh->scale(glm::vec3(2.f));
+	mesh->mode = Render_Mode::RENDER_MESH;
+	Entity* entity = new Entity("Tree1");
 	entity->addTransformComponent();
 	mesh_component* meshCom = new mesh_component(mesh);
 	entity->addComponent(meshCom);
