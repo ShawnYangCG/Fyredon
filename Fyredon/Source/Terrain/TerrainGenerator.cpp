@@ -4,6 +4,7 @@
 	TerrainGeneration.cpp: Terrain loading and management class : Isaiah
 =============================================================================*/
 #include "Fyredon/Other/pch.h"
+#include <algorithm>
 
 #include "Fyredon/Terrain/TerrainGenerator.h"
 //#define STB_IMAGE_IMPLEMENTATION
@@ -181,26 +182,30 @@ void TerrainGenerator::generate_mesh(int res) {
 			int i = (z * res) + x;
 			Fyredon::Vert vertex0;
 			vertex0.pos = this->vertices[i];
-			vertex0.uv = glm::vec3(0.f, 0.f, 0.f);
-			vertex0.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex0.uv = glm::vec3(u_text_0, v_text_0, 0.f);
+			//vertex0.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex0.col = glm::vec3(vertex0.pos.y);
 
 			// right
 			Fyredon::Vert vertex1;
 			vertex1.pos = this->vertices[i + 1];
-			vertex1.uv = glm::vec3(0.f, 0.f, 0.f);
-			vertex1.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex1.uv = glm::vec3(u_text_1, v_text_0, 0.f);
+			//vertex1.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex1.col = glm::vec3(vertex1.pos.y);
 
 			// up
 			Fyredon::Vert vertex2;
 			vertex2.pos = this->vertices[i + res];
-			vertex2.uv = glm::vec3(0.f, 0.f, 0.f);
-			vertex2.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex2.uv = glm::vec3(u_text_0, v_text_1, 0.f);
+			//vertex2.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex2.col = glm::vec3(vertex2.pos.y);
 
 			// up and right
 			Fyredon::Vert vertex3;
 			vertex3.pos = this->vertices[i + res + 1];
-			vertex3.uv = glm::vec3(0.f, 0.f, 0.f);
-			vertex3.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex3.uv = glm::vec3(u_text_1, v_text_1, 0.f);
+			//vertex3.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex3.col = glm::vec3(vertex3.pos.y);
 
 			//Set Vector U to(Triangle.p2 minus Triangle.p1)
 			//	Set Vector V to(Triangle.p3 minus Triangle.p1)
@@ -234,6 +239,25 @@ void TerrainGenerator::generate_mesh(int res) {
 
 	//std::cout << TerrainMesh.obj_data.verts.size() << " size\n";
 	//std::cout << "verts " << vertices.size() << "\n";
+
+	/*
+	for (size_t z = 0; z < ((std::size_t)res - ((float)res / (float)image_height)); z++) {
+		for (size_t x = 0; x < ((std::size_t)res - ((float)res / (float)image_width)); x++) {
+
+			std::size_t i = z * res + x;
+			std::size_t i1 = std::min(i + 1, std::size_t(res));
+			std::size_t j1 = std::min(i + res, std::size_t(res));
+			std::size_t ij1 = std::min(i + res + 1, std::size_t(res));
+			glm::vec3 N_i   = verts[i].normal;
+			glm::vec3 N_i1  = verts[i + 1].normal; 
+			glm::vec3 N_j1  = verts[i + res].normal;
+			glm::vec3 N_ij1 = verts[i + res + 1].normal;
+
+			verts[i].normal = (N_i + N_i1 + N_j1 + N_ij1) * 0.25f;
+
+			//verts[i].normal = (verts[i].normal + verts[i1].normal + verts[j1].normal + verts[ij1].normal) * 0.25f; 
+		}
+	} */
 
 	// Set Primtivie Data
 	TerrainMesh->set_data_mesh(verts);
