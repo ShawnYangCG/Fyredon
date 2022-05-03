@@ -12,6 +12,7 @@
 // Extern Includes
 #include "dearimgui/imgui.h"
 #include "Fyredon/Core/SaveState.h"
+#include "Fyredon/GUI/GUI_RendererSettings.h"
 
 Fyredon::GUI_Menu::GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y_pad)
 	: GUI_Panel(), cfg(menu_config), pad_y(y_pad) ,gui_config(gui_config)
@@ -35,6 +36,10 @@ void Fyredon::GUI_Menu::tick()
 	if (menu_state.savestate) {
 		saved_state();
 		menu_state.savestate = false;
+	}
+	if (menu_state.loadstate) {
+		loaded_state();
+		menu_state.loadstate = false;
 	}
 }
 
@@ -72,7 +77,7 @@ void Fyredon::GUI_Menu::main_menu()
 				if (ImGui::BeginMenu("Edit"))
 				{
 					if (ImGui::MenuItem("Save State")) { menu_state.savestate = true; }
-					if (ImGui::MenuItem("PlaceHolder 2")) {}
+					if (ImGui::MenuItem("Load State")) { menu_state.loadstate = true; }
 					ImGui::EndMenu(); // End Edit Menu
 				}
 				if (ImGui::BeginMenu("GameObject"))
@@ -91,7 +96,7 @@ void Fyredon::GUI_Menu::main_menu()
 				}
 				if (ImGui::BeginMenu("View"))
 				{
-					if (ImGui::MenuItem("PlaceHolder 1")) {}
+					if (ImGui::MenuItem("Renderer Settings")) { menu_state.view_renderer = true; }
 					if (ImGui::MenuItem("PlaceHolder 2")) {}
 					ImGui::EndMenu(); // End View Menu
 				}
@@ -189,4 +194,10 @@ void Fyredon::GUI_Menu::new_project()
 void Fyredon::GUI_Menu::saved_state()
 {
 	SaveState::getInstance().update = true;
+}
+
+// Load engine state called
+void Fyredon::GUI_Menu::loaded_state()
+{
+	SaveState::getInstance().loaded = true;
 }

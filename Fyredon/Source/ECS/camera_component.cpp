@@ -5,44 +5,39 @@ camera_component::camera_component(Fyredon::Camera* camera)
 {
 	this->componentName = "Camera";
 	this->camera = camera;
-	this->outlook = new Fyredon::Primitive("camera");
-	float data[176] =
+
+	this->outlook = new Fyredon::Mesh("camera");
+	using Fyredon::Vert;
+	std::vector<Vert> data =
 	{
-		0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 0.f, 0.f,
-		.5f, .5f, .5f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 0.f, 0.f,
-
-		0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, -1.f, -1.f, 0.f, 0.f,
-		.5f, -.5f, -.5f, 0.f, 0.f, 0.f, 1.f, -1.f, -1.f, 0.f, 0.f,
-
-		0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 0.f,
-		.5f, -.5f, .5f, 0.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 0.f,
-
-		0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, -1.f, 0.f, 0.f,
-		.5f, .5f, -.5f, 0.f, 0.f, 0.f, 1.f, 1.f, -1.f, 0.f, 0.f,
-
-		.5f, -.5f, .5f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f,
-		.5f, .5f, .5f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f,
-		
-		.5f, .5f, .5f, 0.f, 0.f, 0.f, 0.f, 0.f, -1.f, 0.f, 0.f,
-		.5f, .5f, -.5f, 0.f, 0.f, 0.f, 0.f, 0.f, -1.f, 0.f, 0.f,
-
-		.5f, .5f, -.5f, 0.f, 0.f, 0.f, 0.f, -1.f, 0.f, 0.f, 0.f,
-		.5f, -.5f, -.5f, 0.f, 0.f, 0.f, 0.f, -1.f, 0.f, 0.f, 0.f,
-
-		.5f, -.5f, -.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-		.5f, -.5f, .5f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
+		Vert(0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 0.f, 0.f, 0.f),
+		Vert(.5f, .5f, .5f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 0.f, 0.f, 0.f),
+		Vert(0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, -1.f, -1.f, 0.f, 0.f, 0.f),
+		Vert(.5f, -.5f, -.5f, 0.f, 0.f, 0.f, 1.f, -1.f, -1.f, 0.f, 0.f, 0.f),
+		Vert(0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 0.f, 0.f),
+		Vert(.5f, -.5f, .5f, 0.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 0.f, 0.f),
+		Vert(0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, -1.f, 0.f, 0.f, 0.f),
+		Vert(.5f, .5f, -.5f, 0.f, 0.f, 0.f, 1.f, 1.f, -1.f, 0.f, 0.f, 0.f),
+		Vert(.5f, -.5f, .5f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f),
+		Vert(.5f, .5f, .5f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f),
+		Vert(.5f, .5f, .5f, 0.f, 0.f, 0.f, 0.f, 0.f, -1.f, 0.f, 0.f, 0.f),
+		Vert(.5f, .5f, -.5f, 0.f, 0.f, 0.f, 0.f, 0.f, -1.f, 0.f, 0.f, 0.f),
+		Vert(.5f, .5f, -.5f, 0.f, 0.f, 0.f, 0.f, -1.f, 0.f, 0.f, 0.f, 0.f),
+		Vert(.5f, -.5f, -.5f, 0.f, 0.f, 0.f, 0.f, -1.f, 0.f, 0.f, 0.f, 0.f),
+		Vert(.5f, -.5f, -.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f),
+		Vert(.5f, -.5f, .5f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f)
 	};
-	this->outlook->set_data_mesh(data, 16);
-	this->outlook->scale(glm::vec3(1.f));
-	this->outlook->translate(glm::vec3(0.f, 0.f, 0.f));
+	outlook->set_data_mesh(data);
+	outlook->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
+	outlook->set_colour(glm::vec3(0.8f, 0.8f, 0.8f));
+	outlook->scale(glm::vec3(1.f));
+	outlook->translate(glm::vec3(0.f, 0.f, 0.f));
+	outlook->mode = Fyredon::Render_Mode::RENDER_LINES;
 
-	this->outlook->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
-	this->outlook->set_colour(glm::vec3(0.8f, 0.8f, 0.8f));
+	outlook_render = new Fyredon::Mesh(*outlook);
+	Fyredon::Renderer::get_renderer().submit_mesh(outlook_render);
 
-	this->outlook->mode = Fyredon::Render_Mode::RENDER_LINES;
-	this->outlook_render = (Fyredon::Primitive*)malloc(sizeof(Fyredon::Primitive));
-	memcpy((void*)this->outlook_render, (void*)this->outlook, sizeof(Fyredon::Primitive));
-	Fyredon::Renderer::get_renderer().submit_primitive(this->outlook_render);
+	// Note : This does not store correct memory size, doesn't count heap allocations. 
 	this->memmory_size = sizeof(camera_component);
 }
 

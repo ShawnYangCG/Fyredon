@@ -14,8 +14,8 @@ void EngineRenderSystem::tick()
 		camera_component* caCom = (camera_component*)entity->getComponentByName("Camera");
 		transform_component* transf = (transform_component*)entity->getComponentByName("Transform");
 		if (transf->isChanged) {
-			Fyredon::Primitive* mesh = (Fyredon::Primitive*)malloc(sizeof(Fyredon::Primitive));
-			memcpy((void*)mesh, (void*)caCom->outlook, sizeof(Fyredon::Primitive));
+			Fyredon::Mesh* mesh = new Fyredon::Mesh(*(caCom->outlook));
+
 			float TranslationX, TranslationY, TranslationZ;
 			float ScaleX, ScaleY, ScaleZ;
 			float RotationX, RotationY, RotationZ;
@@ -34,8 +34,10 @@ void EngineRenderSystem::tick()
 			ScaleY = transf->matrixScale[1];
 			ScaleZ = transf->matrixScale[2];
 			mesh->scale(glm::vec3(ScaleX, ScaleY, ScaleZ));
-			memcpy((void*)caCom->outlook_render, (void*)mesh, sizeof(Fyredon::Primitive));
-			free(mesh);
+
+			delete caCom->outlook_render;
+			caCom->outlook_render = new Fyredon::Mesh(*mesh); 
+			delete mesh;
 		}
 	}
 	// render object

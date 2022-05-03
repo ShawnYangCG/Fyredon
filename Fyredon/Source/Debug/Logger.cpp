@@ -3,8 +3,6 @@
 
 #include <Fyredon/Debug/Logger.h>
 
-
-
 /*
 	TODO
 	=====

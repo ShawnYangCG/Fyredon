@@ -13,6 +13,8 @@
 #include "Fyredon/Debug/Logger.h"
 #include "Fyredon/Core/RandomGenerator.h"
 
+#include "GLEW/glew.h"
+
 Fyredon::GameWorld Fyredon::GameWorld::world; 
 
 Fyredon::GameWorld& Fyredon::GameWorld::get_world()
@@ -38,11 +40,10 @@ void Fyredon::GameWorld::tick(float delta_time)
 // 1. Allocate to internal array. 
 // 2. Define mapping for named access.
 // 3. Submit pointer to Renderer (draw list). 
-
-// ToDo : also pass xform 
+// ToDo : also pass per prim xform + render commands
 
 // Info : Handles creation of meshes, this format should be extended for creation of other game entitiy/components.
-void Fyredon::GameWorld::create_mesh(const char* name, const char* file_path)
+void Fyredon::GameWorld::create_mesh_obj(const char* name, const char* file_path)
 {
 	auto rng = Fyredon::RandomGenerator(1234);
 	float x = rng.getDouble();
@@ -51,21 +52,22 @@ void Fyredon::GameWorld::create_mesh(const char* name, const char* file_path)
 	rng = Fyredon::RandomGenerator(4321);
 	float z = rng.getDouble();
 
-	Mesh mesh(name, file_path);
+	Mesh_OBJ mesh(name, file_path);
 	mesh.load_obj();
 	mesh.set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	mesh.translate(glm::vec3(x, y, z));
 
 	// Setup
 	prims.push_back(std::move(mesh));
-	Primitive* mesh_p = &prims.back();
+	Mesh* mesh_p = &prims.back();
 	prims_map[std::string(name)] = mesh_p;
 
 	// Submit to renderer
-	Renderer::get_renderer().submit_primitive(mesh_p);
+	Renderer::get_renderer().submit_mesh(mesh_p);
 }
 
-void Fyredon::GameWorld::create_mesh(const char* name, const char* file_path, const char* vert_shader, const char* frag_shader)
+/*
+void Fyredon::GameWorld::create_mesh_obj(const char* name, const char* file_path, const char* vert_shader, const char* frag_shader)
 {
 	Mesh mesh(name, file_path);
 	prims.push_back(std::move(mesh));
@@ -80,7 +82,7 @@ void Fyredon::GameWorld::create_mesh(const char* name, const char* file_path, co
 
 	// Submit to renderer
 	Renderer::get_renderer().submit_primitive(mesh_p);
-}
+} */
 
 void Fyredon::GameWorld::create_light(const char* name, glm::vec3 Pos, float Strength)
 {
@@ -94,7 +96,7 @@ void Fyredon::GameWorld::create_light(const char* name, glm::vec3 Pos, float Str
 void Fyredon::GameWorld::delete_mesh(const char* name)
 {
 	auto found = prims_map.find(std::string(name));
-	if (found != prims_map.end())
+	if (found == prims_map.end())
 	{
 		FD_DEBUG_BLOCK_MSG("Tried to delete non existing mesh: ", "s", name);
 		return; 
@@ -112,7 +114,7 @@ void Fyredon::GameWorld::delete_mesh(const char* name)
 void Fyredon::GameWorld::delete_light(const char* name)
 {
 	auto found = lights_map.find(std::string(name));
-	if (found != lights_map.end())
+	if (found == lights_map.end())
 	{
 		FD_DEBUG_BLOCK_MSG("Tried to delete non existing light: ", "s", name);
 		return;
@@ -128,28 +130,26 @@ void Fyredon::GameWorld::delete_light(const char* name)
 }
 
 void Fyredon::GameWorld::create_terrain() {
-	terrain_generator = new TerrainGenerator("heightmap1", "./assets/heightmap/ai.png");
-	terrain_generator->read_height_map("ai.png");
-	terrain_generator->generate_mesh(256*2);
-	terrain_generator->TerrainMesh.use_tex = true;
-	terrain_generator->TerrainMesh.create_buffers();
-	terrain_generator->TerrainMesh.set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
-	terrain_generator->TerrainMesh.set_colour(glm::vec3(1.f, 0.f, 0.f));
-	terrain_generator->TerrainMesh.translate(glm::vec3(0.f, 0.f, 0.f));
-	terrain_generator->TerrainMesh.scale(glm::vec3(1.0f));
-	terrain_generator->TerrainMesh.mode = Render_Mode::RENDER_MESH;
+	terrain_generator = new TerrainGenerator("heightmap1", "./assets/heightmap/Heightmap.png");
+	terrain_generator->read_height_map("Heightmap.png");
+	terrain_generator->generate_mesh(257*2);
+	
+	//terrain_generator->TerrainMesh->use_tex = true; // Disable Tex
+	terrain_generator->TerrainMesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	terrain_generator->TerrainMesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	terrain_generator->TerrainMesh->translate(glm::vec3(0.f, 0.f, 0.f));
+	terrain_generator->TerrainMesh->scale(glm::vec3(1.0f));
+	terrain_generator->TerrainMesh->mode = Render_Mode::RENDER_MESH;
+	terrain_generator->TerrainMesh->name = "terrain";
 
-
-
-	terrain_generator->TerrainMesh.name = "terrain";
-	prims.push_back(std::move(terrain_generator->TerrainMesh));
-	Primitive* mesh_p = &prims.back();
+	// Ownership issue as TerrainMesh exists within terrain_generator...
+	prims.push_back(*(terrain_generator->TerrainMesh));
+	Mesh* mesh_p = &prims.back();
 	prims_map[std::string("terrain")] = mesh_p;
 
+	// Submit to renderer
+	Renderer::get_renderer().submit_mesh(mesh_p);
 
-	
-	
-	Renderer::get_renderer().submit_primitive(mesh_p);
 
 	//TerrainGenerator* terrain_generator2 = new TerrainGenerator("heightmap12", "./assets/heightmap/Heightmap.png");
 	//terrain_generator2->read_height_map("Heightmap.png");

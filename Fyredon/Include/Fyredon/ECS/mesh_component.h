@@ -10,6 +10,7 @@ public:
 	// 2. 
 	// rewrite Constructor (give a name to this component)
 	mesh_component(Fyredon::Mesh* mesh);
+	~mesh_component();
 	// 3.
 	// when you create your own component you need to inherit this class and 
 	// add your own variable here

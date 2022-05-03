@@ -1,5 +1,9 @@
 #include "Fyredon/Other/pch.h"
+// Implements
 #include "Fyredon/ECS/terrain_entity.h"
+#include "Fyredon/Render/Mesh.h"
+
+// Note : This class does not correctly implement Component, we need to fix this...
 
 terrain_entity::terrain_entity()
 {
@@ -16,7 +20,7 @@ terrain_entity::terrain_entity()
 	terrain_generator->TerrainMesh.name = "terrain";
 
 	this->addTransformComponent();
-	Component* terrainMesh = new mesh_component(&terrain_generator->TerrainMesh);
+	Component* terrainMesh = new mesh_component(terrain_generator->TerrainMesh);
 	this->addComponent(terrainMesh);
 
 	/*std::cout << "loading tree\n";

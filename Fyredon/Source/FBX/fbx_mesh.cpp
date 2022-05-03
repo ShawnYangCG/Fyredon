@@ -2,7 +2,7 @@
 #include "Fyredon/FBX/fbx_mesh.h"
 
 fbx_mesh::fbx_mesh(const char* name, const char* filePath)
-	:Mesh(name, filePath)
+	:Mesh_OBJ(name, filePath)
 {
 	this->fbxloader = new FBXLoader(filePath);
 	this->fbxloader->LoadFile();
@@ -55,16 +55,16 @@ void fbx_mesh::load_obj(bool has_tex)
 					// add uv
 					for (int uv = 0; uv < vboMesh.lUVsLength; uv += 2) {
 						fbxData.fbx_obj_data.v_t.emplace_back(
-							vboMesh.lUVs[uv], vboMesh.lUVs[uv + 1]);
+							vboMesh.lUVs[uv], vboMesh.lUVs[uv + 1], 0.f);
 					}
 					
-					// add vert
+					// add Vert
 					// Create Vertex
-					for (int vertice = 0; vertice < vboMesh.verticesCount; vertice++) {
-						Fyredon::vert vertex;
-						vertex.pos = fbxData.fbx_obj_data.v_p[vertice];
-						vertex.normal = fbxData.fbx_obj_data.v_n[vertice];
-						vertex.uv = fbxData.fbx_obj_data.v_t[vertice];
+					for (int Vertice = 0; Vertice < vboMesh.verticesCount; Vertice++) {
+						Fyredon::Vert vertex;
+						vertex.pos = fbxData.fbx_obj_data.v_p[Vertice];
+						vertex.normal = fbxData.fbx_obj_data.v_n[Vertice];
+						vertex.uv = fbxData.fbx_obj_data.v_t[Vertice];
 						vertex.col = glm::vec3(1.f, 1.f, 1.f);
 
 						// Append to vert array
@@ -152,7 +152,6 @@ void fbx_mesh::loadAnimation(double startTime, double endTime, double timeStep)
 	}
 }
 
-
 void fbx_mesh::obj_data_backup()
 {
 	for (int i = 0; i < this->fbxMeshData.size(); i++) {
@@ -165,63 +164,40 @@ void fbx_mesh::obj_data_backup()
 
 void fbx_mesh::loadFbxMeshToRender()
 {
-	this->obj_data.verts.clear();
-	this->obj_data.v_n.clear();
-	this->obj_data.v_p.clear();
-	this->obj_data.v_t.clear();
+	this->vert_data.clear();
 	for (int i = 0; i < this->fbxMeshData.size(); i++) {
-		//load v_p
-		for (int vp = 0; vp < this->fbxMeshData[i].fbx_obj_data.v_p.size(); vp++) {
-			this->obj_data.v_p.emplace_back(this->fbxMeshData[i].fbx_obj_data.v_p[vp]);
-		}
-
-		//load v_n
-		for (int vn = 0; vn < this->fbxMeshData[i].fbx_obj_data.v_n.size(); vn++) {
-			this->obj_data.v_n.emplace_back(this->fbxMeshData[i].fbx_obj_data.v_n[vn]);
-		}
-
-		//load v_t
-		for (int vt = 0; vt < this->fbxMeshData[i].fbx_obj_data.v_t.size(); vt++) {
-			this->obj_data.v_t.emplace_back(this->fbxMeshData[i].fbx_obj_data.v_t[vt]);
-		}
 		
 		//load vert
+		// Note : I Changed this to use the new vert_data array within Fyredon::Mesh - Niall (23/04/22) 
 		for (int vr = 0; vr < this->fbxMeshData[i].fbx_obj_data.verts.size(); vr++) {
-			this->obj_data.verts.emplace_back(this->fbxMeshData[i].fbx_obj_data.verts[vr]);
+			Fyredon::Vert vert;
+			vert.pos = this->fbxMeshData[i].fbx_obj_data.v_p[vr];
+			vert.normal = this->fbxMeshData[i].fbx_obj_data.v_n[vr];
+			vert.uv = this->fbxMeshData[i].fbx_obj_data.v_t[vr];
+			this->vert_data.push_back(vert);
 		}
 	}
-	set_data_mesh(obj_data.verts);
+	set_data_mesh(this->vert_data);
 }
 
 void fbx_mesh::loadFbxMeshToRender(int FrameIndex)
 {
-	this->obj_data.verts.clear();
-	this->obj_data.v_n.clear();
-	this->obj_data.v_p.clear();
-	this->obj_data.v_t.clear();
+	this->vert_data.clear();
 
 	std::vector<fbxObjectData> oneFrame = fbx_mesh_all_fream[FrameIndex];
 	for (int i = 0; i < oneFrame.size(); i++) {
-		//load v_p
-		for (int vp = 0; vp < oneFrame[i].fbx_obj_data.v_p.size(); vp++) {
-			this->obj_data.v_p.emplace_back(oneFrame[i].fbx_obj_data.v_p[vp]);
-		}
 
-		//load v_n
-		for (int vn = 0; vn < oneFrame[i].fbx_obj_data.v_n.size(); vn++) {
-			this->obj_data.v_n.emplace_back(oneFrame[i].fbx_obj_data.v_n[vn]);
-		}
-
-		//load v_t
-		for (int vt = 0; vt < oneFrame[i].fbx_obj_data.v_t.size(); vt++) {
-			this->obj_data.v_t.emplace_back(oneFrame[i].fbx_obj_data.v_t[vt]);
-		}
-
-		//load vert
-		for (int vr = 0; vr < oneFrame[i].fbx_obj_data.verts.size(); vr++) {
-			this->obj_data.verts.emplace_back(oneFrame[i].fbx_obj_data.verts[vr]);
+		// Load Vert
+		// Note : I Changed this to use the new vert_data array within Fyredon::Mesh - Niall (23/04/22) 
+		for (int vr = 0; vr < oneFrame[i].fbx_obj_data.verts.size(); vr++) 
+		{
+			Fyredon::Vert vert;
+			vert.pos = this->fbxMeshData[i].fbx_obj_data.v_p[vr];
+			vert.normal = this->fbxMeshData[i].fbx_obj_data.v_n[vr];
+			vert.uv = this->fbxMeshData[i].fbx_obj_data.v_t[vr];
+			this->vert_data.push_back(vert);
 		}
 	}
-	set_data_mesh(obj_data.verts);
+	set_data_mesh(this->vert_data);
 }
 

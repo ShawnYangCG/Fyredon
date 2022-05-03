@@ -1,4 +1,8 @@
-// COMP5823M - A2 : Niall Horn - mesh.vert
+// Copyright Fyredon. All Rights Reserved.
+/*=============================================================================
+	terrain.vert : Terrain Vertex Shader 
+=============================================================================*/
+
 #version 400 core 
 
 // Input 

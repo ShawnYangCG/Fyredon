@@ -120,8 +120,6 @@ namespace Fyredon {
 		GUI_PanelOrgnizer* gui_org;
 		MenuAction* menuAction;
 
-		//std::map<std::string, GUI_Panel*> gui_panels;
-
 		// Camera 
 		Camera camera;
 		float last_yawoffs, last_pitchoffs, last_zoom;
@@ -136,6 +134,9 @@ namespace Fyredon {
 		EngineRenderSystem* renderSys;
 
 	}; // EditorApp
+
+	//  ============ GL Debug Callbacks Requires (4.3) ============
+	void GLAPIENTRY message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* msg, const void* userParm);
 
 	//  ============ GLFW Input Callbacks ============
 	void framebuffer_size_callback(GLFWwindow* window, int width, int height);

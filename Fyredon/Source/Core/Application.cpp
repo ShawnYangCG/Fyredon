@@ -3,9 +3,7 @@
 /*=============================================================================
 	Application.h: Base Engine Editor Application : Niall, Shawn
 =============================================================================*/
-// Project Includes
 #include "Fyredon/Other/pch.h"
-
 // Implements 
 #include "Fyredon/Core/Application.h"
 
@@ -42,9 +40,13 @@
 #define GL_VERSION_MAJOR 4
 #define GL_VERSION_MINOR 5
 #define EDITOR_WINDOW_RESIZE
-//#define EDITOR_FULLSCREEN 
+#define MSAA_SAMPLES 12 // Just testing, lower for release ! 
 
-// #define ENABLE_CREATE_NEW_PROJECT
+//#define GL_DETAILED_DEBUGGING 
+#define GL_DETAILED_ERROR_CHECK
+
+//#define EDITOR_FULLSCREEN 
+//#define ENABLE_CREATE_NEW_PROJECT
 
 // ================ Init Singleton Instance + Static Data ================
 Fyredon::EditorApplication Fyredon::EditorApplication::app;
@@ -62,7 +64,7 @@ Fyredon::EditorApplication::EditorApplication()
 	last_pitchoffs(0.f), last_zoom(0.f), window_title("null")
 {
 	// Camera (to move to world)
-	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, width / height, true);
+	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, RENDER_RES_X / RENDER_RES_Y, true);
 
 	gui_org = new GUI_PanelOrgnizer();
 }
@@ -75,8 +77,6 @@ Fyredon::EditorApplication::~EditorApplication()
 {
 	glfwDestroyWindow(window); window = nullptr;
 	glfwTerminate();
-
-	//if (gui_org) delete gui_org; 
 }
 
 // Info : Called before application loop is ran, to do inital application setup. 
@@ -86,7 +86,6 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	std::string title = Title;
 	title += " :: Default Game Project";
 	width = Width, height = Height, window_title = title.c_str();
-
 
 	// ======== setup a ECS world ======== 
 	this->ECSworld = new World(this->gui_org);
@@ -101,20 +100,13 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// ---- Editor GUI Setup 
 	setup_gui();
 
-	// We need a Susbsystem manager class, for now just create within EditorApp
+	// ToDo: A Susbsystem manager class, for now just create renderer instance within EditorApp
 	// ---- Renderer Subsystem Setup
 	Renderer& renderer = Renderer::get_renderer();
-	renderer.init(window);
-	// Hack untill i find a better solution assume RenderSettings is back of array.
+	renderer.init(window, MSAA_SAMPLES);
 
-	GUI_RendererSettings* ren_set = static_cast<GUI_RendererSettings*>(gui_org->gui_panels["setting"]);
-
-	renderer.flags.draw_axis = &(ren_set->state.draw_axis);
-	renderer.flags.draw_grid = &(ren_set->state.draw_grid);
-	renderer.flags.draw_test_prims = &(ren_set->state.draw_testmesh);
-	renderer.flags.light_pos = &(ren_set->state.light_pos);
-	renderer.flags.light_str = &(ren_set->state.light_strength);
-	renderer.flags.test_pos = &(ren_set->state.test_mesh_pos);
+	// Test terrain (bypass ECS)
+	//GameWorld::get_world().create_terrain();
 
 	// ========== setup system ===============
 	// render system
@@ -195,6 +187,7 @@ void Fyredon::EditorApplication::tick_engine()
 {
 	get_dt();
 
+	// ToDo : Put into engine class
 	// Tick World when game run
 	GameWorld::get_world().tick(dt);
 	update_camera();
@@ -210,12 +203,24 @@ void Fyredon::EditorApplication::tick_engine()
 	this->renderSys->tick();
 
 	// Tick Renderer
-	Renderer::get_renderer().render(camera);
+	Renderer::get_renderer().game_cam = &this->camera; 
+	Renderer::get_renderer().render();
 
-	// Tick state update (if save state requested)
-	if (SaveState::getInstance().update) {
+	// Tick state update (if save/load state requested)
+	if (SaveState::getInstance().update) {			// -- State saved
 		SaveState::getInstance().tick(camera.position, camera.yaw, camera.pitch);
 	}
+	if (SaveState::getInstance().loaded) {			// -- State loaded
+		SaveState::getInstance().load();
+		// Inject state
+		// Camera state
+		camera.position = SaveState::getInstance().cam_pos;
+		camera.yaw = SaveState::getInstance().yaw;
+		camera.pitch = SaveState::getInstance().pitch;
+		camera.calc_basis();
+		// 
+	}
+
 }
 
 void Fyredon::EditorApplication::tick_play()
@@ -272,11 +277,14 @@ void Fyredon::EditorApplication::paint_begin()
 	glDisable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	// Set GUI Dims
+	guiConfig.AppHeight = height;
+	guiConfig.AppWidth = width;
+
 	// GUI new frame, todo wrap im ImGui wrapper class...
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-
 }
 
 // End of Application paint operations (within Tick())
@@ -304,7 +312,7 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_VERSION_MAJOR);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	//	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA 4 Samples for editorapp framebuffer. 
+	glfwWindowHint(GLFW_SAMPLES, MSAA_SAMPLES);
 #ifdef EDITOR_WINDOW_RESIZE
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 #else
@@ -366,6 +374,11 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	FD_DEBUG_BLOCK_MSG("DEVICE VERSION", "s", render_device.version);
 	FD_DEBUG_BLOCK_MSG("DEVICE SL VERSION", "s", render_device.sl_version);
 	FD_DEBUG_BLOCK_END();
+
+	// ============= Setup Debug Messages =============
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(message_callback, 0);
+
 }
 
 GLFWwindow* Fyredon::EditorApplication::get_ogl_context()
@@ -455,13 +468,30 @@ void Fyredon::EditorApplication::shutdown_gui()
 	ImGui::DestroyContext();
 }
 
+// ============= GL DEBUG Callbacks Implementation =============
+
+void Fyredon::message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* msg, const void* userParm)
+{
+#ifdef GL_DETAILED_ERROR_CHECK
+	if (type == GL_DEBUG_TYPE_ERROR)
+	{
+		std::cerr << "GL_ERROR:: " << "type: " << type << " severity: " << severity << " message: " << msg << std::endl;
+		return; 
+	}
+#endif
+#ifdef GL_DETAILED_DEBUGGING
+	if (type != GL_DEBUG_TYPE_ERROR)
+	{
+		std::cerr << "GL_INFO:: " << "type: " << type << " severity: " << severity << " message: " << msg << std::endl;
+	}
+#endif
+}
+
 // ============= GLFW Callbacks Implementation =============
-// 
 // GLFW Callbacks 
 static auto EditorApp = Fyredon::EditorApplication::get_instance();
 
-// Info : Called when window (thus window framebuffer) is resized. (width, height is in pixels) 
-// ToDo : Link with GUI Viewport size. 
+// Info : Called when window (thus window framebuffer) is resized (units is pixels) 
 void Fyredon::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	EditorApp.GLFWState.width = width, EditorApp.GLFWState.height = height;

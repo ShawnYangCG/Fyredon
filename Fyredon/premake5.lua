@@ -18,7 +18,7 @@ project "Fyredon"
 		"%{wks.location}/Fyredon/Include/",
 		"%{wks.location}/Extern/Include/",
 		"%{wks.location}/Extern/Include/dearimgui/", -- need abs dearimgui dir, for cases of : #include "imgui.h" etc.
-		"%{wks.location}/Extern/Include/FBX/"        -- need abs fbx dir, for cases of : #include "fbxsdk/fbxsdk/fbxsdk_version.h"
+		"%{wks.location}/Extern/Include/FBX/",        -- need abs fbx dir, for cases of : #include "fbxsdk/fbxsdk/fbxsdk_version.h"
 	}
 
 	-- precompiled headers

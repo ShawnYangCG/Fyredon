@@ -65,24 +65,24 @@ void navigation_component::createGrid()
 
 void navigation_component::getMeshDetail() 
 {
-	if (this->mesh->obj_data.verts.size() > 0) {
-		this->min_X = this->mesh->obj_data.verts[0].pos[0];
-		this->max_X = this->mesh->obj_data.verts[0].pos[0];
-		this->min_Z = this->mesh->obj_data.verts[0].pos[2];
-		this->max_Z = this->mesh->obj_data.verts[0].pos[2];
+	if (this->mesh->vert_data.size() > 0) {
+		this->min_X = this->max_X = this->mesh->vert_data[0].pos[0];
+		this->max_X = this->max_X = this->mesh->vert_data[0].pos[0];
+		this->min_Z = this->max_X = this->mesh->vert_data[0].pos[2];
+		this->max_Z = this->max_X = this->mesh->vert_data[0].pos[2];
 	}
-	for (int i = 0; i < this->mesh->obj_data.verts.size(); i++) {
-		if (this->mesh->obj_data.verts[i].pos[0] < this->min_X) {
-			this->min_X = this->mesh->obj_data.verts[i].pos[0];
+	for (int i = 0; i < this->mesh->vert_count; i++) {
+		if (this->mesh->vert_data[i].pos[0] < this->min_X) {
+			this->min_X = this->mesh->vert_data[i].pos[0];
 		}
-		if (this->mesh->obj_data.verts[i].pos[0] > this->max_X) {
-			this->max_X = this->mesh->obj_data.verts[i].pos[0];
+		if (this->mesh->vert_data[i].pos[0]> this->max_X) {
+			this->max_X = this->mesh->vert_data[i].pos[0];
 		}
-		if (this->mesh->obj_data.verts[i].pos[2] < this->min_Z) {
-			this->min_Z = this->mesh->obj_data.verts[i].pos[2];
+		if (this->mesh->vert_data[i].pos[2] < this->min_Z) {
+			this->min_Z = this->mesh->vert_data[i].pos[2];
 		}
-		if (this->mesh->obj_data.verts[i].pos[2] > this->max_Z) {
-			this->max_Z = this->mesh->obj_data.verts[i].pos[2];
+		if (this->mesh->vert_data[i].pos[2] > this->max_Z) {
+			this->max_Z = this->mesh->vert_data[i].pos[2];
 		}
 	}
 	this->width = this->max_X - this->min_X;

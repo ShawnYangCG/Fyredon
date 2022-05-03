@@ -13,8 +13,6 @@
 #include "Fyredon/Debug/Logger.h"
 #include "Fyredon/Render/Texture.h"
 
-
-
 //TODO change namespace
 
 class TerrainGenerator
@@ -37,7 +35,6 @@ public:
 	void write_obj(std::string path);
 	void smooth_normals();
 	void load_obj(bool has_tex = false);
-
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;

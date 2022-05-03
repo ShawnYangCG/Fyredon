@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_Panel.h: Base Engine Editor Application
+	GUI_Panel.h: Base Engine Editor Application: Niall
 =============================================================================*/
 #pragma once
 
@@ -11,6 +11,8 @@
 
 namespace Fyredon
 { 
+// Info : Base class for all GUI Panels to implement
+
 class GUI_Panel
 {
 public:

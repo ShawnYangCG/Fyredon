@@ -20,5 +20,6 @@ namespace Fyredon
 		void createTree1();
 		void createDoll();
 		void createCamera();
+		void render_settings();
 	};
 }

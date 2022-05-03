@@ -1,5 +1,9 @@
 #include "Fyredon/Other/pch.h"
+// Implements
 #include "Fyredon/Action/MenuAction.h"
+
+#include "Fyredon/Render/Mesh_OBJ.h"
+#include "Fyredon/GUI/GUI_RendererSettings.h"
 
 Fyredon::MenuAction::MenuAction(GUI_PanelOrgnizer* panelOrgnizer, World* world)
 {
@@ -36,6 +40,11 @@ void Fyredon::MenuAction::tick()
 		createCamera();
 		menuPanel->menu_state.createCamera = false;
 	}
+	if (menuPanel->menu_state.view_renderer)
+	{
+		render_settings();
+		menuPanel->menu_state.view_renderer = false; 
+	}
 }
 
 void Fyredon::MenuAction::createTerrainEntity()
@@ -47,13 +56,14 @@ void Fyredon::MenuAction::createTerrainEntity()
 
 void Fyredon::MenuAction::createPigHead()
 {
-	Mesh* mesh = new Mesh("test_pig", "..//Assets//Mesh//pighead.obj");
-	mesh->load_obj(false);
+	Mesh_OBJ* mesh = new Mesh_OBJ("test_pig", "..//Assets//Mesh//pighead.obj");
+	mesh->load_obj();
 	mesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
 	mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
 	mesh->scale(glm::vec3(2.f));
 	mesh->mode = Render_Mode::RENDER_MESH;
+
 	Entity* entity = new Entity("Pig Head");
 	entity->addTransformComponent();
 	mesh_component* meshCom = new mesh_component(mesh);
@@ -99,4 +109,12 @@ void Fyredon::MenuAction::createCamera()
 {
 	camera_entity* entity = new camera_entity();
 	this->world->addCamera(entity);
+}
+
+void Fyredon::MenuAction::render_settings()
+{
+	if (panelOrgnizer->gui_panels.find("render_settings") == panelOrgnizer->gui_panels.end()) {
+		panelOrgnizer->gui_panels["render_settings"] = new GUI_RendererSettings;
+	}
+	else delete panelOrgnizer->gui_panels["render_settings"];
 }
