@@ -57,7 +57,6 @@ ImTextureID Fyredon::Texture_Base::get_imgui_texture()
 Fyredon::Texture::Texture(const char* Tex_Name, GLuint Tex_Unit, std::size_t Width, std::size_t Height)
 	: Texture_Base(Tex_Name, Tex_Unit, Width, Height)
 {
-	std::cout << "gen text " << ID << " \n";
 	// Gen Tex
 	glGenTextures(1, &ID);
 	glBindTexture(GL_TEXTURE_2D, ID);
