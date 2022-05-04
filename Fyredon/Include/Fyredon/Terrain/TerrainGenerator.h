@@ -63,8 +63,10 @@ public:
 	
 	bool terrain_loaded = false;
 
-	float terrain_height_scale = 0.02;
+	float terrain_height_scale = 0.002;
 	float terrain_coverage_size = 0.1;
+
+	bool flat_normals = true;
 
 
 	void load_terrain_tree(std::string path);

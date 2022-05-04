@@ -86,6 +86,7 @@ public:
 
 	// Camera references 
 	Camera* game_cam;
+	// Camera* scene_cam; 
 
 private:
 	static Renderer renderer; 

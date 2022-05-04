@@ -4,6 +4,7 @@
 	TerrainGeneration.cpp: Terrain loading and management class : Isaiah
 =============================================================================*/
 #include "Fyredon/Other/pch.h"
+#include <algorithm>
 
 #include "Fyredon/Terrain/TerrainGenerator.h"
 //#define STB_IMAGE_IMPLEMENTATION
@@ -197,14 +198,16 @@ void TerrainGenerator::generate_mesh(int res) {
 		for (float x = 0; x < image_width; x += ((float) image_width / (float) res)) {
 			//std::cout << "x :" << x << " z: " << z << " \n";
 
-			glm::vec3 position = glm::vec3(x* terrain_coverage_size, (triangle_plane(x,z) * terrain_height_scale ) , z* terrain_coverage_size);
+			glm::vec3 position = glm::vec3(x * terrain_coverage_size, (triangle_plane(x,z) * terrain_height_scale ) , z* terrain_coverage_size);
 
 			vertices.push_back(position);
 		}
 	}
 	std::cout << vertices.size() << " vert size\n";
 
-	smooth_normals();
+	if (!flat_normals) {
+		smooth_normals();
+	}
 
 
 	//std::cout << "verts" << " image size" << "\n";
@@ -222,33 +225,33 @@ void TerrainGenerator::generate_mesh(int res) {
 			int i = (z * res) + x;
 			Fyredon::Vert vertex0;
 			vertex0.pos = this->vertices[i];
-			vertex0.uv = glm::vec3(u_text_0, v_text_0, 0);
-			vertex0.col = glm::vec3(1.f, 1.f, 1.f);
-			vertex0.normal = normals[i];
+			vertex0.uv = glm::vec3(u_text_0, v_text_0, 0.f);
+			//vertex0.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex0.col = glm::vec3(vertex0.pos.y);
 
 
 			// right
 			Fyredon::Vert vertex1;
 			vertex1.pos = this->vertices[i + 1];
-			vertex1.uv = glm::vec3(u_text_1, v_text_0, 0);
-			vertex1.col = glm::vec3(1.f, 1.f, 1.f);
-			vertex1.normal = normals[i + 1];
+			vertex1.uv = glm::vec3(u_text_1, v_text_0, 0.f);
+			//vertex1.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex1.col = glm::vec3(vertex1.pos.y);
 
 			// up
 			Fyredon::Vert vertex2;
 			vertex2.pos = this->vertices[i + res];
-			vertex2.uv = glm::vec3(u_text_0, v_text_1, 0);
-			vertex2.col = glm::vec3(1.f, 1.f, 1.f);
-			vertex2.normal = normals[i + res];
+			vertex2.uv = glm::vec3(u_text_0, v_text_1, 0.f);
+			//vertex2.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex2.col = glm::vec3(vertex2.pos.y);
 
 
 
 			// up and right
 			Fyredon::Vert vertex3;
 			vertex3.pos = this->vertices[i + res + 1];
-			vertex3.uv = glm::vec3(u_text_1, v_text_1, 0);;
-			vertex3.col = glm::vec3(1.f, 1.f, 1.f);
-			vertex3.normal = normals[i + res + 1];
+			vertex3.uv = glm::vec3(u_text_1, v_text_1, 0.f);
+			//vertex3.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex3.col = glm::vec3(vertex3.pos.y);
 
 			//Set Vector U to(Triangle.p2 minus Triangle.p1)
 			//	Set Vector V to(Triangle.p3 minus Triangle.p1)
@@ -264,16 +267,21 @@ void TerrainGenerator::generate_mesh(int res) {
 			glm::vec3 v2 = vertex3.pos - vertex0.pos;
 			glm::vec3 n2 = glm::normalize(glm::cross(u2, v2));
 
-	/*		vertex0.normal = n1;
-			vertex1.normal = n1;
-			vertex3.normal = n1;*/
+			if (flat_normals) {
+				vertex0.normal = n1;
+				vertex1.normal = n1;
+				vertex3.normal = n1;
+			}
 			verts.push_back(vertex0);
 			verts.push_back(vertex3);
 			verts.push_back(vertex1);
 
-			/*vertex0.normal = n2;
-			vertex2.normal = n2;
-			vertex3.normal = n2;*/
+			if (flat_normals) {
+				vertex0.normal = n2;
+				vertex2.normal = n2;
+				vertex3.normal = n2;
+			}
+
 			verts.push_back(vertex0);
 			verts.push_back(vertex2);
 			verts.push_back(vertex3);
