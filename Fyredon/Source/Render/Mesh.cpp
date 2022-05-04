@@ -399,6 +399,7 @@ void Fyredon::Mesh::scale(const glm::vec3 &scale)
 
 void Fyredon::Mesh::load_texture(const char* filepath, GLuint unit)
 {
+	use_tex = true; 
 	if (tex) delete tex; 
 	std::string tex_name = name + "_texture";
 	tex = new TextureImage(filepath, tex_name.c_str(), unit, true);
