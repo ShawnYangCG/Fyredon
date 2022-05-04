@@ -121,6 +121,12 @@ void Fyredon::Shader::setInt(const std::string &name, int value) const
 	static std::size_t count = 0;
 	glUseProgram(ID);
 	GLint id = glGetUniformLocation(ID, name.c_str());
+
+
+	std::cout << id << " id\n";
+	std::cout << ID << " ID\n";
+	std::cout << name.c_str() << " name\n";
+
 	if (id == -1) { 
 		if (count > 1) return;
 		count++;

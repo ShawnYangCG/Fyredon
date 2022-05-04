@@ -405,6 +405,7 @@ void Fyredon::Mesh::load_texture(const char* filepath, GLuint unit)
 	tex->load();
 
 	if (tex->valid_state) flags.texture_set = 1; else return;
+	std::cout << "no early return \n";
 	shader.setInt("tex", unit);
 }
 

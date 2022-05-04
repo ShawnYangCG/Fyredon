@@ -73,8 +73,8 @@ void Fyredon::MenuAction::createPigHead()
 
 void Fyredon::MenuAction::createTree1()
 {
-	Mesh* mesh = new Mesh("tree1", "..//Assets//Mesh//tree1.obj");
-	mesh->load_obj(0);
+	Mesh_OBJ* mesh = new Mesh_OBJ("tree1", "..//Assets//Mesh//tree1.obj");
+	mesh->load_obj();
 	mesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
 	mesh->translate(glm::vec3(0.f, 0.2f, 2.f));

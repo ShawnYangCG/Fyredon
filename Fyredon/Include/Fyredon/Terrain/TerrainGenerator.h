@@ -12,6 +12,7 @@
 #include "Fyredon/Render/Mesh.h"
 #include "Fyredon/Debug/Logger.h"
 #include "Fyredon/Render/Texture.h"
+#include <Fyredon/Render/Mesh_OBJ.h>
 
 //TODO change namespace
 
@@ -41,9 +42,10 @@ public:
 
 	int terrain_res;
 
-	Fyredon::Mesh TerrainMesh;
-	Fyredon::Mesh water_quad;
-	Fyredon::Mesh tree1;
+	Fyredon::Mesh *TerrainMesh;
+	Fyredon::Mesh *water_quad;
+	Fyredon::Mesh_OBJ *tree1;
+
 
 	int image_width, image_height, image_n_channels;
 

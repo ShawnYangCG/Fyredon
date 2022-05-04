@@ -28,7 +28,7 @@ void TerrainGenerator::write_obj(std::string path) {
 
 
 void TerrainGenerator::read_height_map(std::string path) {
-
+	std::cout << "reading height map\n";
 	std::filesystem::path file = std::filesystem::current_path() / "..\\Assets\\Images\\Heightmaps" / path;
 
 	std::cout << file.string().c_str() << "\n";
@@ -39,6 +39,8 @@ void TerrainGenerator::read_height_map(std::string path) {
 	int x_res = image_width;
 	int z_res = image_height;
 
+	std::cout << "creating sampled height map\n";
+
 	for (size_t x = 0; x < image_width ; x++){
 		for (size_t z = 0; z < image_height; z++){
 			int avg_counter = 1;
@@ -47,28 +49,28 @@ void TerrainGenerator::read_height_map(std::string path) {
 			int up_i = getUp(i, image_width);
 			int up = 0;
 			if (up_i != NULL) {
-				up = image_data[getUp(i, image_width)];
+				up = image_data[up_i];
 				avg_counter++;
 			}
 
 			int down_i = getDown(i, image_width);
 			int down = 0;
 			if (down_i != NULL) {
-				down = image_data[getDown(i, image_width)];
+				down = image_data[down_i];
 				avg_counter++;
 			}
 
 			int left_i = getLeft(i, image_width);
 			int left = 0;
 			if (left_i != NULL) {
-				left = image_data[getLeft(i, image_width)];
+				left = image_data[left_i];
 				avg_counter++;
 			}
 
 			int right_i = getRight(i, image_width);
 			int right = 0;
 			if (right_i != NULL) {
-				right = image_data[getRight(i, image_width)];
+				right = image_data[right_i];
 				avg_counter++;
 			}
 
@@ -193,6 +195,8 @@ void TerrainGenerator::generate_mesh(int res) {
 
 	for (float z = 0; z < image_height; z += ((float) image_height / (float) res)) {
 		for (float x = 0; x < image_width; x += ((float) image_width / (float) res)) {
+			//std::cout << "x :" << x << " z: " << z << " \n";
+
 			glm::vec3 position = glm::vec3(x* terrain_coverage_size, (triangle_plane(x,z) * terrain_height_scale ) , z* terrain_coverage_size);
 
 			vertices.push_back(position);
@@ -200,7 +204,7 @@ void TerrainGenerator::generate_mesh(int res) {
 	}
 	std::cout << vertices.size() << " vert size\n";
 
-	//smooth_normals();
+	smooth_normals();
 
 
 	//std::cout << "verts" << " image size" << "\n";
@@ -218,26 +222,33 @@ void TerrainGenerator::generate_mesh(int res) {
 			int i = (z * res) + x;
 			Fyredon::Vert vertex0;
 			vertex0.pos = this->vertices[i];
-			vertex0.uv = glm::vec2(u_text_0, v_text_0);
+			vertex0.uv = glm::vec3(u_text_0, v_text_0, 0);
 			vertex0.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex0.normal = normals[i];
+
 
 			// right
 			Fyredon::Vert vertex1;
 			vertex1.pos = this->vertices[i + 1];
-			vertex1.uv = glm::vec2(u_text_1, v_text_0);
+			vertex1.uv = glm::vec3(u_text_1, v_text_0, 0);
 			vertex1.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex1.normal = normals[i + 1];
 
 			// up
 			Fyredon::Vert vertex2;
 			vertex2.pos = this->vertices[i + res];
-			vertex2.uv = glm::vec2(u_text_0, v_text_1);
+			vertex2.uv = glm::vec3(u_text_0, v_text_1, 0);
 			vertex2.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex2.normal = normals[i + res];
+
+
 
 			// up and right
 			Fyredon::Vert vertex3;
 			vertex3.pos = this->vertices[i + res + 1];
-			vertex3.uv = glm::vec2(u_text_1, v_text_1);;
+			vertex3.uv = glm::vec3(u_text_1, v_text_1, 0);;
 			vertex3.col = glm::vec3(1.f, 1.f, 1.f);
+			vertex3.normal = normals[i + res + 1];
 
 			//Set Vector U to(Triangle.p2 minus Triangle.p1)
 			//	Set Vector V to(Triangle.p3 minus Triangle.p1)
@@ -253,16 +264,16 @@ void TerrainGenerator::generate_mesh(int res) {
 			glm::vec3 v2 = vertex3.pos - vertex0.pos;
 			glm::vec3 n2 = glm::normalize(glm::cross(u2, v2));
 
-			vertex0.normal = n1;
+	/*		vertex0.normal = n1;
 			vertex1.normal = n1;
-			vertex3.normal = n1;
+			vertex3.normal = n1;*/
 			verts.push_back(vertex0);
 			verts.push_back(vertex3);
 			verts.push_back(vertex1);
 
-			vertex0.normal = n2;
+			/*vertex0.normal = n2;
 			vertex2.normal = n2;
-			vertex3.normal = n2;
+			vertex3.normal = n2;*/
 			verts.push_back(vertex0);
 			verts.push_back(vertex2);
 			verts.push_back(vertex3);
@@ -303,7 +314,23 @@ void TerrainGenerator::smooth_normals() {
 			glm::vec3 C = vertices[i + terrain_res + 1];
 			glm::vec3 D = vertices[i + 1];
 
-			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A));
+
+			//Set Vector U to(Triangle.p2 minus Triangle.p1)
+//	Set Vector V to(Triangle.p3 minus Triangle.p1)
+//	Set Normal.x to(multiply U.y by V.z) minus(multiply U.z by V.y)
+//	Set Normal.y to(multiply U.z by V.x) minus(multiply U.x by V.z)
+//	Set Normal.z to(multiply U.x by V.y) minus(multiply U.y by V.x)
+
+			glm::vec3 u0 = B - A;
+			glm::vec3 v0 = C - A;
+			glm::vec3 norm0 = glm::cross(u0, v0);
+
+			glm::vec3 u1 = C - A;
+			glm::vec3 v1 = D - A;
+			glm::vec3 norm1 = glm::cross(u1, v1);
+
+
+			glm::vec3 n = glm::normalize(norm0 + norm1);
 			normals.push_back(n);
 		}
 		//lower right
@@ -311,10 +338,14 @@ void TerrainGenerator::smooth_normals() {
 			//std::cout << "LR\n";
 
 			glm::vec3 A = vertices[i];
-			glm::vec3 B = vertices[i + terrain_res];
-			glm::vec3 C = vertices[i - 1];
+			glm::vec3 B = vertices[i - 1];
+			glm::vec3 C = vertices[i + terrain_res];
 
-			glm::vec3 n = glm::normalize((B - A) + (C - A) );
+			glm::vec3 u0 = B - A;
+			glm::vec3 v0 = C - A;
+			glm::vec3 norm0 = glm::cross(u0, v0);
+
+			glm::vec3 n = glm::normalize(norm0);
 			normals.push_back(n);
 		}
 		// upper left
@@ -324,8 +355,12 @@ void TerrainGenerator::smooth_normals() {
 			glm::vec3 A = vertices[i];
 			glm::vec3 B = vertices[i + 1];
 			glm::vec3 C = vertices[i - terrain_res];
+
+			glm::vec3 u0 = B - A;
+			glm::vec3 v0 = C - A;
+			glm::vec3 norm0 = glm::cross(u0, v0);
 		
-			glm::vec3 n = glm::normalize((B - A) + (C - A));
+			glm::vec3 n = glm::normalize(norm0);
 			normals.push_back(n);
 		}
 		// upper right
@@ -337,7 +372,16 @@ void TerrainGenerator::smooth_normals() {
 			glm::vec3 C = vertices[i - terrain_res - 1];
 			glm::vec3 D = vertices[i - 1];
 
-			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A));
+			glm::vec3 u0 = B - A;
+			glm::vec3 v0 = C - A;
+			glm::vec3 norm0 = glm::cross(u0, v0);
+
+			glm::vec3 u1 = C - A;
+			glm::vec3 v1 = D - A;
+			glm::vec3 norm1 = glm::cross(u1, v1);
+
+
+			glm::vec3 n = glm::normalize(norm0 + norm1);
 			normals.push_back(n);
 		}
 		//lower
@@ -350,7 +394,20 @@ void TerrainGenerator::smooth_normals() {
 			glm::vec3 D = vertices[i + 1];
 			glm::vec3 E = vertices[i - 1];
 
-			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A) + (E - A));
+			glm::vec3 u0 = B - A;
+			glm::vec3 v0 = C - A;
+			glm::vec3 norm0 = glm::cross(u0, v0);
+
+			glm::vec3 u1 = C - A;
+			glm::vec3 v1 = D - A;
+			glm::vec3 norm1 = glm::cross(u1, v1);
+
+			glm::vec3 u2 = E - A;
+			glm::vec3 v2 = B - A;
+			glm::vec3 norm2 = glm::cross(u2, v2);
+
+
+			glm::vec3 n = glm::normalize(norm0 + norm1 + norm2);
 			normals.push_back(n);
 		}
 		//left
@@ -364,7 +421,16 @@ void TerrainGenerator::smooth_normals() {
 			glm::vec3 D = vertices[i + 1];
 			glm::vec3 E = vertices[i - terrain_res];
 
-			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A) + (E - A));
+
+			glm::vec3 u0 = B - A;
+			glm::vec3 v0 = C - A;
+			glm::vec3 norm0 = glm::cross(u0, v0);
+
+			glm::vec3 u1 = D - A;
+			glm::vec3 v1 = E - A;
+			glm::vec3 norm1 = glm::cross(u1, v1);
+
+			glm::vec3 n = glm::normalize(norm0 + norm1);
 			normals.push_back(n);
 		}
 		//right
@@ -377,7 +443,21 @@ void TerrainGenerator::smooth_normals() {
 			glm::vec3 D = vertices[i - terrain_res - 1];
 			glm::vec3 E = vertices[i - 1];
 
-			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A));
+
+			glm::vec3 u0 = E - A;
+			glm::vec3 v0 = B - A;
+			glm::vec3 norm0 = glm::cross(u0, v0);
+
+			glm::vec3 u1 = C - A;
+			glm::vec3 v1 = D - A;
+			glm::vec3 norm1 = glm::cross(u1, v1);
+
+			glm::vec3 u2 = D - A;
+			glm::vec3 v2 = E - A;
+			glm::vec3 norm2 = glm::cross(u2, v2);
+
+			glm::vec3 n = glm::normalize(norm0 +  norm1 + norm2);
+
 			normals.push_back(n);
 		}
 		// upper
@@ -390,7 +470,20 @@ void TerrainGenerator::smooth_normals() {
 			glm::vec3 D = vertices[i - terrain_res - 1];
 			glm::vec3 E = vertices[i - 1];
 
-			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A));
+			glm::vec3 u0 = B - A;
+			glm::vec3 v0 = C - A;
+			glm::vec3 norm0 = glm::cross(u0, v0);
+
+			glm::vec3 u1 = C - A;
+			glm::vec3 v1 = D - A;
+			glm::vec3 norm1 = glm::cross(u1, v1);
+
+			glm::vec3 u2 = D - A;
+			glm::vec3 v2 = E - A;
+			glm::vec3 norm2 = glm::cross(u2, v2);
+
+			glm::vec3 n = glm::normalize(norm0 + norm1 + norm2 );
+
 			normals.push_back(n);
 		}
 		//mids
@@ -405,7 +498,28 @@ void TerrainGenerator::smooth_normals() {
 			glm::vec3 F = vertices[i - terrain_res - 1];
 			glm::vec3 G = vertices[i - 1];
 
-			glm::vec3 n = glm::normalize((B - A) + (C - A) + (D - A) + (E - A) + (F - A) + (G - A));
+
+			glm::vec3 u0 = B - A;
+			glm::vec3 v0 = C - A;
+			glm::vec3 norm0 = glm::cross(u0, v0);
+
+			glm::vec3 u1 = C - A;
+			glm::vec3 v1 = D - A;
+			glm::vec3 norm1 = glm::cross(u1, v1);
+
+			glm::vec3 u2 = D - A;
+			glm::vec3 v2 = E - A;
+			glm::vec3 norm2 = glm::cross(u2, v2);
+
+			glm::vec3 u3 = E - A;
+			glm::vec3 v3 = F - A;
+			glm::vec3 norm3 = glm::cross(u3, v3);
+
+			glm::vec3 u4 = G - A;
+			glm::vec3 v4 = B - A;
+			glm::vec3 norm4 = glm::cross(u4, v4);
+			
+			glm::vec3 n = glm::normalize(norm0 + norm1 + norm2 + norm3 + norm4);
 			normals.push_back(n);
 		}
 	}
@@ -507,8 +621,8 @@ void TerrainGenerator::load_terrain_tree(std::string path) {
 
 	std::filesystem::path file = std::filesystem::current_path() / "..\\Assets\\Mesh\\" / path;
 
-	tree1 = Fyredon::Mesh("tree1", file.string().c_str());
+	tree1 = new Fyredon::Mesh_OBJ("tree1", file.string().c_str());
 
-	tree1.load_obj(1);
+	tree1->load_obj();
 
 }
