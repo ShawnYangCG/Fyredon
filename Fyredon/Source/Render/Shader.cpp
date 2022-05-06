@@ -28,6 +28,7 @@ Fyredon::Shader::Shader(const char *sname, const char *vertpath, const char *fra
 {
 	name = sname; 
 	valid_state = false;
+	flags.loaded = false, flags.built = false; 
 	vert_path = vertpath, frag_path = fragpath; 
 } 
 
@@ -39,21 +40,27 @@ Fyredon::Shader::~Shader()
 
 void Fyredon::Shader::load()
 {
+	flags.loaded = false, valid_state = false;
+
+	// Clear any existing state
+	if (vert_shader) glDeleteShader(vert_shader); 
+	if (frag_shader) glDeleteShader(frag_shader); 
+	if (vert_shader_code.size()) vert_shader_code.clear(); 
+	if (frag_shader_code.size()) frag_shader_code.clear(); 
+
 	std::ifstream vShaderFile, fShaderFile;
 	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	try
 	{
-		vShaderFile.open(vert_path);
-		fShaderFile.open(frag_path);
-
 		std::stringstream vShaderStream, fShaderStream;
+
+		vShaderFile.open(vert_path); fShaderFile.open(frag_path);
 
 		vShaderStream << vShaderFile.rdbuf();
 		fShaderStream << fShaderFile.rdbuf();
 
-		vShaderFile.close();
-		fShaderFile.close();
+		vShaderFile.close(); fShaderFile.close();
 
 		vert_shader_code = vShaderStream.str();
 		frag_shader_code = fShaderStream.str();
@@ -61,39 +68,53 @@ void Fyredon::Shader::load()
 	catch (std::ifstream::failure err) // Catch ifstream failure error to object err
 	{
 		std::cerr << "ERROR::Fyredon::Shader::" << name << "::Failed to load shader code::" << err.what() << std::endl;
-		std::terminate();
+		throw std::runtime_error("Shader Loader Error");
 	}
 
-	const char *vShaderCode = vert_shader_code.c_str();
-	const char *fShaderCode = frag_shader_code.c_str();
+	vert_shader = glCreateShader(GL_VERTEX_SHADER);
+	frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	// Intermediate Shaders (Vertex, Fragment) handles. 
-	unsigned int vertexS, fragmentS;
+	flags.loaded = true; 
+}
 
-	// Build Vertex Shader
-	vertexS = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexS, 1, &vShaderCode, NULL);
-	glCompileShader(vertexS);
-	check_compile(vertexS, "Vertex_Shader");
+void Fyredon::Shader::build(std::vector<const char*>& frag_defines)
+{
+	valid_state = false, valid_state = false;
+	//if (ID) glDeleteProgram(ID);
 
-	// Build Fragment Shader
-	fragmentS = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentS, 1, &fShaderCode, NULL);
-	glCompileShader(fragmentS);
-	check_compile(fragmentS, "Fragment_Shader");
+	assert(flags.loaded); // Source needs to be loaded first. 
+
+	const char* vShaderCode = vert_shader_code.c_str();
+	const char* fShaderCode = frag_shader_code.c_str();
+
+	// Compile Vertex Shader
+	glShaderSource(vert_shader, 1, &vShaderCode, NULL);
+	glCompileShader(vert_shader);
+	check_compile(vert_shader, "Vertex_Shader");
+
+	// Compile Fragment Shader
+	if (!frag_defines.size())
+	{
+		glShaderSource(frag_shader, 1, &fShaderCode, NULL);
+		glCompileShader(frag_shader);
+		check_compile(frag_shader, "Fragment_Shader");
+	}
+	else // Pass preprocessor define strings to prepend shader source
+	{
+		frag_defines.push_back(fShaderCode);
+		glShaderSource(frag_shader, frag_defines.size(), frag_defines.data(), NULL);
+		glCompileShader(frag_shader);
+		check_compile(frag_shader, "Fragment_Shader");
+	}
 
 	// Build Shader Program
 	ID = glCreateProgram();
-	glAttachShader(ID, vertexS);
-	glAttachShader(ID, fragmentS);
+	glAttachShader(ID, vert_shader);
+	glAttachShader(ID, frag_shader);
 	glLinkProgram(ID);
 	check_link();
 
-	// Delete Intermediate Shaders
-	glDeleteShader(vertexS);
-	glDeleteShader(fragmentS);
-
-	valid_state = true;
+	flags.built = true; valid_state = true;
 }
 
 void Fyredon::Shader::use()
@@ -103,7 +124,10 @@ void Fyredon::Shader::use()
 }
 
 // ========================== Set Uniform Member Functions ========================== 
-void Fyredon::Shader::setBool(const std::string &name, bool value) const
+// NOTE : Invalid Uniforms may have been optimised out of the shader due to not been used, hence an error limit is imposed
+//        to avoid repetitve error messages. However, always ensure the uniform has been set if its inteded for use. 
+
+void Fyredon::Shader::set_bool(const std::string &name, bool value) const
 {
 	static std::size_t count = 0; 
 	glUseProgram(ID);
@@ -116,7 +140,7 @@ void Fyredon::Shader::setBool(const std::string &name, bool value) const
 	glUniform1i(id, (int)value); 
 }
 
-void Fyredon::Shader::setInt(const std::string &name, int value) const
+void Fyredon::Shader::set_int(const std::string &name, int value) const
 {
 	static std::size_t count = 0;
 	glUseProgram(ID);
@@ -129,7 +153,7 @@ void Fyredon::Shader::setInt(const std::string &name, int value) const
 	glUniform1i(id, value);
 }
 
-void Fyredon::Shader::setFloat(const std::string &name, float value) const
+void Fyredon::Shader::set_float(const std::string &name, float value) const
 {
 	static std::size_t count = 0;
 	glUseProgram(ID);
@@ -142,7 +166,7 @@ void Fyredon::Shader::setFloat(const std::string &name, float value) const
 	glUniform1f(id, value);
 }
 
-void Fyredon::Shader::setVec(const std::string &name, const glm::vec3 value) const
+void Fyredon::Shader::set_vec3(const std::string &name, const glm::vec3 &value) const
 {
 	static std::size_t count = 0;
 	glUseProgram(ID);
@@ -155,7 +179,21 @@ void Fyredon::Shader::setVec(const std::string &name, const glm::vec3 value) con
 	glUniform3fv(id, 1, glm::value_ptr(value));
 }
 
-void Fyredon::Shader::setMat3(const std::string &name, const glm::mat3x3 value) const
+void Fyredon::Shader::set_vec4(const std::string& name, const glm::vec4 &value) const
+{
+	static std::size_t count = 0;
+	glUseProgram(ID);
+	GLint id = glGetUniformLocation(ID, name.c_str());
+	if (id == -1) {
+		if (count > 1) return;
+		count++;
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid uniform " << name << "\n";
+		return;
+	}
+	glUniform4fv(id, 1, glm::value_ptr(value));
+}
+
+void Fyredon::Shader::set_mat3(const std::string &name, const glm::mat3x3 &value) const
 {
 	static std::size_t count = 0; 
 	glUseProgram(ID);
@@ -168,7 +206,7 @@ void Fyredon::Shader::setMat3(const std::string &name, const glm::mat3x3 value) 
 	glUniformMatrix3fv(id, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Fyredon::Shader::setMat4(const std::string &name, const glm::mat4x4 value) const
+void Fyredon::Shader::set_mat4(const std::string &name, const glm::mat4x4 &value) const
 {
 	static std::size_t count = 0; 
 	glUseProgram(ID);

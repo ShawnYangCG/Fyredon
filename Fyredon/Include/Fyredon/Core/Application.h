@@ -133,6 +133,8 @@ namespace Fyredon {
 		World* ECSworld;
 		EngineRenderSystem* renderSys;
 
+		friend class Renderer; 
+
 	}; // EditorApp
 
 	//  ============ GL Debug Callbacks Requires (4.3) ============

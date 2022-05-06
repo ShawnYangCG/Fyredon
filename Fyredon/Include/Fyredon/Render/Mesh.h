@@ -27,6 +27,7 @@
 namespace Fyredon {
 
 class TextureImage;
+class Material; 
 
 // 48 Byte (16 Byte Aligned) Vertex 
 struct Vert
@@ -91,6 +92,8 @@ public:
 
 	void set_shader(const char* vert_path, const char* frag_path);
 
+	void set_shader_uniforms();
+
 	// Update
 	void update_data_mesh(const std::vector<Vert>& data);
 
@@ -99,14 +102,13 @@ public:
 
 	void update_data_colour  (const std::vector<glm::vec3> &col_data);
 
-	// Mesh now supports textures
-	void load_texture(const char* filepath, GLuint unit = 0);
-
 	// Model Transforms
 	void scale       (const glm::vec3 &scale);
 	void translate   (const glm::vec3 &offs);
 	void rotate      (float d_ang, const glm::vec3 &axis);
 	void local_rotate(float x_ang, float y_ang, float z_ang);
+
+	inline glm::mat3 normal_model_matrix(); 
 
 	// Debug
 	float get_vertindex_ratio();
@@ -127,6 +129,12 @@ public:
 	glm::mat4 model;
 	Shader shader;
 
+	Material* material; 
+	// Texture State
+	//bool use_tex;
+	//TextureImage* tex;
+
+
 	// ------- State -------
 	Render_Mode mode;
 	bool wireframe;
@@ -140,9 +148,7 @@ public:
 		uint8_t camera_set    : 1;
 		uint8_t texture_set   : 1;
 	} flags;
-	// Texture State
-	bool use_tex;
-	TextureImage* tex;
+
 
 	std::string name;
 };

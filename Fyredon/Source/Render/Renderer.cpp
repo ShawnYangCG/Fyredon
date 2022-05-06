@@ -21,6 +21,7 @@
 
 //#define DEBUG_RENDERER
 #define DEBUG_FRAMEBUFFER_CHECKS
+
 #define GL_ERROR() get_GLError(__FILE__, __LINE__)
 
 // =========================================== Renderer Class Implementation ===========================================
@@ -31,29 +32,39 @@ Fyredon::Renderer& Fyredon::Renderer::get_renderer()
 
 Fyredon::Renderer::Renderer()
 {
-	// These will point to Renderer GUI Booleans 
-	flags.draw_grid       = nullptr;
-	flags.draw_axis       = nullptr;
-	flags.draw_test_prims = nullptr;
-	flags.ren_normals     = nullptr; 
-	flags.ren_wire        = nullptr; 
+	// Parameters Init
+	// Lighting - Sun
+	parms.enable_sun = true, parms.sun_shadows = false;
+	parms.sun_strength = 1.f;
+	parms.shadowmap_res_sqr = 512; 
 
-	// Replace with Light Array
-	flags.light_str = nullptr; 
-	flags.light_pos = nullptr; 
-	flags.test_pos  = nullptr;
+	// Skybox
+	// ....
+	// Reflections
+	// ....
+	// Post Processing 
+	// ....
 
-	is_init = false; 
-	has_testprims = false; 
+	// Viewport Parameters
+	bool draw_grid, draw_axis, draw_test_mesh;
+	bool draw_mesh_guides;
+
+	// Internal State
+	sun_light = nullptr; 
+	cameras.active_cam = nullptr, cameras.game_cam = nullptr, cameras.scene_cam = nullptr;
+
+	// Internal flags 
+	flags.is_init = false; 
+	flags.has_viewer_prims = false; 
 }
 
 Fyredon::Renderer::~Renderer()
 {
 	// Dealloc FB Resources
-	if (framebuffers.render_framebuffer_s)  delete (framebuffers.render_framebuffer_s);
-	if (framebuffers.render_framebuffer_ms) delete (framebuffers.render_framebuffer_ms);
-	if (framebuffers.render_col_tex_s)      delete (framebuffers.render_col_tex_s);
-	if (framebuffers.render_col_tex_ms)     delete (framebuffers.render_col_tex_ms);
+	if (primary_framebuffers.render_framebuffer_s)  delete (framebuffers.render_framebuffer_s);
+	if (primary_framebuffers.render_framebuffer_ms) delete (framebuffers.render_framebuffer_ms);
+	if (primary_framebuffers.render_col_tex_s)      delete (framebuffers.render_col_tex_s);
+	if (primary_framebuffers.render_col_tex_ms)     delete (framebuffers.render_col_tex_ms);
 
 	// Dealloc Viewer Prims
 	if (viewer_prims.ground)    delete viewer_prims.ground;
@@ -68,21 +79,7 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context, int8_t sample_count)
 	ogl_wincontext = ogl_context;
 	msaa_samples = sample_count;
 
-	// Dealloc previous Framebuffer resources
-	if (is_init)
-	{
-		if (framebuffers.render_framebuffer_s)  delete (framebuffers.render_framebuffer_s);
-		if (framebuffers.render_framebuffer_ms) delete (framebuffers.render_framebuffer_ms);
-		if (framebuffers.render_col_tex_s)      delete (framebuffers.render_col_tex_s);
-		if (framebuffers.render_col_tex_ms)     delete (framebuffers.render_col_tex_ms);
-	}
-	is_init = false; 
-
-	// Allocate Render Framebuffer resources
-	framebuffers.render_col_tex_s      = new Texture("Viewport Colour Attachment S", 0, width, height);
-	framebuffers.render_col_tex_ms     = new Texture_MultiSample("Viewport Colour Attachment MS", 0, width, height, msaa_samples);
-	framebuffers.render_framebuffer_s  = new Framebuffer_S(framebuffers.render_col_tex_s);
-	framebuffers.render_framebuffer_ms = new Framebuffer_MS(framebuffers.render_col_tex_ms, msaa_samples);
+	create_view_framebuffer_resources();
 	GL_ERROR();
 
 	#ifdef DEBUG_FRAMEBUFFER_CHECKS
@@ -91,15 +88,33 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context, int8_t sample_count)
 	#endif 
 
 	// Create Viewer Primitives
-	if (!has_testprims)
+	if (!flags.has_viewer_prims)
 	{
 		create_render_prims();
 		create_test_mesh();
-		has_testprims = true; 
+		flags.has_viewer_prims = true;
 	}
 	GL_ERROR();
 
-	is_init = true; 
+	flags.is_init = true; 
+}
+
+void Fyredon::Renderer::create_view_framebuffer_resources()
+{
+	// Dealloc previous View framebuffer resources
+	if (flags.is_init)
+	{
+		if (primary_framebuffers.render_framebuffer_s)  delete (framebuffers.render_framebuffer_s);
+		if (primary_framebuffers.render_framebuffer_ms) delete (framebuffers.render_framebuffer_ms);
+		if (primary_framebuffers.render_col_tex_s)      delete (framebuffers.render_col_tex_s);
+		if (primary_framebuffers.render_col_tex_ms)     delete (framebuffers.render_col_tex_ms);
+	}
+	flags.is_init = false;
+	// Allocate View framebuffer resources
+	primary_framebuffers.render_col_tex_s      = new Texture("tex_view_colour_s", 0, width, height);
+	primary_framebuffers.render_col_tex_ms     = new Texture_MultiSample("tex_view_colour_ms", 0, width, height, msaa_samples);
+	primary_framebuffers.render_framebuffer_s  = new Framebuffer_S(framebuffers.render_col_tex_s);
+	primary_framebuffers.render_framebuffer_ms = new Framebuffer_MS(framebuffers.render_col_tex_ms, msaa_samples);
 }
 
 // Info : Public exposed function to pass primtives to internal draw array of Primitives.
@@ -129,20 +144,23 @@ void Fyredon::Renderer::resize(int width, int height)
 	init(ogl_wincontext, msaa_samples);
 }
 
-// Initalize Render State (abstract these calls later)
-void Fyredon::Renderer::render_prep()
+void Fyredon::Renderer::set_active_camera(Camera* active_camera)
+{
+	cameras.active_cam = active_camera; 
+}
+
+// Info : Default Rendering Flags
+void Fyredon::Renderer::render_setup()
 {
 	if (!is_init) throw std::runtime_error("ERROR::Renderer Not Initalized");
-
-	// Multisampling (Disabled for iteration 1, needs multi-sampled texture + fbo setup)
-	//glEnable(GL_MULTISAMPLE);
 
 	// Prim Sizes
 	glPointSize(5.f);
 	glLineWidth(2.5f);
 
-	// Blending and Depth. 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE);
+	// Blending 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -153,45 +171,16 @@ void Fyredon::Renderer::render()
 }
 
 // Info : Basic forward rendering pipeline from some camera, render to framebuffer.
-void Fyredon::Renderer::render_camera(Camera &cam_ref)
+void Fyredon::Renderer::render_camera(Camera *cam_ref)
 {
 	// ==================== Render State ====================
 	// Enforce base renderer flags
-	render_prep();
-
-	if(viewer_prims.test_mesh) // Update Test Mesh
-	{
-		viewer_prims.test_mesh->shader.setVec("camPos_world", cam_ref.position);
-		viewer_prims.test_mesh->shader.setVec("lightPos_world", *flags.light_pos);
-		viewer_prims.test_mesh->shader.setFloat("lightStr", *flags.light_str);
-	} 
+	render_setup();
 
 	// Bind Renderer MS Framebuffer
 	framebuffers.render_framebuffer_ms->bind_clear();
 	GL_ERROR();
 
-	// ==================== Render Viewer Primtivies ====================
-	// Draw Grid 
-
-	if (*flags.draw_grid)
-	{
-		viewer_prims.ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
-		viewer_prims.ground->render();
-	} 
-
-	// Draw Axis
-	if (*flags.draw_axis)
-	{
-		viewer_prims.axis->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
-		glLineWidth(2.5f); // Reset for axis width.
-		viewer_prims.axis->render();
-	}
-
-	if (*flags.draw_test_prims)
-	{
-		viewer_prims.test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
-		viewer_prims.test_mesh->render();
-	} 
 
 	// ==================== Render Game Meshes ====================
 
@@ -264,6 +253,7 @@ void Fyredon::Renderer::create_render_prims()
 
 	// Axis
 	viewer_prims.axis = new Mesh("axis");
+	// move to assets.h
 	std::vector<Vert> verts; 
 	verts.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
 	verts.emplace_back(glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
@@ -277,3 +267,33 @@ void Fyredon::Renderer::create_render_prims()
 	viewer_prims.axis->translate(glm::vec3(0.f, 0.01f, 0.f));
 }
 
+void Fyredon::Renderer::draw_viewer_prims()
+{
+	if (viewer_prims.test_mesh) // Update Test Mesh
+	{
+		viewer_prims.test_mesh->shader.setVec("camPos_world", cam_ref.position);
+		viewer_prims.test_mesh->shader.setVec("lightPos_world", *flags.light_pos);
+		viewer_prims.test_mesh->shader.setFloat("lightStr", *flags.light_str);
+	}
+
+	// ==================== Render Viewer Primtivies ====================
+	// Draw Grid 
+
+	if (parms.draw_grid)
+	{
+		viewer_prims.ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
+		viewer_prims.ground->render();
+	}
+	if (parms.draw_axis)
+	{
+		glLineWidth(2.5f);
+
+		viewer_prims.axis->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
+		viewer_prims.axis->render();
+	}
+	if (parms.draw_test_mesh)
+	{
+		viewer_prims.test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
+		viewer_prims.test_mesh->render();
+	}
+}

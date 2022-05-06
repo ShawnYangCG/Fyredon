@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Light.h: Basic Light class (Point lights for now) : Niall
+	Light.h: Basic Light Classes : Niall
 =============================================================================*/
 #pragma once
 
@@ -10,13 +10,22 @@
 
 namespace Fyredon {
 
-class alignas(16) Light
+struct alignas(16) Light_Directional
 {
-public: 
-	Light(const glm::vec3& Pos, float Strength);
+	Light_Directional(const glm::vec3& Direction, const glm::vec3& Colour, float Strength)
+		: direction(Direction), colour(Colour), strength(Strength) {}
 
-	glm::vec3 position;
-	float strength; 
+	glm::vec3 colour, direction;
+	float strength;
+};
+
+struct alignas(16) Light_Point
+{
+	Light_Point(const glm::vec3& Position, const glm::vec3& Colour, float Strength)
+		: position(Position), colour(Colour), strength(Strength) {}
+
+	glm::vec3 colour, position;
+	float strength;
 };
 
 }

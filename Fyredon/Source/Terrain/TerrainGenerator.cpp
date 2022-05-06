@@ -143,8 +143,6 @@ float TerrainGenerator::triangle_plane(float x, float z){
 	//glm::vec3 v23 = glm::vec3(x, (vertex2.y * x_fraction) + (vertex3.y * (1 - x_fraction)), z_whole + 1);
 	//glm::vec3 v0123 = glm::vec3(x, (v01.y * z_fraction) + (v23.y * (1 - z_fraction)), z);
 
-
-
 	return 0;// (v01.y * z_fraction) + (v0123.y * (1 - z_fraction));
 }
 
@@ -239,25 +237,6 @@ void TerrainGenerator::generate_mesh(int res) {
 
 	//std::cout << TerrainMesh.obj_data.verts.size() << " size\n";
 	//std::cout << "verts " << vertices.size() << "\n";
-
-	/*
-	for (size_t z = 0; z < ((std::size_t)res - ((float)res / (float)image_height)); z++) {
-		for (size_t x = 0; x < ((std::size_t)res - ((float)res / (float)image_width)); x++) {
-
-			std::size_t i = z * res + x;
-			std::size_t i1 = std::min(i + 1, std::size_t(res));
-			std::size_t j1 = std::min(i + res, std::size_t(res));
-			std::size_t ij1 = std::min(i + res + 1, std::size_t(res));
-			glm::vec3 N_i   = verts[i].normal;
-			glm::vec3 N_i1  = verts[i + 1].normal; 
-			glm::vec3 N_j1  = verts[i + res].normal;
-			glm::vec3 N_ij1 = verts[i + res + 1].normal;
-
-			verts[i].normal = (N_i + N_i1 + N_j1 + N_ij1) * 0.25f;
-
-			//verts[i].normal = (verts[i].normal + verts[i1].normal + verts[j1].normal + verts[ij1].normal) * 0.25f; 
-		}
-	} */
 
 	// Set Primtivie Data
 	TerrainMesh->set_data_mesh(verts);

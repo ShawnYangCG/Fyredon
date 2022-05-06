@@ -11,6 +11,7 @@
 
 // Std Headers
 #include <string>
+#include <vector>
 
 namespace Fyredon
 {
@@ -27,15 +28,17 @@ public:
 	~Shader();
 
 	void load();
+	void build(std::vector<const char*> &frag_defines);
 	void use();
 
 	// Set Shader Uniforms
-	void setBool (const std::string &name, bool value)          const;
-	void setInt  (const std::string &name, int value)           const;
-	void setFloat(const std::string &name, float value)         const;
-	void setVec  (const std::string &name, glm::vec3 value)     const;
-	void setMat3 (const std::string &name, glm::mat3x3 value)   const;
-	void setMat4 (const std::string &name, glm::mat4x4 value)   const;
+	void set_bool (const std::string &name, bool value)                const;
+	void set_int  (const std::string &name, int value)                 const;
+	void set_float(const std::string &name, float value)               const;
+	void set_vec3 (const std::string &name, const glm::vec3 &value)    const;
+	void set_vec4 (const std::string &name, const glm::vec4 &value)    const;
+	void set_mat3 (const std::string &name, const glm::mat3x3 &value)  const;
+	void set_mat4 (const std::string &name, const glm::mat4x4 &value)  const;
 
 	// Debug
 	void check_compile(unsigned int &shader, std::string type);
@@ -46,6 +49,13 @@ public:
 public:
 	std::string name;
 	GLuint ID; 
+	GLuint vert_shader, frag_shader; 
+
+	struct
+	{
+		int8_t loaded : 1;
+		int8_t built : 1; 
+	} flags;
 	bool valid_state;
 
 private:

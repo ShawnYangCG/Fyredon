@@ -6,7 +6,6 @@
 #pragma once
 
 // Std Headers
-#include <iostream>
 #include <string>
 
 #ifndef ImTextureID
@@ -84,7 +83,6 @@ public:
 
 /* ====================== Texture Image class (from file) ======================
    Info: Standard Texture that is defined by an image loaded from file (channel count of 3|4 only) */
-
 
 class TextureImage : public Texture
 {

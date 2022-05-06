@@ -9,6 +9,7 @@
 
 // Project Headers
 #include "Fyredon/Render/Texture.h"
+#include "Fyredon/Render/Material.h"
 
 // Std Headers
 #include <cassert>
@@ -33,6 +34,8 @@ Fyredon::Mesh::Mesh(const char *Name)
 	flags.shader_set    = 0;
 	flags.camera_set    = 0;
 	flags.texture_set   = 0;
+
+	material = new Material(*this);
 
 	model = glm::mat4(1.f);
 
@@ -86,13 +89,14 @@ void Fyredon::Mesh::render()
 		tex->bind();
 	}
 
+	/*
 	// Update Modfied Uniforms
-	shader.setMat4("model", model);
+	shader.set_mat4("model", model);
 
 	// Calc model_normal
 	glm::mat3 nmodel(model);
 	nmodel = glm::transpose(glm::inverse(nmodel));
-	shader.setMat3("model_normal", nmodel);
+	shader.setMat3("model_normal", nmodel); */
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -340,6 +344,8 @@ void Fyredon::Mesh::set_colour(const glm::vec3 &col)
 	update_data_colour(data);
 }
 
+// ===================== Shader and Uniform Setting =====================
+
 // Info : Only support shader program using Vertex and Fragment pipeline currently
 void Fyredon::Mesh::set_shader(const char *vert_path, const char *frag_path)
 {
@@ -350,12 +356,28 @@ void Fyredon::Mesh::set_shader(const char *vert_path, const char *frag_path)
 	// Load and build shader
 	shader.load();
 
-	// Set Model Matrix
-	shader.setMat4("model", model);
+
 	if (shader.valid_state) flags.shader_set = 1; 
 }
 
+// Info : Called on shader load and for each render tick, to ensure uniforms are set for mesh. 
+//        assumes using mesh uber shaders. 
+void Fyredon::Mesh::set_shader_uniforms()
+{
+	// Set Model Matrix
+	shader.set_mat4("model", model);
+
+	// Set Normal Model Matrix
+	glm::mat3 nmodel = normal_model_matrix();
+	shader.set_mat3("model_normal", nmodel);
+
+	// Set Material Uniforms
+
+
+}
+
 // Info : Forward Transforms to shader uniforms
+// Note these should ideally be gettable from renderer singleton...
 void Fyredon::Mesh::set_cameraTransform(const glm::mat4x4 &view, const glm::mat4x4 &persp)
 {
 	if (!flags.shader_set) return; 
@@ -395,18 +417,11 @@ void Fyredon::Mesh::scale(const glm::vec3 &scale)
 	model = glm::scale(model, scale);
 }
 
-// ===================== Texturing =====================
-
-void Fyredon::Mesh::load_texture(const char* filepath, GLuint unit)
+// Info : Calculcate Normal Model Matrix from current model matrix.
+glm::mat3 Fyredon::Mesh::normal_model_matrix()
 {
-	use_tex = true; 
-	if (tex) delete tex; 
-	std::string tex_name = name + "_texture";
-	tex = new TextureImage(filepath, tex_name.c_str(), unit, true);
-	tex->load();
-
-	if (tex->valid_state) flags.texture_set = 1; else return;
-	shader.setInt("tex", unit);
+	glm::mat3 nmodel(model);
+	return glm::transpose(glm::inverse(nmodel));
 }
 
 // ===================== Debug Code =====================
