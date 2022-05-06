@@ -8,12 +8,13 @@
 terrain_entity::terrain_entity()
 {
 	this->terrain_generator = new TerrainGenerator("heightmap1", "./assets/heightmap/height_map.png");
-	terrain_generator->read_height_map("Heightmap.png");
-	terrain_generator->generate_mesh(257);
+	terrain_generator->read_height_map("ai3.png");
+	terrain_generator->generate_mesh(512);
 	terrain_generator->TerrainMesh->set_shader("..//Shaders//terrain.vert", "..//Shaders//terrain.frag");
 
-	std::filesystem::path texture = std::filesystem::current_path() / "..\\Assets\\Images\\Terrain\\input_000_random_sample14.png";
+	std::filesystem::path texture = std::filesystem::current_path() / "..\\Assets\\Images\\Terrain\\input_000_random_sample142.png";
 	terrain_generator->TerrainMesh->load_texture(texture.string().c_str(), 0);
+	//terrain_generator->TerrainMesh->set_colour(glm::vec3(1.f, 1.f, 1.f));
 
 	terrain_generator->TerrainMesh->translate(glm::vec3(0.f, 0.f, 0.f));
 	terrain_generator->TerrainMesh->scale(glm::vec3(1.0f));

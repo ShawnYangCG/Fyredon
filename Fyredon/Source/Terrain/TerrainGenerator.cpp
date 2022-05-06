@@ -215,10 +215,10 @@ void TerrainGenerator::generate_mesh(int res) {
 	for (size_t z = 0; z < (res - ((float)res / (float)image_height)); z++) {
 		for (size_t x = 0; x < (res - ((float)res / (float)image_width)); x++) {
 			//UVs
-			float u_text_0 = ((float)x) / res;
-			float v_text_0 = ((float)z) / res;
-			float u_text_1 = ((float)x + 1) / res;
-			float v_text_1 = ((float)z + 1) / res;
+			float u_text_0 = ((float)z) / res;
+			float v_text_0 = ((float)x) / res;
+			float u_text_1 = ((float)z + 1) / res;
+			float v_text_1 = ((float)x + 1) / res;
 
 			// Verts
 			//current
@@ -228,6 +228,7 @@ void TerrainGenerator::generate_mesh(int res) {
 			vertex0.uv = glm::vec3(u_text_0, v_text_0, 0.f);
 			//vertex0.col = glm::vec3(1.f, 1.f, 1.f);
 			vertex0.col = glm::vec3(vertex0.pos.y);
+			vertex0.normal = normals[i];
 
 
 			// right
@@ -236,6 +237,8 @@ void TerrainGenerator::generate_mesh(int res) {
 			vertex1.uv = glm::vec3(u_text_1, v_text_0, 0.f);
 			//vertex1.col = glm::vec3(1.f, 1.f, 1.f);
 			vertex1.col = glm::vec3(vertex1.pos.y);
+			vertex1.normal = normals[i+1];
+
 
 			// up
 			Fyredon::Vert vertex2;
@@ -243,6 +246,7 @@ void TerrainGenerator::generate_mesh(int res) {
 			vertex2.uv = glm::vec3(u_text_0, v_text_1, 0.f);
 			//vertex2.col = glm::vec3(1.f, 1.f, 1.f);
 			vertex2.col = glm::vec3(vertex2.pos.y);
+			vertex2.normal = normals[i+res];
 
 
 
@@ -252,6 +256,8 @@ void TerrainGenerator::generate_mesh(int res) {
 			vertex3.uv = glm::vec3(u_text_1, v_text_1, 0.f);
 			//vertex3.col = glm::vec3(1.f, 1.f, 1.f);
 			vertex3.col = glm::vec3(vertex3.pos.y);
+			vertex3.normal = normals[i+res+1];
+
 
 			//Set Vector U to(Triangle.p2 minus Triangle.p1)
 			//	Set Vector V to(Triangle.p3 minus Triangle.p1)

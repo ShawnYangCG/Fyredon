@@ -35,7 +35,7 @@ void main()
 	vec3 view_dir     = normalize(camPos_world - pos_world);
 	vec3 half_v       = normalize(light_dir + view_dir);
 	//vec3 r_colour     = vec3(0.2, 0.2, 0.2);
-	vec3 r_colour = vec3(texture(tex, vec2(uvw.x * 5.f, uvw.y * 5.f)));  
+	vec3 r_colour = vec3(texture(tex, vec2(uvw.x * 1.f, uvw.y * 1.f)));  
 	r_colour = mix(vec3(0.02, 0.1, 0.75), r_colour, min(height * 10.0, 1.0)); 
 	//r_colour = 
 	vec3 a = 0.125 * r_colour; 
