@@ -54,25 +54,13 @@ public:
 
 	void init(GLFWwindow* ogl_context, int8_t sample_count);
 
-	void set_active_camera(Camera* active_camera);
+	static void set_active_camera(Camera* cam);
+	static Camera* get_active_camera();
 
 	void render(); 
 
 	// ToDo : get_framebuffer_attachemnt (ENUM : view_colour, view_depth, shadow_depth etc...)
 	Texture* get_colour_attachment();
-
-private:
-	Renderer();
-
-	void get_GLError(const char *file, int32_t line);
-
-	void render_setup();
-
-	void render_camera(Camera* cam_ref);
-
-	// Debug
-	void create_test_mesh();
-	void create_render_prims();
 
 public:
 	void resize(int width, int height);
@@ -119,7 +107,20 @@ public:
 	int32_t width  = RENDER_RES_X;
 	int32_t height = RENDER_RES_Y;
 	int8_t msaa_samples;
+
 private:
+	Renderer();
+
+	void get_GLError(const char* file, int32_t line);
+
+	void render_setup();
+
+	void render_camera(Camera* cam_ref);
+
+	// Debug
+	void create_test_mesh();
+	void create_render_prims();
+
 
 	void draw_viewer_prims(); 
 
@@ -153,14 +154,7 @@ private:
 	// =========== Per Mesh Render Commands ============
 	std::unordered_map<std::string, std::function<void()>> commands;
 
-	struct // References to game world cameras
-	{
-		Camera* active_cam;
-		// ---------------
-		Camera* game_cam;
-		Camera* scene_cam;
-
-	} cameras;
+	static Camera* active_cam;
 
 	struct
 	{
@@ -169,7 +163,7 @@ private:
 		Texture*             render_col_tex_s;
 		Texture_MultiSample* render_col_tex_ms; 
 
-	} primary_framebuffers;
+	} view_framebuffers;
 
 	/*
 	struct 

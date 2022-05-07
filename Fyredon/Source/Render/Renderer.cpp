@@ -13,7 +13,7 @@
 #include "Fyredon/Render/Light.h"
 
 // Ext Headers
-#include "GLEW/glew.h" // GLEW
+#include "GLEW/glew.h"  // GLEW
 #include "GLFW/glfw3.h" // GLFW
 // GLM
 #include "glm/gtc/matrix_transform.hpp"
@@ -51,7 +51,7 @@ Fyredon::Renderer::Renderer()
 
 	// Internal State
 	sun_light = nullptr; 
-	cameras.active_cam = nullptr, cameras.game_cam = nullptr, cameras.scene_cam = nullptr;
+	active_cam = nullptr;
 
 	// Internal flags 
 	flags.is_init = false; 
@@ -61,10 +61,10 @@ Fyredon::Renderer::Renderer()
 Fyredon::Renderer::~Renderer()
 {
 	// Dealloc FB Resources
-	if (primary_framebuffers.render_framebuffer_s)  delete (framebuffers.render_framebuffer_s);
-	if (primary_framebuffers.render_framebuffer_ms) delete (framebuffers.render_framebuffer_ms);
-	if (primary_framebuffers.render_col_tex_s)      delete (framebuffers.render_col_tex_s);
-	if (primary_framebuffers.render_col_tex_ms)     delete (framebuffers.render_col_tex_ms);
+	if (view_framebuffers.render_framebuffer_s)  delete (view_framebuffers.render_framebuffer_s);
+	if (view_framebuffers.render_framebuffer_ms) delete (view_framebuffers.render_framebuffer_ms);
+	if (view_framebuffers.render_col_tex_s)      delete (view_framebuffers.render_col_tex_s);
+	if (view_framebuffers.render_col_tex_ms)     delete (view_framebuffers.render_col_tex_ms);
 
 	// Dealloc Viewer Prims
 	if (viewer_prims.ground)    delete viewer_prims.ground;
@@ -99,22 +99,33 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context, int8_t sample_count)
 	flags.is_init = true; 
 }
 
+// Info : Active Camera is static for the Renderer singleton. 
+void Fyredon::Renderer::set_active_camera(Camera* cam)
+{
+	active_cam = cam;
+}
+Fyredon::Camera* Fyredon::Renderer::get_active_camera()
+{
+	return active_cam; 
+}
+
+
 void Fyredon::Renderer::create_view_framebuffer_resources()
 {
 	// Dealloc previous View framebuffer resources
 	if (flags.is_init)
 	{
-		if (primary_framebuffers.render_framebuffer_s)  delete (framebuffers.render_framebuffer_s);
-		if (primary_framebuffers.render_framebuffer_ms) delete (framebuffers.render_framebuffer_ms);
-		if (primary_framebuffers.render_col_tex_s)      delete (framebuffers.render_col_tex_s);
-		if (primary_framebuffers.render_col_tex_ms)     delete (framebuffers.render_col_tex_ms);
+		if (view_framebuffers.render_framebuffer_s)  delete (view_framebuffers.render_framebuffer_s);
+		if (view_framebuffers.render_framebuffer_ms) delete (view_framebuffers.render_framebuffer_ms);
+		if (view_framebuffers.render_col_tex_s)      delete (view_framebuffers.render_col_tex_s);
+		if (view_framebuffers.render_col_tex_ms)     delete (view_framebuffers.render_col_tex_ms);
 	}
 	flags.is_init = false;
 	// Allocate View framebuffer resources
-	primary_framebuffers.render_col_tex_s      = new Texture("tex_view_colour_s", 0, width, height);
-	primary_framebuffers.render_col_tex_ms     = new Texture_MultiSample("tex_view_colour_ms", 0, width, height, msaa_samples);
-	primary_framebuffers.render_framebuffer_s  = new Framebuffer_S(framebuffers.render_col_tex_s);
-	primary_framebuffers.render_framebuffer_ms = new Framebuffer_MS(framebuffers.render_col_tex_ms, msaa_samples);
+	view_framebuffers.render_col_tex_s      = new Texture("tex_view_colour_s", 0, width, height);
+	view_framebuffers.render_col_tex_ms     = new Texture_MultiSample("tex_view_colour_ms", 0, width, height, msaa_samples);
+	view_framebuffers.render_framebuffer_s  = new Framebuffer_S(framebuffers.render_col_tex_s);
+	view_framebuffers.render_framebuffer_ms = new Framebuffer_MS(framebuffers.render_col_tex_ms, msaa_samples);
 }
 
 // Info : Public exposed function to pass primtives to internal draw array of Primitives.
@@ -144,10 +155,6 @@ void Fyredon::Renderer::resize(int width, int height)
 	init(ogl_wincontext, msaa_samples);
 }
 
-void Fyredon::Renderer::set_active_camera(Camera* active_camera)
-{
-	cameras.active_cam = active_camera; 
-}
 
 // Info : Default Rendering Flags
 void Fyredon::Renderer::render_setup()
@@ -181,29 +188,24 @@ void Fyredon::Renderer::render_camera(Camera *cam_ref)
 	framebuffers.render_framebuffer_ms->bind_clear();
 	GL_ERROR();
 
-
-	// ==================== Render Game Meshes ====================
-
-	 // Not remaining bound for some reason ...
+	// Not remaining bound for some reason ...
 	framebuffers.render_framebuffer_ms->bind();
 
+	// ==================== Render Game Meshes ====================
 	if (meshes.size())
 	{
 		for (Mesh *p : meshes)
 		{
-			// Set Shared Uniforms
-			p->shader.setVec("camPos_world",   cam_ref.position);
-			p->shader.setVec("lightPos_world", *flags.light_pos);
-			p->shader.setFloat("lightStr",     *flags.light_str);
-
-			// Execute Render Command (to set pre-draw state of mesh)
+			// Pre Render Command
 			commands[p->name](); 
 
-			p->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 			p->render();
 		}
 	}
 	GL_ERROR(); 
+
+	// ==================== Render Guide Meshes ====================
+	// ...
 
 	// Blind to S framebuffer
 	framebuffers.render_framebuffer_ms->blit_to_framebuffer_s(framebuffers.render_framebuffer_s);

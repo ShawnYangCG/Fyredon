@@ -19,5 +19,4 @@
 
 // system
 #include "Fyredon/ECS/System/AnimationSystem.h"
-#include "Fyredon/ECS/System/EngineRenderSystem.h"
 #include "Fyredon/ECS/System/NavigationSystem.h"

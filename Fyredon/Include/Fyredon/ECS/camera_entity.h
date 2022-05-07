@@ -10,13 +10,9 @@
 class camera_entity : public Entity
 {
 public:
-	// 3.
-	// add your own veriable here
-
-	// 4.
-	// rewrite the constructor
 	camera_entity();
-	camera_entity(Fyredon::Camera* camera);
+
+	camera_entity();
 };
 // 5.
 // don't forget to add this header in ECS.h

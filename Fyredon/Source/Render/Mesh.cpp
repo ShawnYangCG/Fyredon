@@ -10,6 +10,8 @@
 // Project Headers
 #include "Fyredon/Render/Texture.h"
 #include "Fyredon/Render/Material.h"
+#include "Fyredon/Render/Renderer.h"
+#include "Fyredon/Render/Camera.h"
 
 // Std Headers
 #include <cassert>
@@ -364,6 +366,11 @@ void Fyredon::Mesh::set_shader(const char *vert_path, const char *frag_path)
 //        assumes using mesh uber shaders. 
 void Fyredon::Mesh::set_shader_uniforms()
 {
+	if (!flags.shader_set) {
+		std::cerr << "ERROR::Trying to set uniforms on invalid shader state::" << name << "." << std::endl;
+		return;
+	}
+
 	// Set Model Matrix
 	shader.set_mat4("model", model);
 
@@ -372,19 +379,18 @@ void Fyredon::Mesh::set_shader_uniforms()
 	shader.set_mat3("model_normal", nmodel);
 
 	// Set Material Uniforms
+	material->set_uniforms();
 
-
+	// Set Active Camera Camera Uniforms
+	Camera *active_cam = Renderer::get_renderer().get_active_camera();
+	if (!active_cam) {
+		std::cerr << "ERROR::Active Camera Not Set" << std::endl;
+		throw std::runtime_error("Error Active Camera Not Set");
+	}
+	shader.set_mat4("view", active_cam->get_view_matrix());
+	shader.set_mat4("proj", active_cam->get_proj_matrix());
 }
 
-// Info : Forward Transforms to shader uniforms
-// Note these should ideally be gettable from renderer singleton...
-void Fyredon::Mesh::set_cameraTransform(const glm::mat4x4 &view, const glm::mat4x4 &persp)
-{
-	if (!flags.shader_set) return; 
-	shader.setMat4("view", view);
-	shader.setMat4("proj", persp);
-	flags.camera_set = 1;
-}
 
 // Flags that need to be set for rendering to be valid
 bool Fyredon::Mesh::check_state() const

@@ -1,7 +1,7 @@
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/ECS/Entity.h"
 #include "Fyredon/ECS/transform_component.h"
-#include <iostream>
+
 Entity::Entity()
 {
     this->name = "new entity";

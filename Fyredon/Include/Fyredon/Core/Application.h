@@ -14,7 +14,6 @@
 #include "Fyredon/GUI/GUI_PanelOrgnizer.h"
 #include "Fyredon/GUI/GUI_NewProjectWindow.h"
 #include "Fyredon/Action/MenuAction.h"
-#include "Fyredon/ECS/System/EngineRenderSystem.h"
 #include "Fyredon/GUI/GUI_Viewport.h"
 #include "Fyredon/ECS/camera_entity.h"
 
@@ -92,7 +91,6 @@ namespace Fyredon {
 		void setup_gui();
 		void shutdown_gui();
 		void tick_gui();
-		void viewport_gui();
 
 		// Engine/World (temp)
 		void update_camera();
@@ -127,11 +125,6 @@ namespace Fyredon {
 		// Editor State
 		float dt;
 		float cur_t, prev_t;
-
-		// Game World
-		GameWorld* world;
-		World* ECSworld;
-		EngineRenderSystem* renderSys;
 
 		friend class Renderer; 
 

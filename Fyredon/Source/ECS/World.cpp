@@ -1,5 +1,31 @@
+// Copyright Fyredon. All Rights Reserved.
+/*=============================================================================
+    World.cpp: ECS Game World : Shawn, Niall
+=============================================================================*/
 #include "Fyredon/Other/pch.h"
+// Implements
 #include "Fyredon/ECS/World.h"
+
+// ================= Singleton Instance =================
+World::World() : gui_org(nullptr) {}
+
+World World::world; 
+
+World& World::get_world() { return world; }
+
+// Assume ownership is in world class
+World::~World()
+{
+    if (entities.size()) {
+        for (Entity* entity : entities)
+        {
+            if (entity) delete entity; 
+        }
+    }
+
+}
+
+// ================= ECS World Class Implementation =================
 
 World::World(GUI_PanelOrgnizer* gui_org)
 {

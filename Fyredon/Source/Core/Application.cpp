@@ -16,6 +16,8 @@
 // Debug
 #include <Fyredon/Debug/Logger.h>
 
+#include "Fyredon/ECS/World.h"
+
 // GUI
 #include "Fyredon/GUI/GUI_Menu.h"
 #include "Fyredon/GUI/GUI_FloatingWidget.h"
@@ -87,9 +89,6 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	title += " :: Default Game Project";
 	width = Width, height = Height, window_title = title.c_str();
 
-	// ======== setup a ECS world ======== 
-	this->ECSworld = new World(this->gui_org);
-
 	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 
 	setup_ogl_window_contex();
@@ -100,21 +99,18 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// ---- Editor GUI Setup 
 	setup_gui();
 
-	// ToDo: A Susbsystem manager class, for now just create renderer instance within EditorApp
 	// ---- Renderer Subsystem Setup
 	Renderer& renderer = Renderer::get_renderer();
 	renderer.init(window, MSAA_SAMPLES);
 
-	// Test terrain (bypass ECS)
-	//GameWorld::get_world().create_terrain();
-
-	// ========== setup system ===============
-	// render system
-	this->renderSys = new EngineRenderSystem(this->ECSworld, &renderer);
-
-	// set a default camera
+	// Default Camera Setup
 	camera_entity* camEntity = new camera_entity();
-	this->ECSworld->addCamera(camEntity);
+
+	// ECS World setup
+	World& world = World::get_world();
+	world.init();
+	world.gui_org = this->gui_org;
+	world.addCamera(camEntity);
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
@@ -198,14 +194,16 @@ void Fyredon::EditorApplication::tick_engine()
 	// submit mesh from world to renderer
 	GUI_RendererSettings* Rset = (GUI_RendererSettings*)gui_org->gui_panels["setting"];
 	// the render prims map haven't finished so use this for testing, need to remove next 2 lines
-	this->renderSys->setCamera(&camera);
-	this->renderSys->setLight(&Rset->state.light_pos, &Rset->state.light_strength);
-	this->renderSys->tick();
+	//this->renderSys->setCamera(&camera);
+	//this->renderSys->setLight(&Rset->state.light_pos, &Rset->state.light_strength);
+	//this->renderSys->tick();
 
 	// Tick Renderer
-	Renderer::get_renderer().game_cam = &this->camera; 
-	Renderer::get_renderer().render();
+	//Renderer::get_renderer().game_cam = &this->camera; 
+	//Renderer::get_renderer().render();
 
+
+	/* What is this doing ? 
 	// Tick state update (if save/load state requested)
 	if (SaveState::getInstance().update) {			// -- State saved
 		SaveState::getInstance().tick(camera.position, camera.yaw, camera.pitch);
@@ -219,7 +217,7 @@ void Fyredon::EditorApplication::tick_engine()
 		camera.pitch = SaveState::getInstance().pitch;
 		camera.calc_basis();
 		// 
-	}
+	} */
 
 }
 
@@ -362,9 +360,9 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	}
 
 	// Query GL Device and Version Info - 
-	render_device.vendor = glGetString(GL_VENDOR);
-	render_device.name = glGetString(GL_RENDERER);
-	render_device.version = glGetString(GL_VERSION);
+	render_device.vendor     = glGetString(GL_VENDOR);
+	render_device.name       = glGetString(GL_RENDERER);
+	render_device.version    = glGetString(GL_VERSION);
 	render_device.sl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
 	// Cleanup Debug Output
@@ -424,27 +422,22 @@ void Fyredon::EditorApplication::update_camera()
 // Info : DearImGui Setup operations
 void Fyredon::EditorApplication::setup_gui()
 {
+	World* ECSworld = &World::get_world();
 	// Menu bar 
 	gui_org->gui_panels["Menu"] = new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, &guiConfig, 9);
-	this->menuAction = new MenuAction(this->gui_org, this->ECSworld);
+	this->menuAction = new MenuAction(gui_org, &World::get_world());
 
 	// Entity Panel
-	gui_org->gui_panels["Hierarchy"] = new GUI_EntityList("Hierarchy", &guiConfig, this->ECSworld);
+	gui_org->gui_panels["Hierarchy"] = new GUI_EntityList("Hierarchy", &guiConfig, ECSworld);
 
 	// Component Panel
-	gui_org->gui_panels["Inspector"] = new GUI_Components("Inspector", &guiConfig, this->ECSworld);
+	gui_org->gui_panels["Inspector"] = new GUI_Components("Inspector", &guiConfig, ECSworld);
 
 	// Asset Panel
-	gui_org->gui_panels["Asset Browser"] = new GUI_Asset("Asset Browser", &guiConfig, this->ECSworld);
+	gui_org->gui_panels["Asset Browser"] = new GUI_Asset("Asset Browser", &guiConfig, ECSworld);
 
 	// game viewport
 	gui_org->gui_panels["Game Viewport"] = new GUI_Viewport("Game Viewport", &guiConfig);
-
-	// Standins
-	//gui_panels.emplace_back(new GUI_FloatingWidget("Floating Panel"));
-
-	// Testing only
-	//gui_panels.emplace_back(new GUI_GameWorld);
 
 	// Renderer Settings Panel 
 	gui_org->gui_panels["setting"] = new GUI_RendererSettings;
