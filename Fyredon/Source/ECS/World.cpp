@@ -34,6 +34,7 @@ World::~World()
 
 // ================= ECS World Class Implementation =================
 
+// Info : Shawn I think we should remove this as ownership of entitiy is now within world initally ? - Niall.
 void World::addEntity(Entity* entity)
 {
     if (this->entityList.count(entity->getName()) == 0) {
@@ -64,7 +65,7 @@ void World::create_camera_entity()
     counts.camera_entity_count++;
 }
 
-// Info : Checks for named camera (Scene or Game) to also reference explicitlly. 
+// Info : Checks for named camera (Scene or Game) to initalize and reference explicitlly within world. 
 void World::create_camera_entity(const std::string& name)
 {
     Fyredon::camera_entity* entity = new Fyredon::camera_entity();
@@ -95,6 +96,10 @@ void World::create_camera_entity(const std::string& name)
     }
 
     this->addEntity(entity);
+
+    // Probs should use camera_array oppose to just general entities ?
+    // But kinda redundant now we store scene and game cam explicit ptrs. 
+    cameraList[name] = entityList.size() - 1; 
 
     counts.camera_entity_count++;
 }

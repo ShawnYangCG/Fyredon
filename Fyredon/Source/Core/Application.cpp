@@ -65,6 +65,7 @@ Fyredon::EditorApplication& Fyredon::EditorApplication::get_instance()
 Fyredon::EditorApplication::EditorApplication()
 	: dt(0.f), cur_t(0.f), prev_t(0.f), width(1024), height(1024), window_title("Editor")
 {
+	// ToDo : remove
 	// Camera (to move to ECS world)
 	//camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, RENDER_RES_X / RENDER_RES_Y, true);
 
@@ -192,17 +193,18 @@ void Fyredon::EditorApplication::tick_engine()
 {
 	get_dt();
 
-	// ToDo : Put into engine class
-	// Tick World when game run
-	// OLD GAME WORLD ... GameWorld::get_world().tick(dt);
-
+	// Tick ECS World
 	World::get_world().tick(dt);
 	update_inputs();
 
+	//  ?? rm ..
 	guiConfig.AppHeight = height;
 	guiConfig.AppWidth = width;
 
-	// Renderer
+	// Render
+	Renderer::get_renderer().render();
+
+	// On Play, switch to game cam
 	//Renderer::get_renderer().set_active_camera(World::get_world().game_cam_entity->camera());
 }
 
@@ -250,8 +252,6 @@ void Fyredon::EditorApplication::tick_gui()
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
-
-	// tick system
 }
 
 // Start of Application paint operations (within Tick())
@@ -375,6 +375,7 @@ void Fyredon::EditorApplication::get_dt()
 
 // As Camera meta state is set in application, ECS Cameras update is called from within Application
 
+// Info : Update inputs based on GLFW State, ECS Cameras will update based on this from app singleton.
 void Fyredon::EditorApplication::update_inputs()
 {
 	// Fetch global GLFW State
@@ -382,18 +383,25 @@ void Fyredon::EditorApplication::update_inputs()
 		width = GLFWState.width, height = GLFWState.height;
 
 	// Only set yaw,pitch if delta from last tick (update_camera() call). 
-	float delta_yaw = GLFWState.mouse_offset_x != GLFWState.last_yawoffs ? GLFWState.mouse_offset_x : 0.f;
-	float delta_pitch = GLFWState.mouse_offset_y != GLFWState.last_pitchoffs ? GLFWState.mouse_offset_y : 0.f;
-	float delta_zoom = GLFWState.scroll_y != GLFWState.last_zoom ? GLFWState.scroll_y : 0.f;
+	GLFWState.delta_yaw   = GLFWState.mouse_offset_x != GLFWState.last_yawoffs ? GLFWState.mouse_offset_x : 0.f;
+	GLFWState.delta_pitch = GLFWState.mouse_offset_y != GLFWState.last_pitchoffs ? GLFWState.mouse_offset_y : 0.f;
+	GLFWState.delta_zoom  = GLFWState.scroll_y != GLFWState.last_zoom ? GLFWState.scroll_y : 0.f;
+	GLFWState.cam_dt      = dt; 
 
 	// Set last offsets
 	GLFWState.last_yawoffs   = GLFWState.mouse_offset_x;
 	GLFWState.last_pitchoffs = GLFWState.mouse_offset_y;
 	GLFWState.last_zoom      = GLFWState.scroll_y;
 
+
+	// Update Cameras in ECS world using this on next camera_comp tick() oppose to here.
+	// ToDo : Below code is deprecated, remove when stable : 
+
+	/*
 	// Update Camera State for all camera components
 	// Old pre ECS solution : //camera.update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
 	World& world = World::get_world();
+
 	// Terrible solution currently (Have to fetch and cast camera enttity and component). Only works on camera 0.
 	camera_entity* cam_ent = static_cast<camera_entity*>(world.getCameraByIndex(0));
 	static_cast<camera_component*>(cam_ent->getComponentByIndex(0))->camera->update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
@@ -403,7 +411,8 @@ void Fyredon::EditorApplication::update_inputs()
 	{
 		float ar = width / height;
 		camera.aspect_ratio = ar;
-	}
+	} 
+	*/
 }
 
 // ============= ImGui GUI Setup =============
@@ -412,6 +421,7 @@ void Fyredon::EditorApplication::update_inputs()
 void Fyredon::EditorApplication::setup_gui()
 {
 	World* ECSworld = &World::get_world();
+
 	// Menu bar 
 	gui_org->gui_panels["Menu"] = new GUI_Menu(GUI_Menu::config::EDIT_VIEW_HELP_ABOUT, &guiConfig, 9);
 	this->menuAction = new MenuAction(gui_org, &World::get_world());
@@ -452,6 +462,7 @@ void Fyredon::EditorApplication::shutdown_gui()
 
 // ============= GL DEBUG Callbacks Implementation =============
 
+// Info : Requires OpenGL 4.3, assume users have 4.5 spec, if an issue can revert to classic GL Error debugging. 
 void Fyredon::message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* msg, const void* userParm)
 {
 #ifdef GL_DETAILED_ERROR_CHECK

@@ -50,6 +50,9 @@ namespace Fyredon {
 		void exec();
 		void resize();
 
+		// Transfer of OGL Context
+		GLFWwindow* get_ogl_context();
+
 		// GLFW / Input State (modified via public callback access)
 		static struct {
 			int32_t    width, height;
@@ -62,6 +65,7 @@ namespace Fyredon {
 			// Input Deltas
 			double last_yawoffs = 0.f, last_pitchoffs = 0.f, last_zoom  = 0.f;
 			double delta_yaw    = 0.f, delta_pitch    = 0.f, delta_zoom = 0.f; 
+			float cam_dt = 0.f; 
 		} GLFWState;
 
 		static bool isSizeChange;
@@ -88,7 +92,7 @@ namespace Fyredon {
 		// OpenGL Setup
 		void setup_ogl_window_contex();
 		void setup_ogl_loading();
-		GLFWwindow* get_ogl_context();
+	
 
 		// Application Paint Steps
 		void paint_begin();

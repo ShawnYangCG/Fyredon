@@ -19,12 +19,11 @@
 #include "Fyredon/Render/GroundPlane.h"
 #include "Fyredon/Render/Light.h"
 
-#include "Fyredon/Core/GameWorld.h"
 
 // Ext Headers
 #include "glm/glm.hpp"
 
-// Inital render res
+// Inital render res (pre viewport scaling)
 #define RENDER_RES_X 768
 #define RENDER_RES_Y 504
 
@@ -55,6 +54,7 @@ public:
 	void init(GLFWwindow* ogl_context, int8_t sample_count);
 
 	static void set_active_camera(Camera* cam);
+
 	static Camera* get_active_camera();
 
 	void render(); 
@@ -67,13 +67,18 @@ public:
 
 	// Submit to draw lists for rendering
 	std::size_t submit_mesh(Mesh* mesh, const std::function<void()> &command);
+
 	std::size_t submit_mesh(Mesh* mesh);
+
 	std::size_t submit_mesh_guide(Mesh* mesh_guide);
+
 	std::size_t submit_point_light(Light_Point* light);
 
 	// Remove from draw lists
 	void delete_mesh              (std::size_t idx); 
+
 	void delete_mesh_guide        (std::size_t idx);
+
 	void delete_point_light       (std::size_t idx);
 
 	// ToDo : Debug Guide Mesh creation
@@ -117,8 +122,7 @@ public:
 private:
 	Renderer();
 
-	void get_GLError(const char* file, int32_t line);
-
+	// Core Rendering
 	void render_setup();
 
 	void render_camera(Camera* cam_ref);
@@ -128,10 +132,13 @@ private:
 	// Resource Creation
 	void create_view_framebuffer_resources(); 
 
-	// Debug Resources
+	// Debug Resources Creation
 	void create_test_mesh();
 
 	void create_render_prims();
+
+	// Debugging 
+	void get_GLError(const char* file, int32_t line);
 
 private:
 	// Renderer singleton 
@@ -146,6 +153,9 @@ private:
 
 	} draw_lists;
 
+	// Mesh render commands
+	std::unordered_map<std::string, std::function<void()>> commands;
+
 	struct // Internal meshes
 	{
 		GroundPlane* ground;
@@ -157,11 +167,7 @@ private:
 	Light_Directional*        sun_light; 
 	std::vector<Light_Point*> point_lights;
 
-	// =========== Per Mesh Render Commands ============
-	std::unordered_map<std::string, std::function<void()>> commands;
-
-	static Camera* active_cam;
-
+	// =========== Resources ============
 	struct
 	{
 		Framebuffer_S*       render_framebuffer_s;
@@ -175,15 +181,16 @@ private:
 	struct 
 	{
 	  Framebuffer_S *sun_shadow_map
-	} light_framebuffers; 
-	
-	*/
+	} light_framebuffers;  */
 
 	struct
 	{
 		int8_t is_init, has_viewer_prims : 1; 
+		int8_t frame_complete : 1; 
 	} flags;
 
+	// =========== Ext References ============
+	static Camera* active_cam;
 	GLFWwindow* ogl_wincontext; 
 };
 

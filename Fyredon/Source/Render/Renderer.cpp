@@ -199,9 +199,11 @@ void Fyredon::Renderer::render_setup()
 	glPointSize(5.f);
 	glLineWidth(2.5f);
 
+	// Common
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_MULTISAMPLE);
 
+	// Culling (assume CCW)
 	if (parms.cull_backface) glCullFace(GL_BACK);
 
 	// Blending 
@@ -218,14 +220,16 @@ void Fyredon::Renderer::render()
 	// Render from Active Camera
 	render_camera(active_cam);
 
-	// Post Processing ...
+	// Post Processing ... not gonna happen :( 
 
-	// Convert resulting attachments to ImGui Textures ...
+	// Convert resulting attachments to ImGui Textures or fetch manually to GUI_Viewport...
 }
 
 // Info : Basic forward rendering pipeline from some camera, render to framebuffer.
 void Fyredon::Renderer::render_camera(Camera *cam_ref)
 {
+	flags.frame_complete = 0; 
+
 	// Bind View MS Framebuffer
 	view_framebuffers.render_framebuffer_ms->bind_clear();
 	GL_ERROR();
@@ -246,12 +250,20 @@ void Fyredon::Renderer::render_camera(Camera *cam_ref)
 	GL_ERROR(); 
 
 	// ==================== Render Guide Meshes ====================
-	// ...
-
+	if (draw_lists.guides.size()) {
+		for (Mesh* p : draw_lists.guides)
+		{
+			p->render();
+		}
+	}
+	
+	draw_viewer_prims();
 	// ==================== Post Render ====================
 	// Blind to S framebuffer
 	view_framebuffers.render_framebuffer_ms->blit_to_framebuffer_s(view_framebuffers.render_framebuffer_s);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); 
+
+	flags.frame_complete = 1; 
 
 	// ====================  Swap and Poll ====================
 	// Render to glfw framebuffer for debugging only (bypass GUI texture)

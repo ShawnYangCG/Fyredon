@@ -9,6 +9,7 @@
 #include "Fyredon/ECS/camera_entity.h"
 #include "Fyredon/ECS/World.h"
 
+#include "Fyredon/Core/Application.h"
 #include "Fyredon/Render/Assets.h"
 
 Fyredon::camera_component::camera_component(Entity* parent)
@@ -33,6 +34,7 @@ Fyredon::camera_component::camera_component(Entity* parent)
 	Fyredon::Renderer::get_renderer().submit_mesh_guide(guide_mesh);
 }
 
+// Info : Expose key parms to component GUI
 void Fyredon::camera_component::GUI_struct()
 {
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
@@ -49,12 +51,20 @@ void Fyredon::camera_component::GUI_struct()
 	}
 }
 
-
+// Info : Update Camera State per tick
 void Fyredon::camera_component::tick() 
 {
-	// Update Camera State
+	// Get engine singletons
+	auto& app      = Fyredon::EditorApplication::get_instance();
 	auto& renderer = Fyredon::Renderer::get_renderer(); 
-	parms.aspect = float(renderer.width) / renderer.height; 
-	camera->aspect_ratio = parms.aspect; 
 
+	// Get Application latest GLFWState to update camera from. 
+	camera->update_camera(app.get_ogl_context(), 1.f, app.GLFWState.cam_dt, app.GLFWState.delta_yaw, app.GLFWState.delta_pitch);
+
+	// Update Aspect Ratio if changed (not correct currently based on whole editor app size, not viewport).
+	if (renderer.width && renderer.height)
+	{
+		parms.aspect = float(renderer.width) / renderer.height; 
+		camera->aspect_ratio = parms.aspect; 
+	}
 }
