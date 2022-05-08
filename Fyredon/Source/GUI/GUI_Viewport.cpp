@@ -50,8 +50,11 @@ void Fyredon::GUI_Viewport::draw()
 		{
 			// Set Viewport and Camera to Scene_Cam
 			current_viewport = viewport::VIEWPORT_SCENE;
-			camera_component* game_cam = world.game_cam_entity->get_camera_component();
-			renderer.set_active_camera(game_cam->camera);
+			if (world.game_cam_entity)
+			{
+				camera_component* game_cam = world.game_cam_entity->get_camera_component();
+				renderer.set_active_camera(game_cam->camera);
+			}
 
 			// Get Rendered View Texture
 			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
@@ -65,8 +68,11 @@ void Fyredon::GUI_Viewport::draw()
 		{
 			// Set Viewport and Camera to Game_Cam
 			current_viewport = viewport::VIEWPORT_GAME;
-			camera_component* scene_cam = world.scene_cam_entity->get_camera_component();
-			renderer.set_active_camera(scene_cam->camera);
+			if (world.scene_cam_entity)
+			{
+				camera_component* scene_cam = world.scene_cam_entity->get_camera_component();
+				renderer.set_active_camera(scene_cam->camera);
+			}
 
 			// Get Rendered View Texture
 			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
