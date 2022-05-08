@@ -4,11 +4,10 @@
 =============================================================================*/
 #version 450 core 
 
-// For now use a single sun light only. 
+// Info :  For now use a single sun light only. 
 
 // ======= Input ======= 
 in vec3 colour;
-in vec3 normal;
 in vec3 uvw;
 in vec3 pos_world;
 in vec3 normal_world; 
@@ -53,6 +52,7 @@ void main()
 	vec3 diff_col = mat_parms.colour_diffuse; 
 	vec3 spec_col = mat_parms.colour_specular;
 	
+	// Test Branch
 	#ifndef BRANCH_LIGHT_SUN
 	frag_colour = vec4(1.0, 0.0, 0.0, 1.0); 
 	return; 

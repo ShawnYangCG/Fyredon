@@ -27,8 +27,8 @@ namespace Fyredon
 class Mesh_OBJ : public Mesh
 {
 public:
-	Mesh_OBJ() : Mesh("") {}
 	Mesh_OBJ(const char *name, const char *filePath);
+	Mesh_OBJ() = delete;
 	virtual ~Mesh_OBJ() = default; 
 
 	void load_obj();

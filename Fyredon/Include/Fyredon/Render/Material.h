@@ -39,8 +39,8 @@ public:
 		float exp_gloss; 
 	} parms;
 
-protected:
 	void build_mesh_shader();
+protected:
 
 	bool parms_changed; 
 	Mesh& parent_mesh; 

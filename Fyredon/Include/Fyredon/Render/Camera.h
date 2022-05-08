@@ -51,7 +51,6 @@ public:
 
 	std::ostringstream debug();
 	void calc_basis();
-	
 };
 }
 

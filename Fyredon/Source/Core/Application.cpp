@@ -65,8 +65,8 @@ Fyredon::EditorApplication::EditorApplication()
 	: dt(0.f), cur_t(0.f), prev_t(0.f), width(1024), height(1024), last_yawoffs(0.f),
 	last_pitchoffs(0.f), last_zoom(0.f), window_title("null")
 {
-	// Camera (to move to world)
-	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, RENDER_RES_X / RENDER_RES_Y, true);
+	// Camera (to move to ECS world)
+	//camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, RENDER_RES_X / RENDER_RES_Y, true);
 
 	gui_org = new GUI_PanelOrgnizer();
 }
@@ -89,7 +89,6 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	title += " :: Default Game Project";
 	width = Width, height = Height, window_title = title.c_str();
 
-	// ======== Application Open GL Setup ========
 	// ---- GLFW, GL Context Setup 
 	setup_ogl_window_contex();
 
@@ -103,14 +102,11 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	Renderer& renderer = Renderer::get_renderer();
 	renderer.init(window, MSAA_SAMPLES);
 
-	// Default Camera Setup
-	camera_entity* camEntity = new camera_entity();
-
-	// ECS World setup
+	// ---- ECS Setup
 	World& world = World::get_world();
 	world.init();
+	world.create_camera_entity();
 	world.gui_org = this->gui_org;
-	world.addCamera(camEntity);
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
@@ -153,10 +149,8 @@ void Fyredon::EditorApplication::exec()
 	while (!glfwWindowShouldClose(window))
 	{
 		tick_engine();
+
 		tick_editor();
-		
-		// If Play ...
-		tick_play();
 	}
 
 	// Post Exec Shutdown
@@ -191,41 +185,7 @@ void Fyredon::EditorApplication::tick_engine()
 	guiConfig.AppHeight = height;
 	guiConfig.AppWidth = width;
 
-	// submit mesh from world to renderer
 	GUI_RendererSettings* Rset = (GUI_RendererSettings*)gui_org->gui_panels["setting"];
-	// the render prims map haven't finished so use this for testing, need to remove next 2 lines
-	//this->renderSys->setCamera(&camera);
-	//this->renderSys->setLight(&Rset->state.light_pos, &Rset->state.light_strength);
-	//this->renderSys->tick();
-
-	// Tick Renderer
-	//Renderer::get_renderer().game_cam = &this->camera; 
-	//Renderer::get_renderer().render();
-
-
-	/* What is this doing ? 
-	// Tick state update (if save/load state requested)
-	if (SaveState::getInstance().update) {			// -- State saved
-		SaveState::getInstance().tick(camera.position, camera.yaw, camera.pitch);
-	}
-	if (SaveState::getInstance().loaded) {			// -- State loaded
-		SaveState::getInstance().load();
-		// Inject state
-		// Camera state
-		camera.position = SaveState::getInstance().cam_pos;
-		camera.yaw = SaveState::getInstance().yaw;
-		camera.pitch = SaveState::getInstance().pitch;
-		camera.calc_basis();
-		// 
-	} */
-
-}
-
-void Fyredon::EditorApplication::tick_play()
-{
-	if (((GUI_Menu*)gui_org->gui_panels["Menu"])->menu_state.play) {
-		std::cout << "play" << std::endl;
-	}
 }
 
 // Info : All operations done within the editor application for a single tick
@@ -238,13 +198,21 @@ void Fyredon::EditorApplication::tick_editor()
 	paint_end();
 }
 
+// Check for play via Menu -> class bool play state ...
+void Fyredon::EditorApplication::tick_play()
+{
+	if (((GUI_Menu*)gui_org->gui_panels["Menu"])->menu_state.play) {
+		std::cout << "play" << std::endl;
+	}
+}
+
 void Fyredon::EditorApplication::tick_gui()
 {
-	ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(40, 40, 40, 255));
+	ImGui::PushStyleColor(ImGuiCol_Header,   IM_COL32(40, 40, 40, 255));
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(70, 70, 70, 255));
-	ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(40, 40, 40, 255));
-	ImGui::PushStyleColor(ImGuiCol_TitleBg, IM_COL32(50, 50, 50, 255));
-	ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(40, 40, 40, 255));
+	ImGui::PushStyleColor(ImGuiCol_Button,   IM_COL32(40, 40, 40, 255));
+	ImGui::PushStyleColor(ImGuiCol_TitleBg,  IM_COL32(50, 50, 50, 255));
+	ImGui::PushStyleColor(ImGuiCol_FrameBg,  IM_COL32(40, 40, 40, 255));
 
 	if (isSizeChange == true) {
 		resize();
@@ -300,6 +268,7 @@ void Fyredon::EditorApplication::paint_end()
 // Info : Setup OpenGL Context via GLFW, setup Window and callbacks. 
 void Fyredon::EditorApplication::setup_ogl_window_contex()
 {
+	// ============= GLFW Init =============
 	if (!glfwInit())
 	{
 		// Logger class repalce this :)
@@ -311,18 +280,18 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, MSAA_SAMPLES);
-#ifdef EDITOR_WINDOW_RESIZE
+	#ifdef EDITOR_WINDOW_RESIZE
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-#else
+	#else
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-#endif
+	#endif
 
-	// Create Window
+	// ============= Create Window =============
 	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* monitor = glfwGetVideoMode(primaryMonitor);
-#ifdef EDITOR_FULLSCREEN
+	#ifdef EDITOR_FULLSCREEN
 	width = monitor->width, height = monitor->height;
-#endif
+	#endif
 	window = glfwCreateWindow(width, height, window_title, NULL, NULL);
 	if (window == NULL)
 	{
@@ -341,8 +310,7 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	// ============= Set Context and Viewport =============
 	glfwMakeContextCurrent(window);
 	int newWidth = guiConfig.AppWidth - guiConfig.leftBar_width - guiConfig.rightBar_width - guiConfig.xOffset;
-	int yheight = guiConfig.leftBar_height > guiConfig.rightBar_height ?
-		guiConfig.leftBar_height : guiConfig.rightBar_height;
+	int yheight  = guiConfig.leftBar_height > guiConfig.rightBar_height ? guiConfig.leftBar_height : guiConfig.rightBar_height;
 	int newHeight = yheight - guiConfig.yOffset;
 	glViewport(0, 0, newWidth, newHeight);
 }
@@ -350,15 +318,14 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 // Info : Setup OpenGL function loading via GLEW 
 void Fyredon::EditorApplication::setup_ogl_loading()
 {
+	// ============= GLEW Init =============
 	glewExperimental = GL_TRUE;
-
-	if (glewInit() != GLEW_OK)
-	{
-		// Logger class repalce this :)
+	if (glewInit() != GLEW_OK) {
 		std::cerr << "Error::Viewer:: GLEW failed to initalize.\n";
 		throw std::runtime_error("GLEW Fail"); // Need to talk about exceptions use...
 	}
 
+	// ============= Render Device =============
 	// Query GL Device and Version Info - 
 	render_device.vendor     = glGetString(GL_VENDOR);
 	render_device.name       = glGetString(GL_RENDERER);
@@ -376,13 +343,10 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	// ============= Setup Debug Messages =============
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(message_callback, 0);
-
 }
 
 GLFWwindow* Fyredon::EditorApplication::get_ogl_context()
-{
-	return window;
-}
+{ return window;}
 
 void Fyredon::EditorApplication::get_dt()
 {
@@ -401,6 +365,7 @@ void Fyredon::EditorApplication::update_camera()
 	float delta_yaw = GLFWState.mouse_offset_x != last_yawoffs ? GLFWState.mouse_offset_x : 0.f;
 	float delta_pitch = GLFWState.mouse_offset_y != last_pitchoffs ? GLFWState.mouse_offset_y : 0.f;
 	float delta_zoom = GLFWState.scroll_y != last_zoom ? GLFWState.scroll_y : 0.f;
+
 	// Set last offsets
 	last_yawoffs = GLFWState.mouse_offset_x;
 	last_pitchoffs = GLFWState.mouse_offset_y;
@@ -434,13 +399,13 @@ void Fyredon::EditorApplication::setup_gui()
 	gui_org->gui_panels["Inspector"] = new GUI_Components("Inspector", &guiConfig, ECSworld);
 
 	// Asset Panel
-	gui_org->gui_panels["Asset Browser"] = new GUI_Asset("Asset Browser", &guiConfig, ECSworld);
+	gui_org->gui_panels["Asset_Browser"] = new GUI_Asset("Asset Browser", &guiConfig, ECSworld);
 
-	// game viewport
-	gui_org->gui_panels["Game Viewport"] = new GUI_Viewport("Game Viewport", &guiConfig);
+	// Game Viewport
+	gui_org->gui_panels["Game_Viewport"] = new GUI_Viewport("Game Viewport", &guiConfig);
 
 	// Renderer Settings Panel 
-	gui_org->gui_panels["setting"] = new GUI_RendererSettings;
+	gui_org->gui_panels["Render_Settings"] = new GUI_RendererSettings;
 
 	// ImGui Context Setup
 	IMGUI_CHECKVERSION();

@@ -65,17 +65,20 @@ public:
 public:
 	void resize(int width, int height);
 
-	void submit_mesh(Mesh* mesh, const std::function<void()> &command);
-	void submit_mesh(Mesh* mesh);
-	void submit_point_light(Light_Point* light);
+	// Submit to draw lists for rendering
+	std::size_t submit_mesh(Mesh* mesh, const std::function<void()> &command);
+	std::size_t submit_mesh(Mesh* mesh);
+	std::size_t submit_mesh_guide(Mesh* mesh_guide);
+	std::size_t submit_point_light(Light_Point* light);
 
-	void delete_mesh              (const char* mesh_name); 
-	void delete_point_light       (const char* light_name);
+	// Remove from draw lists
+	void delete_mesh              (std::size_t idx); 
+	void delete_mesh_guide        (std::size_t idx);
+	void delete_point_light       (std::size_t idx);
 
-	// Utility 
-	// Guide Mesh creation
-	void draw_guide_line(glm::vec3 pos, float length, float width, float lifespan); 
-	void draw_guide_point(glm::vec3 pos, float size, float lifespan); 
+	// ToDo : Debug Guide Mesh creation
+	// void draw_guide_line(glm::vec3 pos, float length, float width, float lifespan); 
+	// void draw_guide_point(glm::vec3 pos, float size, float lifespan); 
 
 	struct
 	{
@@ -88,19 +91,22 @@ public:
 		bool sun_shadows; 
 		std::size_t shadowmap_res_sqr; 
 
-		// Skybox Parameters 
+		// Skybox Parameters : ToDo
 		// Skybox Tex, Use Skybox, Skybox res...
 
-		// Reflection Parameters 
+		// Reflection Parameters : ToDo
 		// cubemap reflections
 
-		// Post Processing Parameters
+		// Post Processing Parameters : ToDo
 		// use bloom
 
 		// Viewport Parameters
 		bool draw_grid, draw_axis, draw_test_mesh;
 		bool draw_mesh_guides;
 		// std::size_t grid_size;
+
+		// Culling
+		bool cull_backface; 
 
 	} parms;
 
@@ -117,15 +123,15 @@ private:
 
 	void render_camera(Camera* cam_ref);
 
-	// Debug
-	void create_test_mesh();
-	void create_render_prims();
-
-
 	void draw_viewer_prims(); 
 
 	// Resource Creation
 	void create_view_framebuffer_resources(); 
+
+	// Debug Resources
+	void create_test_mesh();
+
+	void create_render_prims();
 
 private:
 	// Renderer singleton 
@@ -165,7 +171,7 @@ private:
 
 	} view_framebuffers;
 
-	/*
+	/* ToDo
 	struct 
 	{
 	  Framebuffer_S *sun_shadow_map

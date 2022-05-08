@@ -6,8 +6,16 @@
 // Implements
 #include "Fyredon/ECS/World.h"
 
+// Entites
+#include "Fyredon/ECS/terrain_entity.h"
+#include "Fyredon/ECS/camera_entity.h"
+
 // ================= Singleton Instance =================
-World::World() : gui_org(nullptr) {}
+World::World() : gui_org(nullptr) 
+{
+    counts.terrain_entity_count = 0, counts.mesh_count = 0, counts.camera_count = 0;
+    counts.camera_entity_count = 0, counts.light_count = 0; 
+}
 
 World World::world; 
 
@@ -22,15 +30,9 @@ World::~World()
             if (entity) delete entity; 
         }
     }
-
 }
 
 // ================= ECS World Class Implementation =================
-
-World::World(GUI_PanelOrgnizer* gui_org)
-{
-    this->gui_org = gui_org;
-}
 
 void World::addEntity(Entity* entity)
 {
@@ -46,48 +48,67 @@ void World::addEntity(Entity* entity)
     }
 }
 
-void World::addCamera(Entity* entity)
+// ================= Entity Creation =================
+
+void World::create_terrain_entity()
 {
-    if (this->cameraList.count(entity->getName()) == 0) {
-        this->cameraList[entity->getName()] = this->cameras.size();
-        this->cameras.push_back(entity);
-    }
-    else {
-        //std::cout << "Error: World already contain entity [" << entity->getName() << "]" << std::endl;
-        entity->setName(entity->getName() + " " + std::to_string(this->cameras.size()));
-        this->cameraList[entity->getName()] = this->cameras.size();
-        this->cameras.push_back(entity);
-    }
+    terrain_entity* entity = new terrain_entity;
+    this->addEntity(entity);
+    counts.terrain_entity_count++;
 }
+
+void World::create_camera_entity()
+{
+    Fyredon::camera_entity* entity = new Fyredon::camera_entity();
+    this->addEntity(entity);
+    counts.camera_entity_count++;
+}
+
+void World::create_doll_entity()
+{
+
+}
+
+void World::create_empty_entity()
+{
+
+}
+
+// ================= Core World Functions =================
 
 void World::init()
 {
-    for (int i = 0; i < this->entities.size(); i++) {
-        this->entities[i]->init();
+    for (Entity* entity : entities)
+    {
+        entity->init();
     }
 }
 
 void World::tick()
 {
-    for (int i = 0; i < this->entities.size(); i++) {
-        this->entities[i]->tick();
+    for (Entity* entity : entities)
+    {
+        entity->tick();
     }
 }
 
 void World::reset()
 {
-    for (int i = 0; i < this->entities.size(); i++) {
-        this->entities[i]->reset();
+    for (Entity* entity : entities)
+    {
+        entity->reset();
     }
 }
 
 void World::stop()
 {
-    for (int i = 0; i < this->entities.size(); i++) {
-        this->entities[i]->stop();
+    for (Entity* entity : entities)
+    {
+        entity->stop();
     }
 }
 
+// ================= Getters =================
 Entity* World::getEntityByIndex(int index)
 {
     if (index < 0 || index >= this->entities.size()) {

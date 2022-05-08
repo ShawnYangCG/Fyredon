@@ -7,9 +7,6 @@
 // Implements
 #include "Fyredon/Render/Mesh_OBJ.h"
 
-// Extern Headers
-#include "GLEW/glew.h"
-
 // Std Headers
 #include <fstream>
 #include <sstream>
@@ -19,7 +16,7 @@
 // =================== Mesh Implementation ===================
 
 Fyredon::Mesh_OBJ::Mesh_OBJ(const char* name, const char* filePath)
-	: Mesh(name), file_path(filePath), has_texcoords(false) {}
+	: Mesh(name, Mesh_Type::GAME_MESH), file_path(filePath), has_texcoords(false) {}
 
 // Info : Load Obj, assuming triangle based meshes with indices. 
 void Fyredon::Mesh_OBJ::load_obj()
@@ -72,7 +69,6 @@ void Fyredon::Mesh_OBJ::load_obj()
 		{
 			// Set texture state if 'vt' found. 
 			has_texcoords |= true; 
-			use_tex |= true; 
 
 			float uu, vv;
 			ss >> uu;
@@ -83,7 +79,7 @@ void Fyredon::Mesh_OBJ::load_obj()
 		// Faces / Indices
 		if (str == "f")
 		{
-			if (use_tex) // Get each face vertex (w/ texture coords)
+			if (has_texcoords) // Get each face vertex (w/ texture coords)
 			{
 				for (int i = 0; i < 3; ++i)
 				{
@@ -148,10 +144,8 @@ void Fyredon::Mesh_OBJ::load_obj()
 	// Pass Mesh Data for indexing and buffer creation
 	set_data_mesh(vert_data);
 
-	// Check Primitive is correct.
-	//debug();
-
 #ifdef DEBUG_LOG
+		//debug();
 		std::cout << dbg.str();
 #endif
 }

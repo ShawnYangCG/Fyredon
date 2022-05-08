@@ -64,12 +64,14 @@ struct VertHash
 };
 
 // ======================== Mesh Class ========================
-enum Render_Mode { RENDER_MESH = 0, RENDER_LINES, RENDER_POINTS };
+enum Render_Mode : int8_t { RENDER_MESH = 0, RENDER_LINES, RENDER_POINTS };
+enum Mesh_Type   : int8_t { GAME_MESH = 0, GUIDE_MESH};
 
 class Mesh
 {
 public:
 	explicit Mesh(const char *Name);
+	Mesh(const char* Name, Mesh_Type Type);
 	Mesh() = delete;
 
 	virtual ~Mesh();
@@ -87,8 +89,6 @@ public:
 	void set_data_mesh(const std::vector<Vert>& data);
 
 	void set_colour(const glm::vec3& col);
-
-	void set_cameraTransform(const glm::mat4x4& view, const glm::mat4x4& persp);
 
 	void set_shader(const char* vert_path, const char* frag_path);
 
@@ -151,6 +151,7 @@ public:
 
 
 	std::string name;
+	Mesh_Type type; 
 };
 
 }

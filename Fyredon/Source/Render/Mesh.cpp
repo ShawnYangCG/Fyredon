@@ -28,7 +28,7 @@
 // ================================== Mesh Class Implementation ==================================
 
 Fyredon::Mesh::Mesh(const char *Name)
-	: name(Name), vert_count(-1), index_count(-1), tex(nullptr), use_tex(false), wireframe(false)
+	: name(Name), vert_count(-1), index_count(-1), type(Mesh_Type::GAME_MESH), mode(Render_Mode::RENDER_MESH)
 {
 	flags.buffers_set   = 0;
 	flags.vert_data_set = 0; 
@@ -41,7 +41,40 @@ Fyredon::Mesh::Mesh(const char *Name)
 
 	model = glm::mat4(1.f);
 
-	mode = Render_Mode::RENDER_MESH; 
+	set_shader("..//Shaders//mesh_vert_common.glsl", "..//Shaders//mesh_fragment_blinnphong.glsl");
+}
+
+Fyredon::Mesh::Mesh(const char* Name, Mesh_Type Type)
+	: name(Name), vert_count(-1), index_count(-1), type(Type)
+{
+	flags.buffers_set   = 0;
+	flags.vert_data_set = 0;
+	flags.inds_data_set = 0;
+	flags.shader_set    = 0;
+	flags.camera_set    = 0;
+	flags.texture_set   = 0;
+
+	material = new Material(*this);
+
+	model = glm::mat4(1.f);
+
+	// Mesh Type
+	switch (type)
+	{
+		case(Mesh_Type::GAME_MESH):
+		{
+			type = Mesh_Type::GAME_MESH;
+			mode = Render_Mode::RENDER_MESH;
+			set_shader("..//Shaders//mesh_vert_common.glsl", "..//Shaders//mesh_fragment_blinnphong.glsl");
+			break;
+		}
+		case(Mesh_Type::GUIDE_MESH):
+		{
+			type = Mesh_Type::GUIDE_MESH;
+			mode = Render_Mode::RENDER_LINES;
+			set_shader("..//Shaders//mesh_vert_common.glsl", "..//Shaders//mesh_fragment_blinnphong.glsl");
+		}
+	}
 }
 
 Fyredon::Mesh::~Mesh()
@@ -50,9 +83,6 @@ Fyredon::Mesh::~Mesh()
 	if (VAO) glDeleteVertexArrays(1, &VAO);
 	if (VBO) glDeleteBuffers(1, &VBO);
 	if (EBO) glDeleteBuffers(1, &EBO);
-
-	// Dealloc Dynamic members
-	if (tex) delete tex;
 }
 
 // Info : Copy Ctor
@@ -61,13 +91,13 @@ Fyredon::Mesh::Mesh(const Mesh& copy)
 {
 	*this = copy; 
 
-	// Explict deep copies 
 	this->vert_data = copy.vert_data;
 	this->vert_count = copy.vert_count;
 	this->inds_data = copy.inds_data;
 	this->index_count = copy.index_count; 
 
-	if (copy.tex) this->tex = new TextureImage(*copy.tex);
+	// Explict deep copies 
+	material = new Material(*copy.material);
 }
 
 // ============= Rendering =============
@@ -83,22 +113,13 @@ void Fyredon::Mesh::render()
 
 	// Bind Mesh State
 	shader.use();
+	
+	// Uniforms
+	set_shader_uniforms();
 
-	// Activate and Bind Texture
-	if (use_tex)
-	{
-		tex->activate();
-		tex->bind();
-	}
+	// Textures
+	material->activate_bind_textures();
 
-	/*
-	// Update Modfied Uniforms
-	shader.set_mat4("model", model);
-
-	// Calc model_normal
-	glm::mat3 nmodel(model);
-	nmodel = glm::transpose(glm::inverse(nmodel));
-	shader.setMat3("model_normal", nmodel); */
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -156,7 +177,7 @@ void Fyredon::Mesh::render()
 // For passing updated vertex arrays, use update_data_mesh(). 
 void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data)
 {
-	if (data.size() > 1e05) std::cout << "Info:: Auto-Indexing taking place on large mesh: " << name << ".\n";
+	if (data.size() > 1e+05) std::cout << "Info::Auto-Indexing taking place on large mesh::" << name << ".\n";
 
 	std::vector<Vert> unqiue_verts; 
 	std::vector<GLuint> inds; 
@@ -355,9 +376,11 @@ void Fyredon::Mesh::set_shader(const char *vert_path, const char *frag_path)
 	std::string shader_name = name + "_Shader";
 	shader = Shader(shader_name.c_str(), vert_path, frag_path);
 
-	// Load and build shader
+	// Load Shader In mesh
 	shader.load();
 
+	// Build Shader using default material parameters
+	material->build_mesh_shader();
 
 	if (shader.valid_state) flags.shader_set = 1; 
 }
@@ -366,6 +389,7 @@ void Fyredon::Mesh::set_shader(const char *vert_path, const char *frag_path)
 //        assumes using mesh uber shaders. 
 void Fyredon::Mesh::set_shader_uniforms()
 {
+	// Ensure shader state is set
 	if (!flags.shader_set) {
 		std::cerr << "ERROR::Trying to set uniforms on invalid shader state::" << name << "." << std::endl;
 		return;
@@ -381,7 +405,7 @@ void Fyredon::Mesh::set_shader_uniforms()
 	// Set Material Uniforms
 	material->set_uniforms();
 
-	// Set Active Camera Camera Uniforms
+	// Set Active Camera Matrices
 	Camera *active_cam = Renderer::get_renderer().get_active_camera();
 	if (!active_cam) {
 		std::cerr << "ERROR::Active Camera Not Set" << std::endl;
@@ -390,7 +414,6 @@ void Fyredon::Mesh::set_shader_uniforms()
 	shader.set_mat4("view", active_cam->get_view_matrix());
 	shader.set_mat4("proj", active_cam->get_proj_matrix());
 }
-
 
 // Flags that need to be set for rendering to be valid
 bool Fyredon::Mesh::check_state() const

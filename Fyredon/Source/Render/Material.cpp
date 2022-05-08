@@ -100,7 +100,7 @@ void Fyredon::Material::set_uniforms()
 	shad.set_int("textures.tex_specular", 1);  // Unit_1
 }
 
-// Info : Activate Bind textures used for maps
+// Info : Activate Bind textures used for maps (only if textures are allocated)
 void Fyredon::Material::activate_bind_textures()
 {
 	if (tex_diffuse)

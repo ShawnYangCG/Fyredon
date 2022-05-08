@@ -23,6 +23,8 @@ void mesh_component::GUI_struct()
 	std::string face = "Face: " + std::to_string(this->mesh->index_count / 3);
 	ImGui::Text(vertex.data());
 	ImGui::Text(face.data());
+
+	// Draw Material GUI
 }
 
 void mesh_component::tick()

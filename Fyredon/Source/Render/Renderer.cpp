@@ -11,6 +11,7 @@
 #include "Fyredon/Render/Texture.h"
 #include "Fyredon/Render/Framebuffer.h"
 #include "Fyredon/Render/Light.h"
+#include "Fyredon/Render/Assets.h"
 
 // Ext Headers
 #include "GLEW/glew.h"  // GLEW
@@ -44,6 +45,9 @@ Fyredon::Renderer::Renderer()
 	// ....
 	// Post Processing 
 	// ....
+
+	// Culling
+	parms.cull_backface = false; 
 
 	// Viewport Parameters
 	bool draw_grid, draw_axis, draw_test_mesh;
@@ -81,10 +85,9 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context, int8_t sample_count)
 
 	create_view_framebuffer_resources();
 	GL_ERROR();
-
 	#ifdef DEBUG_FRAMEBUFFER_CHECKS
-	framebuffers.render_framebuffer_s->check();
-	framebuffers.render_framebuffer_ms->check();
+	view_framebuffers.render_framebuffer_s->check();
+	view_framebuffers.render_framebuffer_ms->check();
 	#endif 
 
 	// Create Viewer Primitives
@@ -109,6 +112,7 @@ Fyredon::Camera* Fyredon::Renderer::get_active_camera()
 	return active_cam; 
 }
 
+// ================== Renderer Resource Creation ==================
 
 void Fyredon::Renderer::create_view_framebuffer_resources()
 {
@@ -124,28 +128,57 @@ void Fyredon::Renderer::create_view_framebuffer_resources()
 	// Allocate View framebuffer resources
 	view_framebuffers.render_col_tex_s      = new Texture("tex_view_colour_s", 0, width, height);
 	view_framebuffers.render_col_tex_ms     = new Texture_MultiSample("tex_view_colour_ms", 0, width, height, msaa_samples);
-	view_framebuffers.render_framebuffer_s  = new Framebuffer_S(framebuffers.render_col_tex_s);
-	view_framebuffers.render_framebuffer_ms = new Framebuffer_MS(framebuffers.render_col_tex_ms, msaa_samples);
+	view_framebuffers.render_framebuffer_s  = new Framebuffer_S(view_framebuffers.render_col_tex_s);
+	view_framebuffers.render_framebuffer_ms = new Framebuffer_MS(view_framebuffers.render_col_tex_ms, msaa_samples);
 }
 
+// ================== Submission and Deletion of resources to Render ==================
 // Info : Public exposed function to pass primtives to internal draw array of Primitives.
-void Fyredon::Renderer::submit_mesh(Mesh* mesh, const std::function<void()>& command)
+//        This does not define lifetime of resource, component/ECS world does. 
+std::size_t Fyredon::Renderer::submit_mesh(Mesh* mesh, const std::function<void()>& command)
 {
-	meshes.push_back(std::move(mesh));
+	draw_lists.meshes.push_back(mesh);
 	// Store Render command
 	commands[mesh->name] = command; 
+	return draw_lists.meshes.size() - 1;
 }
 
-void Fyredon::Renderer::submit_mesh(Mesh* mesh)
+std::size_t Fyredon::Renderer::submit_mesh(Mesh* mesh)
 {
-	meshes.push_back(std::move(mesh));
+	draw_lists.meshes.push_back(mesh);
 	// No Render command passes, use empty lambda. 
 	commands[mesh->name] = [&]() {return;};
+	return draw_lists.meshes.size() - 1; 
 }
 
-void Fyredon::Renderer::submit_light(Light* light)
+// Info : For guide meshes (like camera frustum) created externally by ECS system
+std::size_t Fyredon::Renderer::submit_mesh_guide(Mesh* mesh_guide)
 {
-	lights.push_back(std::move(light));
+	draw_lists.guides.push_back(mesh_guide);
+	// No Render command passes, use empty lambda. 
+	commands[mesh_guide->name] = [&]() {return;};
+	return draw_lists.guides.size() - 1; 
+}
+
+std::size_t Fyredon::Renderer::submit_point_light(Light_Point* light)
+{
+	point_lights.push_back(light);
+	return point_lights.size() - 1; 
+}
+
+void Fyredon::Renderer::delete_mesh(std::size_t idx)
+{
+	draw_lists.meshes.erase(draw_lists.meshes.begin() + idx);
+}
+
+void Fyredon::Renderer::delete_mesh_guide(std::size_t idx)
+{
+	draw_lists.guides.erase(draw_lists.guides.begin() + idx);
+}
+
+void Fyredon::Renderer::delete_point_light(std::size_t idx)
+{
+	draw_lists.guides.erase(draw_lists.guides.begin() + idx);
 }
 
 void Fyredon::Renderer::resize(int width, int height)
@@ -155,11 +188,12 @@ void Fyredon::Renderer::resize(int width, int height)
 	init(ogl_wincontext, msaa_samples);
 }
 
-
+// ==================== Renderer Core Functions ====================
+// 
 // Info : Default Rendering Flags
 void Fyredon::Renderer::render_setup()
 {
-	if (!is_init) throw std::runtime_error("ERROR::Renderer Not Initalized");
+	if (!flags.is_init) throw std::runtime_error("ERROR::Renderer Not Initalized");
 
 	// Prim Sizes
 	glPointSize(5.f);
@@ -167,6 +201,9 @@ void Fyredon::Renderer::render_setup()
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_MULTISAMPLE);
+
+	if (parms.cull_backface) glCullFace(GL_BACK);
+
 	// Blending 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -174,31 +211,35 @@ void Fyredon::Renderer::render_setup()
 
 void Fyredon::Renderer::render()
 {
-	render_camera(*game_cam);
+	// ==================== Render State ====================
+	// Enforce base renderer flags
+	render_setup();
+
+	// Render from Active Camera
+	render_camera(active_cam);
+
+	// Post Processing ...
+
+	// Convert resulting attachments to ImGui Textures ...
 }
 
 // Info : Basic forward rendering pipeline from some camera, render to framebuffer.
 void Fyredon::Renderer::render_camera(Camera *cam_ref)
 {
-	// ==================== Render State ====================
-	// Enforce base renderer flags
-	render_setup();
-
-	// Bind Renderer MS Framebuffer
-	framebuffers.render_framebuffer_ms->bind_clear();
+	// Bind View MS Framebuffer
+	view_framebuffers.render_framebuffer_ms->bind_clear();
 	GL_ERROR();
 
 	// Not remaining bound for some reason ...
-	framebuffers.render_framebuffer_ms->bind();
+	view_framebuffers.render_framebuffer_ms->bind();
 
 	// ==================== Render Game Meshes ====================
-	if (meshes.size())
-	{
-		for (Mesh *p : meshes)
-		{
+	if (draw_lists.meshes.size()) {
+		
+		for (Mesh *p : draw_lists.meshes) {
 			// Pre Render Command
 			commands[p->name](); 
-
+			// Render Mesh
 			p->render();
 		}
 	}
@@ -207,14 +248,13 @@ void Fyredon::Renderer::render_camera(Camera *cam_ref)
 	// ==================== Render Guide Meshes ====================
 	// ...
 
+	// ==================== Post Render ====================
 	// Blind to S framebuffer
-	framebuffers.render_framebuffer_ms->blit_to_framebuffer_s(framebuffers.render_framebuffer_s);
-
-	// Unbind Framebuffers
+	view_framebuffers.render_framebuffer_ms->blit_to_framebuffer_s(view_framebuffers.render_framebuffer_s);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); 
 
 	// ====================  Swap and Poll ====================
-	// Renderting to framebuffer, should not needed (unless debugging renderer in window context). 
+	// Render to glfw framebuffer for debugging only (bypass GUI texture)
 #ifdef DEBUG_RENDERER
 	glfwSwapBuffers(ogl_wincontext);
 	glfwPollEvents();
@@ -223,7 +263,7 @@ void Fyredon::Renderer::render_camera(Camera *cam_ref)
 
 // Info : Return Renderer primary colour attachement (resolved from multisampled-->standard texture)
 Fyredon::Texture* Fyredon::Renderer::get_colour_attachment()
-{ return framebuffers.render_col_tex_s; }
+{ return view_framebuffers.render_col_tex_s; }
 
 // =========================================== DEBUG CODE ===========================================
 
@@ -254,48 +294,20 @@ void Fyredon::Renderer::create_render_prims()
 	viewer_prims.ground->set_tile(2.f);
 
 	// Axis
-	viewer_prims.axis = new Mesh("axis");
-	// move to assets.h
-	std::vector<Vert> verts; 
-	verts.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
-	verts.emplace_back(glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
-	verts.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
-	verts.emplace_back(glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
-	verts.emplace_back(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
-	verts.emplace_back(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
-	viewer_prims.axis->set_data_mesh(verts);
-	viewer_prims.axis->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
-	viewer_prims.axis->mode = Render_Mode::RENDER_LINES;
+	viewer_prims.axis = new Mesh("axis", Mesh_Type::GUIDE_MESH);
+	viewer_prims.axis->set_data_mesh(Fyredon::Assets::axis_verts);
 	viewer_prims.axis->translate(glm::vec3(0.f, 0.01f, 0.f));
 }
 
 void Fyredon::Renderer::draw_viewer_prims()
 {
-	if (viewer_prims.test_mesh) // Update Test Mesh
-	{
-		viewer_prims.test_mesh->shader.setVec("camPos_world", cam_ref.position);
-		viewer_prims.test_mesh->shader.setVec("lightPos_world", *flags.light_pos);
-		viewer_prims.test_mesh->shader.setFloat("lightStr", *flags.light_str);
-	}
+	if (parms.draw_grid) viewer_prims.ground->render();
 
-	// ==================== Render Viewer Primtivies ====================
-	// Draw Grid 
+	if (parms.draw_test_mesh) viewer_prims.test_mesh->render();
 
-	if (parms.draw_grid)
-	{
-		viewer_prims.ground->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
-		viewer_prims.ground->render();
-	}
-	if (parms.draw_axis)
-	{
+	if (parms.draw_axis) {
 		glLineWidth(2.5f);
-
-		viewer_prims.axis->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
 		viewer_prims.axis->render();
 	}
-	if (parms.draw_test_mesh)
-	{
-		viewer_prims.test_mesh->set_cameraTransform(cam_ref.get_view_matrix(), cam_ref.get_proj_matrix());
-		viewer_prims.test_mesh->render();
-	}
+
 }

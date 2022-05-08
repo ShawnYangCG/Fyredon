@@ -8,16 +8,20 @@
 // Project Headers
 #include "Fyredon/Render/Mesh_OBJ.h"
 
+#include "Fyredon/Render/Texture.h"
+
 namespace Fyredon
 {
 class GroundPlane : public Mesh_OBJ
 {
 public:
 	GroundPlane();
-	~GroundPlane() = default;
+	~GroundPlane();
 
 	void set_size(float Size);
 	void set_tile(float Tile);
+
+	TextureImage* tex; 
 
 public:
 	float size, tile;

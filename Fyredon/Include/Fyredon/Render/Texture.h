@@ -12,6 +12,8 @@
 typedef void* ImTextureID;       
 #endif
 
+// Info : Note these are not floating point textures. 
+
 namespace Fyredon {
 
 using GLuint = unsigned int;
@@ -60,7 +62,6 @@ public:
 	virtual void unbind() override;
 };
 
-// ========== Multisample Texture (only for use with FBO) ==========
 
 /* ====================== Multisample Texture Class ======================
    Info: MultiSampled Texture class, used for Multisampled Framebuffer colour attachments. */
