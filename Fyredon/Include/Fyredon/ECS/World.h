@@ -24,6 +24,7 @@ public:
 	static World& get_world();
 
 	void create_camera_entity();
+	void create_camera_entity(const std::string& name);
 
 	void create_terrain_entity();
 

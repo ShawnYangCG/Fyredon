@@ -52,12 +52,16 @@ namespace Fyredon {
 
 		// GLFW / Input State (modified via public callback access)
 		static struct {
-			int    width, height;
-			double mouse_offset_x = 0.f, mouse_offset_y = 0.f;
-			double mousepos_x = 0.f, mousepos_y = 0.f;
+			int32_t    width, height;
+			double mouse_offset_x  = 0.f, mouse_offset_y  = 0.f;
+			double mousepos_x      = 0.f, mousepos_y      = 0.f;
 			double mousepos_prev_x = 0.f, mousepos_prev_y = 0.f;
 			double scroll_y = 0.f;
 			bool is_init = false;
+
+			// Input Deltas
+			double last_yawoffs = 0.f, last_pitchoffs = 0.f, last_zoom  = 0.f;
+			double delta_yaw    = 0.f, delta_pitch    = 0.f, delta_zoom = 0.f; 
 		} GLFWState;
 
 		static bool isSizeChange;
@@ -68,6 +72,9 @@ namespace Fyredon {
 
 		// create new project
 		std::string create_new_project();
+
+		// ECS Setup
+		void ecs_world_setup();
 
 		// Application Tick
 		void tick_editor();
@@ -92,8 +99,7 @@ namespace Fyredon {
 		void shutdown_gui();
 		void tick_gui();
 
-		// Engine/World (temp)
-		void update_camera();
+		void update_inputs();
 		void get_dt();
 
 	private:
@@ -120,8 +126,7 @@ namespace Fyredon {
 
 		// Camera 
 		Camera camera;
-		float last_yawoffs, last_pitchoffs, last_zoom;
-
+	
 		// Editor State
 		float dt;
 		float cur_t, prev_t;

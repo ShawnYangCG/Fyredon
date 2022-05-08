@@ -27,13 +27,13 @@ public:
 
 	void reset();
 
-	void addComponent();
+	//void addComponent();
 
-	void addEntity(Entity* entity);
-
-	void addComponent(std::string componentName);
+	//void addComponent(std::string componentName);
 
 	void addComponent(Component* component);
+
+	void addEntity(Entity* entity);
 
 	void deleteComponent(int index);
 

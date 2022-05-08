@@ -14,12 +14,13 @@
 Fyredon::camera_component::camera_component(Entity* parent)
 	: Component(std::string("Camera"), parent)
 {
+	// Default Component Name
 	this->componentName = "Camera_" + std::to_string(World::get_world().counts.camera_count++);
 
 	// Create Camera class within inital state
 	parms.pos[0] = 3.f, parms.pos[1] = 1.f, parms.pos[2] = -1.f; 
 	parms.fov = 80.f; 
-	parms.aspect = (float) 768 / 504;
+	parms.aspect = 768.f / 504.f;
 	parms.free_look = true; 
 	camera = new Fyredon::Camera(glm::vec3(parms.pos[0], parms.pos[1], parms.pos[2]), parms.fov, parms.aspect, parms.free_look);
 
@@ -46,4 +47,14 @@ void Fyredon::camera_component::GUI_struct()
 	{
 		camera->fov = parms.fov; 
 	}
+}
+
+
+void Fyredon::camera_component::tick() 
+{
+	// Update Camera State
+	auto& renderer = Fyredon::Renderer::get_renderer(); 
+	parms.aspect = float(renderer.width) / renderer.height; 
+	camera->aspect_ratio = parms.aspect; 
+
 }

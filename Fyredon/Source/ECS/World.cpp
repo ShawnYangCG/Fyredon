@@ -64,6 +64,41 @@ void World::create_camera_entity()
     counts.camera_entity_count++;
 }
 
+// Info : Checks for named camera (Scene or Game) to also reference explicitlly. 
+void World::create_camera_entity(const std::string& name)
+{
+    Fyredon::camera_entity* entity = new Fyredon::camera_entity();
+
+    entity->setName(name);
+    entity->getComponentByIndex(0)->componentName = name; 
+
+    // Hacky way to set default init for each camera type
+    auto& renderer = Fyredon::Renderer::get_renderer();
+    if (name == "Scene_Camera") 
+    {
+        Fyredon::camera_component *cam_comp = static_cast<Fyredon::camera_component*>(entity->getComponentByIndex(0));
+        Fyredon::Camera* raw_cam = cam_comp->camera;
+        // Scene Camera default pos
+        cam_comp->parms.pos[0] = 5.f, cam_comp->parms.pos[1] = 1.f, cam_comp->parms.pos[2] = -2.f;
+        raw_cam->position = glm::vec3(cam_comp->parms.pos[0], cam_comp->parms.pos[1], cam_comp->parms.pos[2]); 
+
+        scene_cam_entity = entity;
+    }
+
+    if (name == "Game_Camera")  
+    {
+        game_cam_entity = entity;
+
+        // Set as default active camera for renderer
+        Fyredon::Camera* raw_cam = static_cast<Fyredon::camera_component*>(entity->getComponentByIndex(0))->camera;
+        renderer.set_active_camera(raw_cam);
+    }
+
+    this->addEntity(entity);
+
+    counts.camera_entity_count++;
+}
+
 void World::create_doll_entity()
 {
 
@@ -84,6 +119,7 @@ void World::init()
     }
 }
 
+// Info : Tick via application Delta Time
 void World::tick(float Dt)
 {
     for (Entity* entity : entities)

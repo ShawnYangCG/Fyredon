@@ -10,7 +10,6 @@
 // Core 
 #include "Fyredon/Core/Threads.h"
 #include "Fyredon/Core/FileSystem.h"
-#include "Fyredon/Core/GameWorld.h"
 #include "Fyredon/Core/SaveState.h"
 
 // Debug
@@ -64,8 +63,7 @@ Fyredon::EditorApplication& Fyredon::EditorApplication::get_instance()
 // ================ Editor Application Class Implementation ================
 
 Fyredon::EditorApplication::EditorApplication()
-	: dt(0.f), cur_t(0.f), prev_t(0.f), width(1024), height(1024), last_yawoffs(0.f),
-	last_pitchoffs(0.f), last_zoom(0.f), window_title("null")
+	: dt(0.f), cur_t(0.f), prev_t(0.f), width(1024), height(1024), window_title("Editor")
 {
 	// Camera (to move to ECS world)
 	//camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, RENDER_RES_X / RENDER_RES_Y, true);
@@ -86,29 +84,40 @@ Fyredon::EditorApplication::~EditorApplication()
 // Info : Called before application loop is ran, to do inital application setup. 
 void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, const char* Title)
 {
-	// Override defaults
+	// ========= Title =========
 	std::string title = Title;
 	title += " :: Default Game Project";
 	width = Width, height = Height, window_title = title.c_str();
 
-	// ---- GLFW, GL Context Setup 
+	// ========= GLFW, GL Context Setup ========= 
 	setup_ogl_window_contex();
 
-	// ---- GLEW, GL Function Loading 
+	// ========= GLEW, GL Function Loading =========
 	setup_ogl_loading();
 
-	// ---- Editor GUI Setup 
+	// ========= Editor GUI Setup =========
 	setup_gui();
 
-	// ---- Renderer Subsystem Setup
+	// ========= Renderer Subsystem Setup =========
 	Renderer& renderer = Renderer::get_renderer();
 	renderer.init(window, MSAA_SAMPLES);
 
-	// ---- ECS Setup
+	// ========= ECS World Setup =========
+	ecs_world_setup();
+}
+
+// Info : Setup default ECS world state
+void Fyredon::EditorApplication::ecs_world_setup()
+{
 	World& world = World::get_world();
+
 	world.init();
-	world.create_camera_entity();
 	world.gui_org = this->gui_org;
+
+	// Default Cameras (Game_Cam, Scene_Cam)
+	world.create_camera_entity("Scene_Camera");
+	world.create_camera_entity("Game_Camera");
+	assert(world.counts.camera_count == 2);
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
@@ -170,7 +179,11 @@ void Fyredon::EditorApplication::resize()
 	int yheight = guiConfig.leftBar_height > guiConfig.rightBar_height ?
 		guiConfig.leftBar_height : guiConfig.rightBar_height;
 	int newHeight = yheight - guiConfig.yOffset;
+
+	// Update Viewport
 	glViewport(0, 0, newWidth, newHeight);
+
+	// Update Renderer. Needs to be just viewport size based...
 	Renderer::get_renderer().resize(newWidth, newHeight);
 }
 
@@ -184,7 +197,7 @@ void Fyredon::EditorApplication::tick_engine()
 	// OLD GAME WORLD ... GameWorld::get_world().tick(dt);
 
 	World::get_world().tick(dt);
-	update_camera();
+	update_inputs();
 
 	guiConfig.AppHeight = height;
 	guiConfig.AppWidth = width;
@@ -362,21 +375,21 @@ void Fyredon::EditorApplication::get_dt()
 
 // As Camera meta state is set in application, ECS Cameras update is called from within Application
 
-void Fyredon::EditorApplication::update_camera()
+void Fyredon::EditorApplication::update_inputs()
 {
 	// Fetch global GLFW State
 	if (GLFWState.width != 0 && GLFWState.height != 0)
 		width = GLFWState.width, height = GLFWState.height;
 
 	// Only set yaw,pitch if delta from last tick (update_camera() call). 
-	float delta_yaw = GLFWState.mouse_offset_x != last_yawoffs ? GLFWState.mouse_offset_x : 0.f;
-	float delta_pitch = GLFWState.mouse_offset_y != last_pitchoffs ? GLFWState.mouse_offset_y : 0.f;
-	float delta_zoom = GLFWState.scroll_y != last_zoom ? GLFWState.scroll_y : 0.f;
+	float delta_yaw = GLFWState.mouse_offset_x != GLFWState.last_yawoffs ? GLFWState.mouse_offset_x : 0.f;
+	float delta_pitch = GLFWState.mouse_offset_y != GLFWState.last_pitchoffs ? GLFWState.mouse_offset_y : 0.f;
+	float delta_zoom = GLFWState.scroll_y != GLFWState.last_zoom ? GLFWState.scroll_y : 0.f;
 
 	// Set last offsets
-	last_yawoffs = GLFWState.mouse_offset_x;
-	last_pitchoffs = GLFWState.mouse_offset_y;
-	last_zoom = GLFWState.scroll_y;
+	GLFWState.last_yawoffs   = GLFWState.mouse_offset_x;
+	GLFWState.last_pitchoffs = GLFWState.mouse_offset_y;
+	GLFWState.last_zoom      = GLFWState.scroll_y;
 
 	// Update Camera State for all camera components
 	// Old pre ECS solution : //camera.update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
