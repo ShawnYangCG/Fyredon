@@ -5,18 +5,19 @@
 
 #pragma once
 #include "Fyredon/ECS/Component.h"
+
 #include "Fyredon/Render/Camera.h"
 #include "Fyredon/Render/Mesh.h"
 #include "Fyredon/Render/Renderer.h"
 
 // Info : This forms the base component of the Camera_Entity class.
+class Entity;
+namespace Fyredon {
 
-namespace Fyredon
-{
 class camera_component : public Component
 {
 public:
-	camera_component();
+	camera_component(Entity *parent);
 
 	virtual void GUI_struct() override;
 

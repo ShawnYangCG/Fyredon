@@ -13,6 +13,8 @@
 
 #include "Fyredon/ECS/Entity.h"
 #include "Fyredon/GUI/GUI_PanelOrgnizer.h"
+#include "Fyredon/ECS/camera_entity.h"
+
 
 class World
 {
@@ -52,15 +54,20 @@ public:
 	std::map<std::string, int> entityList;
 	std::map<std::string, int> cameraList;
 
+	// Store explicit pointers to cameras for easier lookup
+	Fyredon::camera_entity* game_cam_entity;
+	Fyredon::camera_entity* scene_cam_entity;
+
 	GUI_PanelOrgnizer* gui_org;
 
 	struct
 	{
-		int8_t terrain_entity_count;
-		int8_t mesh_count; 
-		int8_t camera_count;
-		int8_t camera_entity_count;
-		int8_t light_count; 
+		int8_t terrain_entity_count : 4;
+		int8_t mesh_count           : 4; 
+		int8_t camera_count         : 4;
+		int8_t camera_entity_count  : 4;
+		int8_t light_count          : 6; 
+		int8_t transform_count      : 6; 
 	} counts;
 	
 	struct

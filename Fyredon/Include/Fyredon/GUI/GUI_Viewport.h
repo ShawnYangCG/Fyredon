@@ -17,11 +17,13 @@ class GUI_Viewport : public GUI_Panel
 {
 public:
 	enum config { EDIT_VIEW_HELP_ABOUT = 0, DEBUG };
+	enum viewport {VIEWPORT_SCENE = 0, VIEWPORT_GAME};
 	GUI_Viewport(const char* Title, GUIConfig* guiConfig);
 
 	virtual void tick() override;
 	virtual void resize() override;
 
+	viewport current_viewport = viewport::VIEWPORT_SCENE; 
 protected:
 	virtual void draw() override;
 	const char* title;

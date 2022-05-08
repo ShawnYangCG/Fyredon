@@ -14,7 +14,7 @@
 World::World() : gui_org(nullptr) 
 {
     counts.terrain_entity_count = 0, counts.mesh_count = 0, counts.camera_count = 0;
-    counts.camera_entity_count = 0, counts.light_count = 0; 
+    counts.camera_entity_count = 0, counts.light_count = 0, counts.transform_count = 0; 
 }
 
 World World::world; 

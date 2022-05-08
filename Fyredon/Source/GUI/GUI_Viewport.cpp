@@ -2,6 +2,11 @@
 // Implements
 #include "Fyredon/GUI/GUI_Viewport.h"
 
+// Project Includes
+#include "Fyredon/ECS/World.h"
+#include "Fyredon/ECS/camera_component.h"
+#include "Fyredon/ECS/camera_entity.h"
+
 // Extern Includes
 #include "dearimgui/imgui.h"
 
@@ -33,14 +38,22 @@ void Fyredon::GUI_Viewport::draw()
 	ImGui::SetNextWindowPos(ImVec2(this->posX, this->posY));
 	ImGui::SetNextWindowSize(ImVec2(this->width, this->height));
 
-	Fyredon::Texture* tex = Renderer::get_renderer().get_colour_attachment();
+	Fyredon::Renderer &renderer = Renderer::get_renderer();
+	World& world = World::get_world();
+
+	Fyredon::Texture* tex = renderer.get_colour_attachment();
 
 	ImGui::Begin("Game Viewport");
 	if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 	{
 		if (ImGui::BeginTabItem(" Scene "))
 		{
-			// Flip V Min. 
+			// Set Viewport and Camera to Scene_Cam
+			current_viewport = viewport::VIEWPORT_SCENE;
+			camera_component* game_cam = world.game_cam_entity->get_camera_component();
+			renderer.set_active_camera(game_cam->camera);
+
+			// Get Rendered View Texture
 			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
 			ImVec2 uv_max = ImVec2(1.0f, 0.0f); // flip.
 			ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -50,7 +63,18 @@ void Fyredon::GUI_Viewport::draw()
 		}
 		if (ImGui::BeginTabItem(" Game "))
 		{
-			
+			// Set Viewport and Camera to Game_Cam
+			current_viewport = viewport::VIEWPORT_GAME;
+			camera_component* scene_cam = world.scene_cam_entity->get_camera_component();
+			renderer.set_active_camera(scene_cam->camera);
+
+			// Get Rendered View Texture
+			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
+			ImVec2 uv_max = ImVec2(1.0f, 0.0f); // flip.
+			ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+			ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f);
+			ImGui::Image(tex->get_imgui_texture(), ImVec2(tex->width, tex->height), uv_min, uv_max, tint_col, border_col);
+
 			ImGui::EndTabItem();
 		}
 		ImGui::EndTabBar();

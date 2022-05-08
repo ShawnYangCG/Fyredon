@@ -33,6 +33,7 @@ uniform tex_block
 	sampler2D tex_specular; 
 } textures;
 
+// Material Parameters
 uniform material
 {
 	vec3 colour_ambient; 

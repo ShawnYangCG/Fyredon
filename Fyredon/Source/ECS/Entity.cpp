@@ -12,6 +12,7 @@ Entity::Entity(std::string name)
     this->name = name;
 }
 
+/*
 void Entity::addComponent()
 {
     std::string newName = "new component " + std::to_string((this->components.size() + 1));
@@ -26,12 +27,6 @@ void Entity::addComponent()
     } 
 }
 
-void Entity::addEntity(Entity* entity)
-{
-    entity->parent = this;
-    this->childs.push_back(entity);
-}
-
 void Entity::addComponent(std::string componentName)
 {
     std::string newName = componentName;
@@ -44,7 +39,7 @@ void Entity::addComponent(std::string componentName)
     else {
         std::cout << "Error: Entity [" << this->name << "] already contain component [" << newName << "]" << std::endl;
     }
-}
+} */
 
 void Entity::addComponent(Component* component)
 {
@@ -57,6 +52,12 @@ void Entity::addComponent(Component* component)
     else {
         std::cout << "Error: Entity [" << this->name << "] already contain component [" << newName << "]" << std::endl;
     }
+}
+
+void Entity::addEntity(Entity* entity)
+{
+    entity->parent = this;
+    this->childs.push_back(entity);
 }
 
 void Entity::deleteComponent(int index)
@@ -92,13 +93,8 @@ Component* Entity::getComponentByName(std::string componentName)
     return this->components[this->componentList[componentName]];
 }
 
-void Entity::render()
-{
-}
-
 void Entity::tick()
 {
-    this->render();
     for (Component* component : components) {
         component->tick();
     }

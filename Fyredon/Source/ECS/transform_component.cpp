@@ -1,42 +1,41 @@
 #include "Fyredon/Other/pch.h"
+// Implements
 #include "Fyredon/ECS/transform_component.h"
 
-transform_component::transform_component() {
-	this->componentName = "Transform";
-	this->memmory_size = sizeof(transform_component);
+#include "Fyredon/ECS/World.h"
+
+transform_component::transform_component() 
+{
+	this->componentName = std::string("Transform_") + std::to_string(World::get_world().counts.transform_count++);
+	//this->memmory_size = sizeof(transform_component);
 }
 
 void transform_component::GUI_struct()
 {
-	this->isChanged = false;
-	ImGui::InputFloat3("Position", this->matrixTranslation);
-	ImGui::InputFloat3("Rotation", this->matrixRotation);
-	ImGui::InputFloat3("Scale", this->matrixScale);
-	checkChanged();
+	isChanged = false;
+	if (ImGui::InputFloat3("Position", matrix_translation))
+	{
+		isChanged = true;
+	}
+	if (ImGui::InputFloat3("Rotation", matrix_rotation))
+	{
+		isChanged = true;
+	}
+	if (ImGui::InputFloat3("Scale", matrix_scale))
+	{
+		isChanged = true;
+	}
 }
 
-void transform_component::checkChanged()
+void transform_component::tick()
 {
-	if ((matrixTranslation_check[0] != matrixTranslation[0] ||
-		matrixTranslation_check[1] != matrixTranslation[1] ||
-		matrixTranslation_check[2] != matrixTranslation[2] ||
-		matrixRotation_check[0] != matrixRotation[0] ||
-		matrixRotation_check[1] != matrixRotation[1] ||
-		matrixRotation_check[2] != matrixRotation[2] ||
-		matrixScale_check[0] != matrixScale[0] ||
-		matrixScale_check[1] != matrixScale[1] ||
-		matrixScale_check[2] != matrixScale[2]) 
-		&& this->isChanged == false
-		) {
-		matrixTranslation_check[0] = matrixTranslation[0];
-		matrixTranslation_check[1] = matrixTranslation[1];
-		matrixTranslation_check[2] = matrixTranslation[2];
-		matrixRotation_check[0] = matrixRotation[0];
-		matrixRotation_check[1] = matrixRotation[1];
-		matrixRotation_check[2] = matrixRotation[2];
-		matrixScale_check[0] = matrixScale[0];
-		matrixScale_check[1] = matrixScale[1];
-		matrixScale_check[2] = matrixScale[2];
-		this->isChanged = true;
+	// Pass transform component to parent components of entity.
+	if (isChanged)
+	{
+		isChanged = false; 
+
 	}
+
+	// Tick Parent
+	Component::tick();
 }

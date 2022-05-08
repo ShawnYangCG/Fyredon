@@ -72,7 +72,7 @@ Fyredon::Mesh::Mesh(const char* Name, Mesh_Type Type)
 		{
 			type = Mesh_Type::GUIDE_MESH;
 			mode = Render_Mode::RENDER_LINES;
-			set_shader("..//Shaders//mesh_vert_common.glsl", "..//Shaders//mesh_fragment_blinnphong.glsl");
+			set_shader("..//Shaders//mesh_vert_common.glsl", "..//Shaders//guides_fragment_common.glsl");
 		}
 	}
 }
@@ -395,6 +395,9 @@ void Fyredon::Mesh::set_shader_uniforms()
 		return;
 	}
 
+	// Fetch Renderer singleton to reference
+	Renderer& renderer = Renderer::get_renderer();
+
 	// Set Model Matrix
 	shader.set_mat4("model", model);
 
@@ -406,13 +409,18 @@ void Fyredon::Mesh::set_shader_uniforms()
 	material->set_uniforms();
 
 	// Set Active Camera Matrices
-	Camera *active_cam = Renderer::get_renderer().get_active_camera();
+	Camera *active_cam = renderer.get_active_camera();
 	if (!active_cam) {
 		std::cerr << "ERROR::Active Camera Not Set" << std::endl;
 		throw std::runtime_error("Error Active Camera Not Set");
 	}
 	shader.set_mat4("view", active_cam->get_view_matrix());
 	shader.set_mat4("proj", active_cam->get_proj_matrix());
+
+	// Set Sun Light Uniforms
+	shader.set_vec3("sun.direction", renderer.parms.sun_direction);
+	shader.set_vec3("sun.colour",    renderer.parms.sun_colour);
+	shader.set_float("sun.strength", renderer.parms.sun_strength);
 }
 
 // Flags that need to be set for rendering to be valid

@@ -3,40 +3,37 @@
 
 Component::Component()
 {
-	this->componentName = "new component";
+	this->componentName = "default new component";
 	this->memmory_size = sizeof(Component);
+	this->parent = nullptr; 
 }
 
-Component::Component(std::string componentName)
+Component::Component(std::string componentName, Entity* parent)
 {
 	this->componentName = componentName;
 	this->memmory_size = sizeof(Component);
+	this->parent = parent; 
+}
+
+Component::~Component()
+{
+	if (componentBackup) delete componentBackup;
 }
 
 void Component::init()
 {
-	if (this->isRunning == false) {
-		// if we want rewrite this method we must contain this backup
-		free(this->componentBackup);
-		this->componentBackup = (Component*)malloc(this->memmory_size);
-		memcpy((void*)this->componentBackup, (void*)this, this->memmory_size);
-		this->isRunning = true;
-	}
+	componentBackup = new Component(*this);
 }
 
 void Component::reset()
 {
-	memcpy((void*)this, (void*)this->componentBackup, this->memmory_size);
+	//memcpy((void*)this, (void*)this->componentBackup, this->memmory_size);
+	if (componentBackup != nullptr) *this = *componentBackup;
 }
 
 void Component::tick()
 {
-	render();
 	renderGUI();
-}
-
-void Component::render()
-{
 }
 
 void Component::stop() {

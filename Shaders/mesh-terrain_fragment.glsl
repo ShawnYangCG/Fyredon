@@ -16,12 +16,21 @@ out vec4 frag_colour;
 // ======= Uniforms ======= 
 uniform vec3 camPos_world; 
 
+// Sun directional light 
+uniform light_directional
+{
+	vec3 colour; 
+	vec3 direction; 
+	float strength; 
+} sun; 
+
 // Texture Maps
 uniform tex_block
 {
 	sampler2D tex_diffuse; 
 	sampler2D tex_specular; 
 } textures;
+
 // Material Parameters
 uniform material
 {

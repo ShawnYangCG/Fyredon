@@ -16,8 +16,9 @@
 // Debug
 #include <Fyredon/Debug/Logger.h>
 
+// ECS 
 #include "Fyredon/ECS/World.h"
-#include "Fyredon/ECS/camera_component.h"
+#include "Fyredon/ECS/camera_entity.h"
 
 // GUI
 #include "Fyredon/GUI/GUI_Menu.h"
@@ -188,7 +189,8 @@ void Fyredon::EditorApplication::tick_engine()
 	guiConfig.AppHeight = height;
 	guiConfig.AppWidth = width;
 
-	GUI_RendererSettings* Rset = (GUI_RendererSettings*)gui_org->gui_panels["setting"];
+	// Renderer
+	//Renderer::get_renderer().set_active_camera(World::get_world().game_cam_entity->camera());
 }
 
 // Info : All operations done within the editor application for a single tick

@@ -6,12 +6,15 @@
 // Implements
 #include "Fyredon/ECS/camera_component.h"
 
+#include "Fyredon/ECS/camera_entity.h"
 #include "Fyredon/ECS/World.h"
+
 #include "Fyredon/Render/Assets.h"
 
-Fyredon::camera_component::camera_component()
+Fyredon::camera_component::camera_component(Entity* parent)
+	: Component(std::string("Camera"), parent)
 {
-	componentName = "Camera_" + std::to_string(World::get_world().counts.camera_count++);
+	this->componentName = "Camera_" + std::to_string(World::get_world().counts.camera_count++);
 
 	// Create Camera class within inital state
 	parms.pos[0] = 3.f, parms.pos[1] = 1.f, parms.pos[2] = -1.f; 
@@ -23,10 +26,7 @@ Fyredon::camera_component::camera_component()
 	// Create Frustum Guide Mesh
 	guide_mesh = new Fyredon::Mesh((componentName + "_guide-mesh").c_str(), Fyredon::Mesh_Type::GUIDE_MESH);
 	guide_mesh->set_data_mesh(Fyredon::Assets::frustum_verts);
-	guide_mesh->set_shader("..//Shaders//guides.vert", "..//Shaders//guides.frag");
 	guide_mesh->set_colour(glm::vec3(0.8f, 0.8f, 0.8f));
-	guide_mesh->scale(glm::vec3(1.f));
-	guide_mesh->translate(glm::vec3(0.f, 0.f, 0.f));
 	guide_mesh->mode = Fyredon::Render_Mode::RENDER_LINES;
 
 	Fyredon::Renderer::get_renderer().submit_mesh_guide(guide_mesh);
