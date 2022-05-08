@@ -32,7 +32,7 @@ public:
 	void create_empty_entity();
 
 	void init();
-	void tick();
+	void tick(float Dt);
 	void reset();
 	void stop();
 

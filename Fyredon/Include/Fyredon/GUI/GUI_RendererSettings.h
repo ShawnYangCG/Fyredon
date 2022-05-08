@@ -24,13 +24,7 @@ public:
 	virtual void tick() override; 
 	virtual void resize() override;
 
-	struct {
-		bool draw_grid;
-		bool draw_axis;
-		bool draw_testmesh; 
-		glm::vec3 light_pos, test_mesh_pos;
-		float     light_strength; 
-	} state;
+	// Directly set GUI from Renderer Singleton 
 
 protected:
 	virtual void draw() override; 

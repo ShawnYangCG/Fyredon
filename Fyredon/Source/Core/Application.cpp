@@ -17,6 +17,7 @@
 #include <Fyredon/Debug/Logger.h>
 
 #include "Fyredon/ECS/World.h"
+#include "Fyredon/ECS/camera_component.h"
 
 // GUI
 #include "Fyredon/GUI/GUI_Menu.h"
@@ -179,7 +180,9 @@ void Fyredon::EditorApplication::tick_engine()
 
 	// ToDo : Put into engine class
 	// Tick World when game run
-	GameWorld::get_world().tick(dt);
+	// OLD GAME WORLD ... GameWorld::get_world().tick(dt);
+
+	World::get_world().tick(dt);
 	update_camera();
 
 	guiConfig.AppHeight = height;
@@ -355,6 +358,8 @@ void Fyredon::EditorApplication::get_dt()
 	dt = cur_t - prev_t;
 }
 
+// As Camera meta state is set in application, ECS Cameras update is called from within Application
+
 void Fyredon::EditorApplication::update_camera()
 {
 	// Fetch global GLFW State
@@ -371,8 +376,12 @@ void Fyredon::EditorApplication::update_camera()
 	last_pitchoffs = GLFWState.mouse_offset_y;
 	last_zoom = GLFWState.scroll_y;
 
-	// Update Camera State
-	camera.update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
+	// Update Camera State for all camera components
+	// Old pre ECS solution : //camera.update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
+	World& world = World::get_world();
+	// Terrible solution currently (Have to fetch and cast camera enttity and component). Only works on camera 0.
+	camera_entity* cam_ent = static_cast<camera_entity*>(world.getCameraByIndex(0));
+	static_cast<camera_component*>(cam_ent->getComponentByIndex(0))->camera->update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
 
 	// Update Aspect Ratio if changed
 	if (GLFWState.width && GLFWState.height)

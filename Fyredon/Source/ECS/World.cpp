@@ -84,12 +84,14 @@ void World::init()
     }
 }
 
-void World::tick()
+void World::tick(float Dt)
 {
     for (Entity* entity : entities)
     {
         entity->tick();
     }
+
+    time.total_editor_time += Dt; 
 }
 
 void World::reset()

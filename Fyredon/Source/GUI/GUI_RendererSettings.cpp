@@ -13,76 +13,83 @@
 
 Fyredon::GUI_RendererSettings::GUI_RendererSettings()
 	: GUI_Panel()
-{
-	state.draw_axis     = true; 
-	state.draw_grid     = true; 
-	state.draw_testmesh = true; 
-	state.light_strength = 2.0f;
-	state.light_pos = glm::vec3(0.f, 5.f, 3.f);
-	state.test_mesh_pos = glm::vec3(0.f, 1.f, 0.f);
-
-	// Hook renderer flags to GUI
-	Renderer& renderer = Renderer::get_renderer();
-	renderer.flags.draw_axis = &state.draw_axis;
-	renderer.flags.draw_grid = &state.draw_grid;
-	renderer.flags.draw_test_prims = &state.draw_testmesh;
-	renderer.flags.light_pos = &state.light_pos;
-	renderer.flags.light_str = &state.light_strength;
-	renderer.flags.test_pos = &state.test_mesh_pos;
-}
+{}
 
 void Fyredon::GUI_RendererSettings::tick()
 {
-	// Pre-Processing of state...
-
-	// Draw GUI
 	draw(); 
 }
 
 void Fyredon::GUI_RendererSettings::resize()
 {
+	// 
 }
 
+// Info : Set Renederer Singleton Parameters via this GUI Panel. 
 void Fyredon::GUI_RendererSettings::draw()
 {
-	//ImGui::SetNextWindowPos(ImVec2(800, 20));
-	//ImGui::SetNextWindowSize(ImVec2(200, 400));
+	Renderer& renderer = Renderer::get_renderer();
 
-	static float light_pos[3] = { state.light_pos.x, state.light_pos.y, state.light_pos.z };
-	static float test_pos[3] = { state.test_mesh_pos.x, state.test_mesh_pos.y, state.test_mesh_pos.z };
+	// Temporary GUI state
+	static float sun_dir[3] = {renderer.parms.sun_direction.x, renderer.parms.sun_direction.y, renderer.parms.sun_direction.z};
+	static float sun_col[3] = {renderer.parms.sun_colour.x,    renderer.parms.sun_colour.y,    renderer.parms.sun_colour.z   };
 
-	const char* t_title = title.c_str(); 
-	if (t_title[0] == 0) t_title = "Renderer Settings";
-	ImGui::Begin(t_title);
+	// ======= ImGui Renderer Draw =======
+	ImGui::Begin("Renderer Settings");
+
+	// Renderer - Viewer Settings
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
 	ImGui::Text("Viewer Settings");
 	ImGui::PopStyleColor();
-	if (ImGui::Button("Draw Grid")) {
-		state.draw_grid = !state.draw_grid;
-	}
-	if (ImGui::Button("Draw Axis")) {
-		state.draw_axis = !state.draw_axis;
-	}
-	if (ImGui::Button("Draw Test Mesh")) {
-		state.draw_testmesh = !state.draw_testmesh;
-	}
-	if (ImGui::SliderFloat3("Test Mesh", test_pos, -2.5f, 2.5f))
-	{
-		state.test_mesh_pos.x = test_pos[0];
-		state.test_mesh_pos.y = test_pos[1];
-		state.test_mesh_pos.z = test_pos[2];
-	}
+
+	if (ImGui::Button("Draw Grid")) renderer.parms.draw_grid = !renderer.parms.draw_grid;
+
+	if (ImGui::Button("Draw Axis")) renderer.parms.draw_axis = !renderer.parms.draw_axis; 
+
+	if (ImGui::Button("Draw Test Mesh")) renderer.parms.draw_test_mesh = !renderer.parms.draw_test_mesh;
+		
+	// Renderer - Light Settings 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-	ImGui::Text("(temp) Light Settings");
+	ImGui::Text("Light Settings");
 	ImGui::PopStyleColor();
-	ImGui::SliderFloat("Light Strength", &state.light_strength, 0.f, 10.f);
-	if (ImGui::SliderFloat3("Light Position", light_pos, -100.f, 100.f))
+
+	// Renderer - Light Settings - Sun
+	if (ImGui::Button("Enable Sun")) renderer.parms.enable_sun = !renderer.parms.enable_sun;
+
+	ImGui::SliderFloat("Sun Strength", &renderer.parms.sun_strength, 0.f, 10.f);
+
+	if (ImGui::SliderFloat3("Sun_Colour", sun_col, 0.f, 1.f))
 	{
-		state.light_pos.x = light_pos[0];
-		state.light_pos.y = light_pos[1];
-		state.light_pos.z = light_pos[2];
+		renderer.parms.sun_colour.x = sun_col[0];
+		renderer.parms.sun_colour.y = sun_col[1];
+		renderer.parms.sun_colour.z = sun_col[2];
 	}
+
+	if (ImGui::SliderFloat3("Sun_Direction", sun_dir, -1.f, 1.f))
+	{
+		renderer.parms.sun_direction.x = sun_dir[0];
+		renderer.parms.sun_direction.y = sun_dir[1];
+		renderer.parms.sun_direction.z = sun_dir[2];
+	}
+
+	if (ImGui::Button("Sun Shadows")) renderer.parms.sun_shadows = !renderer.parms.sun_shadows;
+
+	// Renderer - Culling Settings
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
+	ImGui::Text("Culling Settings");
+	ImGui::PopStyleColor();
+
+	if (ImGui::Button("Cull Backface")) renderer.parms.cull_backface = !renderer.parms.cull_backface;
+
+	// Renderer - PostProcess Settings
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
+	ImGui::Text("Post Processing Settings");
+	ImGui::PopStyleColor();
+	ImGui::Text("ToDo");
+
 	ImGui::End();
 }
