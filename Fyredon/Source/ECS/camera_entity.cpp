@@ -16,6 +16,7 @@ Fyredon::camera_entity::camera_entity()
 {
 	// Root Component is Camera_Component
 	this->addComponent(new camera_component(this));
+	// Default entitiy name.
 	this->setName(std::string("Camera_") + std::to_string(World::get_world().counts.camera_entity_count++));
 }
 

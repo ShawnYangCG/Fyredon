@@ -27,8 +27,8 @@ public:
 
 	void reset();
 
+	// Deprecated
 	//void addComponent();
-
 	//void addComponent(std::string componentName);
 
 	void addComponent(Component* component);

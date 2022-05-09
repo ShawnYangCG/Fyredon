@@ -1,14 +1,14 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	GUI_Viewport.h: Base Engine Editor Application
+	GUI_Viewport.h: Base Engine Editor Application : Shawn, Niall
 =============================================================================*/
+
 #pragma once
 #include "GUI_Panel.h"
 #include "Fyredon/GUI/GUIConfig.h"
 #include "Fyredon/Render/Texture.h"
 #include "Fyredon/Render/Renderer.h"
-
 
 namespace Fyredon
 {

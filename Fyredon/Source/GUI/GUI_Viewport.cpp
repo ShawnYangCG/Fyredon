@@ -1,3 +1,8 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	GUI_Viewport.h: Base Engine Editor Application : Shawn, Niall
+=============================================================================*/
 #include "Fyredon/Other/pch.h"
 // Implements
 #include "Fyredon/GUI/GUI_Viewport.h"
@@ -32,6 +37,7 @@ void Fyredon::GUI_Viewport::resize()
 	this->posX = this->guiConfig->leftBar_width;
 }
 
+// Info : Set Camera based on Viewport tab selected, renderer will render to this cam on next tick. 
 void Fyredon::GUI_Viewport::draw()
 {
 	resize();

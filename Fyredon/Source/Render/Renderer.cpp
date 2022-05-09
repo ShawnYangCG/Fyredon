@@ -291,8 +291,6 @@ void Fyredon::Renderer::create_test_mesh()
 {
 	viewer_prims.test_mesh = new Mesh_OBJ("test_pig", "..//Assets//Mesh//pighead.obj");
 	viewer_prims.test_mesh->load_obj();
-	viewer_prims.test_mesh->mode = Render_Mode::RENDER_MESH;
-	viewer_prims.test_mesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	viewer_prims.test_mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
 	viewer_prims.test_mesh->scale(glm::vec3(2.f));
 }

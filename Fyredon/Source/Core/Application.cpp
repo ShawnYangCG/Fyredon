@@ -119,6 +119,8 @@ void Fyredon::EditorApplication::ecs_world_setup()
 	world.create_camera_entity("Scene_Camera");
 	world.create_camera_entity("Game_Camera");
 	assert(world.counts.camera_count == 2);
+
+	// Setup some default test mesh here ...
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
