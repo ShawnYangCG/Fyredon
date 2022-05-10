@@ -28,6 +28,8 @@
 // =========================================== Renderer Class Implementation ===========================================
 Fyredon::Renderer Fyredon::Renderer::renderer;
 
+Fyredon::Camera* Fyredon::Renderer::active_cam;
+
 Fyredon::Renderer& Fyredon::Renderer::get_renderer()
 { return renderer; }
 

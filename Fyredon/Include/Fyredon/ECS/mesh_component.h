@@ -15,7 +15,6 @@ public:
 
 	virtual void GUI_struct() override;
 	virtual void tick() override;
-	virtual void render() override;
 
 	// Material
 	// get shaderball thumbnail

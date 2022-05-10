@@ -50,13 +50,13 @@ void AddComponentButtonAction::addComponent(int ALL_COMPONENTS)
 		this->parent->addTransformComponent();
 	}
 	if (ALL_COMPONENTS == MeshComponent) {
-		this->parent->addComponent();
+		//this->parent->addComponent();
 	}
 	if (ALL_COMPONENTS == NavigationComponent) {
 		navigation_component* navCom = new navigation_component(this->parent);
 		this->parent->addComponent(navCom);
 	}
 	if (ALL_COMPONENTS == ScriptComponent) {
-		this->parent->addComponent();
+		//this->parent->addComponent();
 	}
 }

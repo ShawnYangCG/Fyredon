@@ -93,10 +93,10 @@ void navigation_component::getMeshDetail()
 
 void navigation_component::refreshDetail()
 {
-	float translateX = ((transform_component*)this->parent->getComponentByName("Transform"))->matrixTranslation[0];
-	float translateZ = ((transform_component*)this->parent->getComponentByName("Transform"))->matrixTranslation[2];
-	float scaleX = ((transform_component*)this->parent->getComponentByName("Transform"))->matrixScale[0];
-	float scaleZ = ((transform_component*)this->parent->getComponentByName("Transform"))->matrixScale[2];
+	float translateX = ((transform_component*)this->parent->getComponentByName("Transform"))->matrix_translation[0];
+	float translateZ = ((transform_component*)this->parent->getComponentByName("Transform"))->matrix_translation[2];
+	float scaleX = ((transform_component*)this->parent->getComponentByName("Transform"))->matrix_scale[0];
+	float scaleZ = ((transform_component*)this->parent->getComponentByName("Transform"))->matrix_scale[2];
 	this->min_X_tran = scaleX * this->min_X;
 	this->min_Z_tran = scaleZ * this->min_Z;
 	this->max_X_tran = scaleX * this->max_X;

@@ -15,23 +15,23 @@ glm::vec3 test_move_component::getCurrentPosition()
 {
 	Entity* currentObject = this->parent;
 	transform_component* transCom = (transform_component*)currentObject->getComponentByName("Transform");
-	return glm::vec3(transCom->matrixTranslation[0], transCom->matrixTranslation[1], transCom->matrixTranslation[2]);
+	return glm::vec3(transCom->matrix_translation[0], transCom->matrix_translation[1], transCom->matrix_translation[2]);
 }
 
 void test_move_component::setPosition(glm::vec3 pos)
 {
 	Entity* currentObject = this->parent;
 	transform_component* transCom = (transform_component*)currentObject->getComponentByName("Transform");
-	transCom->matrixTranslation[0] = pos[0];
-	transCom->matrixTranslation[1] = pos[1];
-	transCom->matrixTranslation[2] = pos[2];
+	transCom->matrix_translation[0] = pos[0];
+	transCom->matrix_translation[1] = pos[1];
+	transCom->matrix_translation[2] = pos[2];
 }
 
 void test_move_component::setRotation(float angle)
 {
 	Entity* currentObject = this->parent;
 	transform_component* transCom = (transform_component*)currentObject->getComponentByName("Transform");
-	transCom->matrixRotation[1] = angle;
+	transCom->matrix_rotation[1] = angle;
 }
 bool test_move_component::moveOneStep(glm::vec3 dest, float deltaTime) 
 {

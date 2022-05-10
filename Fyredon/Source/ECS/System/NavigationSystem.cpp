@@ -22,7 +22,7 @@ void NavigationSystem::tick()
 			if (entity->getComponentByName("Move test") != nullptr) {
 				// get source position
 				transform_component* transfSrc = (transform_component*)entity->getComponentByName("Transform");
-				glm::vec3 srcPosition(transfSrc->matrixTranslation[0], transfSrc->matrixTranslation[1], transfSrc->matrixTranslation[2]);
+				glm::vec3 srcPosition(transfSrc->matrix_translation[0], transfSrc->matrix_translation[1], transfSrc->matrix_translation[2]);
 				glm::vec2 src2D(srcPosition[0], srcPosition[2]);
 
 				// get destination position
@@ -81,7 +81,7 @@ void NavigationSystem::addEntity(Entity* entity)
 glm::vec3 NavigationSystem::getTargetPosition()
 {
 	transform_component* transf = (transform_component*)this->destPoint->getComponentByName("Transform");
-	glm::vec3 destPosition(transf->matrixTranslation[0], transf->matrixTranslation[1], transf->matrixTranslation[2]);
+	glm::vec3 destPosition(transf->matrix_translation[0], transf->matrix_translation[1], transf->matrix_translation[2]);
 	return destPosition;
 }
 
@@ -134,6 +134,7 @@ void NavigationSystem::printMap(list<glm::vec2> path) {
 
 void NavigationSystem::randerWalls()
 {
+	/*
 	navigation_component* navCom = (navigation_component*)this->map->getComponentByName("Navigation");
 
 	for (int i = 0; i < navCom->walls.size(); i++) {
@@ -142,7 +143,7 @@ void NavigationSystem::randerWalls()
 		wall->translate(glm::vec3(pos[0], 0.25f, pos[1]));
 		this->enrenSys->renderMesh(wall);
 		wall->translate(glm::vec3(-pos[0], -0.25f, -pos[1]));
-	}
+	} */
 }
 
 #include <windows.h>

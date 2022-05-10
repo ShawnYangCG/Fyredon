@@ -1,7 +1,7 @@
 // Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
-	Entity.h : Base Entity class, Shawn. 
+	Entity.h : Base Entity class, Shawn, Niall. 
 =============================================================================*/
 #pragma once
 

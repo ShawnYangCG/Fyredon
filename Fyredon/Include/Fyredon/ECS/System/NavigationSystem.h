@@ -5,13 +5,11 @@
 #include "Fyredon/Render/Mesh_OBJ.h"
 #include "Fyredon/ECS/test_move_component.h"
 #include "Fyredon/ECS/navigation_component.h"
-#include "Fyredon/ECS/System/EngineRenderSystem.h"
 
 class NavigationSystem
 {
 public:
 	World* world;
-	EngineRenderSystem* enrenSys;
 	clock_t lastTime;
 	std::vector<Entity*> entities;
 	Fyredon::Mesh_OBJ* wall;

@@ -32,8 +32,3 @@ void mesh_component::tick()
 	//this->render();
 	this->renderGUI();
 }
-
-void mesh_component::render()
-{
-	this->mesh_render->render();
-}
