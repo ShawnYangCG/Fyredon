@@ -53,8 +53,8 @@ public:
 
 	struct
 	{
-		int8_t loaded : 1;
-		int8_t built : 1; 
+		uint8_t loaded : 1;
+		uint8_t built : 1; 
 	} flags;
 	bool valid_state;
 

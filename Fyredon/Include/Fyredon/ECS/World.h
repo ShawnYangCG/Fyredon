@@ -63,12 +63,12 @@ public:
 
 	struct
 	{
-		int8_t terrain_entity_count : 4;
-		int8_t mesh_count           : 4; 
-		int8_t camera_count         : 4;
-		int8_t camera_entity_count  : 4;
-		int8_t light_count          : 6; 
-		int8_t transform_count      : 6; 
+		uint8_t terrain_entity_count : 4;
+		uint8_t mesh_count           : 4; 
+		uint8_t camera_count         : 4;
+		uint8_t camera_entity_count  : 4;
+		uint8_t light_count          : 6; 
+		uint8_t transform_count      : 6; 
 	} counts;
 	
 	struct

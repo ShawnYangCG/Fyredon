@@ -79,7 +79,7 @@ void Fyredon::Shader::load()
 
 void Fyredon::Shader::build(std::vector<const char*>& frag_defines)
 {
-	valid_state = false, valid_state = false;
+	flags.built = false, valid_state = false;
 	//if (ID) glDeleteProgram(ID);
 
 	assert(flags.loaded); // Source needs to be loaded first. 
@@ -101,6 +101,10 @@ void Fyredon::Shader::build(std::vector<const char*>& frag_defines)
 	}
 	else // Pass preprocessor define strings to prepend shader source
 	{
+		// [0]         : Version Directive
+		// [1 - (n-1)] : Branching Directives (from material)
+		// [n]         : Shader File Code
+		frag_defines.insert(frag_defines.begin(), "#version 450 core\n");
 		frag_defines.push_back(fShaderCode);
 		glShaderSource(frag_shader, frag_defines.size(), frag_defines.data(), NULL);
 		glCompileShader(frag_shader);

@@ -84,7 +84,7 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context, int8_t sample_count)
 	// Assume we are on the same thread as OGL Context creation
 	ogl_wincontext = ogl_context;
 	msaa_samples = sample_count;
-
+	GL_ERROR();
 	create_view_framebuffer_resources();
 	GL_ERROR();
 	#ifdef DEBUG_FRAMEBUFFER_CHECKS

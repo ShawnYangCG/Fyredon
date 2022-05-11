@@ -2,7 +2,7 @@
 /*=============================================================================
   blinn-phong_frag.glsl : Blinn-Phong BRDF based Uber Fragment Shader : Niall 
 =============================================================================*/
-#version 450 core 
+//#version 450 core 
 
 // Info :  For now use a single sun light only. 
 
@@ -27,11 +27,8 @@ uniform light_directional
 } sun; 
 
 // Texture Maps
-uniform tex_block
-{
-	sampler2D tex_diffuse; 
-	sampler2D tex_specular; 
-} textures;
+uniform sampler2D tex_diffuse; 
+uniform sampler2D tex_specular; 
 
 // Material Parameters
 uniform material
@@ -54,7 +51,7 @@ void main()
 	vec3 spec_col = mat_parms.colour_specular;
 	
 	// Test Branch
-	#ifndef BRANCH_LIGHT_SUN
+	#ifdef BRANCH_LIGHT_SUN
 	frag_colour = vec4(1.0, 0.0, 0.0, 1.0); 
 	return; 
 	#endif
@@ -85,14 +82,15 @@ void main()
 	float bpspec = pow(max(dot(normal_world, half_v), 0.0), mat_parms.exp_gloss);
 		
 	// Shading Terms
+	vec3 ambient  = amb_col;
 	vec3 diffuse  = lambertian * diff_col * sun.strength; 
 	vec3 specular = bpspec * spec_col * sun.strength;  
 
 	// Linear output
-	vec3 lin_col = ambient + diffuse + spec; 
+	vec3 lin_col = ambient + diffuse + specular; 
 	
 	// Gamma correction
-	out_c = pow(lin_col, vec3(1.0 / 2.2)); 
+	vec3 out_c = pow(lin_col, vec3(1.0 / 2.2)); 
 	
 	// Output
 	frag_colour = vec4(out_c, 1.0); 

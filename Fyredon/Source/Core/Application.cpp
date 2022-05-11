@@ -45,7 +45,7 @@
 #define EDITOR_WINDOW_RESIZE
 #define MSAA_SAMPLES 12 // Just testing, lower for release ! 
 
-//#define GL_DETAILED_DEBUGGING 
+#define GL_DETAILED_DEBUGGING 
 #define GL_DETAILED_ERROR_CHECK
 
 //#define EDITOR_FULLSCREEN 
@@ -475,7 +475,7 @@ void Fyredon::message_callback(GLenum source, GLenum type, GLuint id, GLenum sev
 	}
 #endif
 #ifdef GL_DETAILED_DEBUGGING
-	if (type != GL_DEBUG_TYPE_ERROR)
+	if (type == GL_DEBUG_TYPE_ERROR)
 	{
 		std::cerr << "GL_INFO:: " << "type: " << type << " severity: " << severity << " message: " << msg << std::endl;
 	}

@@ -18,7 +18,7 @@
 #include <vector>
 
 Fyredon::Material::Material(Mesh& ParentMesh)
-	: parent_mesh(parent_mesh), tex_diffuse(nullptr), tex_specular(nullptr)
+	: parent_mesh(ParentMesh), tex_diffuse(nullptr), tex_specular(nullptr)
 {
 	parms.use_diff_map = false, parms.use_spec_map = false, parms.use_vert_col = false; 
 
@@ -96,8 +96,8 @@ void Fyredon::Material::set_uniforms()
 	shad.set_vec3("mat_parms.colour_specular", parms.colour_specular);
 
 	// Reset Texture Sampler Uniforms
-	shad.set_int("textures.tex_diffuse",  0);  // Unit_0
-	shad.set_int("textures.tex_specular", 1);  // Unit_1
+	shad.set_int("tex_diffuse",  0);  // Unit_0
+	shad.set_int("tex_specular", 1);  // Unit_1
 }
 
 // Info : Activate Bind textures used for maps (only if textures are allocated)

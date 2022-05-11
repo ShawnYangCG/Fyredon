@@ -185,8 +185,8 @@ private:
 
 	struct
 	{
-		int8_t is_init, has_viewer_prims : 1; 
-		int8_t frame_complete : 1; 
+		uint8_t is_init, has_viewer_prims : 1; 
+		uint8_t frame_complete : 1; 
 	} flags;
 
 	// =========== Ext References ============
