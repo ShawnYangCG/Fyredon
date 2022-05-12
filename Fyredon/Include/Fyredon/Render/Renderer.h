@@ -85,6 +85,8 @@ public:
 	// void draw_guide_line(glm::vec3 pos, float length, float width, float lifespan); 
 	// void draw_guide_point(glm::vec3 pos, float size, float lifespan); 
 
+	void rebuild_material_shaders(); 
+
 	struct
 	{
 		// Sun Light (intrinsic to renderer only)

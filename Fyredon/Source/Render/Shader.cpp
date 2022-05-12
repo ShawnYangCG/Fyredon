@@ -93,23 +93,15 @@ void Fyredon::Shader::build(std::vector<const char*>& frag_defines)
 	check_compile(vert_shader, "Vertex_Shader");
 
 	// Compile Fragment Shader
-	if (!frag_defines.size())
-	{
-		glShaderSource(frag_shader, 1, &fShaderCode, NULL);
-		glCompileShader(frag_shader);
-		check_compile(frag_shader, "Fragment_Shader");
-	}
-	else // Pass preprocessor define strings to prepend shader source
-	{
-		// [0]         : Version Directive
-		// [1 - (n-1)] : Branching Directives (from material)
-		// [n]         : Shader File Code
-		frag_defines.insert(frag_defines.begin(), "#version 450 core\n");
-		frag_defines.push_back(fShaderCode);
-		glShaderSource(frag_shader, frag_defines.size(), frag_defines.data(), NULL);
-		glCompileShader(frag_shader);
-		check_compile(frag_shader, "Fragment_Shader");
-	}
+	// Pass preprocessor define strings to prepend shader source
+	// [0]         : Version Directive
+	// [1 - (n-1)] : Branching Directives (from material)
+	// [n]         : Shader File Code
+	frag_defines.insert(frag_defines.begin(), "#version 450 core\n");
+	frag_defines.push_back(fShaderCode);
+	glShaderSource(frag_shader, frag_defines.size(), frag_defines.data(), NULL);
+	glCompileShader(frag_shader);
+	check_compile(frag_shader, "Fragment_Shader");
 
 	// Build Shader Program
 	ID = glCreateProgram();
@@ -139,7 +131,7 @@ void Fyredon::Shader::set_bool(const std::string &name, bool value) const
 	if (!id){ 
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid or optimised uniform bool: " << name << ".\n";
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform bool: " << name << ".\n";
 		return;}
 	glUniform1i(id, (int)value); 
 }
@@ -152,7 +144,7 @@ void Fyredon::Shader::set_int(const std::string &name, int value) const
 	if (id == -1) { 
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid or optimised uniform int: " << name << ".\n";
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform int: " << name << ".\n";
 		return; }
 	glUniform1i(id, value);
 }
@@ -165,7 +157,7 @@ void Fyredon::Shader::set_float(const std::string &name, float value) const
 	if (id == -1) { 
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid or optimised uniform float: " << name << ".\n"; 
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform float: " << name << ".\n"; 
 		return; }
 	glUniform1f(id, value);
 }
@@ -178,7 +170,7 @@ void Fyredon::Shader::set_vec3(const std::string &name, const glm::vec3 &value) 
 	if (id == -1) { 
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid or optimised uniform vec3: " << name << ".\n";
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform vec3: " << name << ".\n";
 		return; }
 	glUniform3fv(id, 1, glm::value_ptr(value));
 }
@@ -191,7 +183,7 @@ void Fyredon::Shader::set_vec4(const std::string& name, const glm::vec4 &value) 
 	if (id == -1) {
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid or optimised uniform vec4: " << name << ".\n";
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform vec4: " << name << ".\n";
 		return;
 	}
 	glUniform4fv(id, 1, glm::value_ptr(value));
@@ -205,7 +197,7 @@ void Fyredon::Shader::set_mat3(const std::string &name, const glm::mat3x3 &value
 	if (id == -1) { 
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid or optimised uniform mat3: " << name << ".\n"; 
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform mat3: " << name << ".\n"; 
 		return; }
 	glUniformMatrix3fv(id, 1, GL_FALSE, glm::value_ptr(value));
 }
@@ -218,7 +210,7 @@ void Fyredon::Shader::set_mat4(const std::string &name, const glm::mat4x4 &value
 	if (id == -1) {
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << ":: invalid or optimised uniform mat4: " << name << ".\n"; 
+		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform mat4: " << name << ".\n"; 
 		return; }
 	glUniformMatrix4fv(id, 1, GL_FALSE, glm::value_ptr(value));
 }

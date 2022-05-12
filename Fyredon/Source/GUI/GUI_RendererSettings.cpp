@@ -56,7 +56,12 @@ void Fyredon::GUI_RendererSettings::draw()
 	ImGui::PopStyleColor();
 
 	// Renderer - Light Settings - Sun
-	if (ImGui::Button("Enable Sun")) renderer.parms.enable_sun = !renderer.parms.enable_sun;
+	if (ImGui::Checkbox("Enable Sun", &renderer.parms.enable_sun))
+	{
+		// Rebuild Material Shaders
+		renderer.rebuild_material_shaders();
+	}
+		
 
 	ImGui::SliderFloat("Sun Strength", &renderer.parms.sun_strength, 0.f, 10.f);
 
@@ -82,7 +87,12 @@ void Fyredon::GUI_RendererSettings::draw()
 	ImGui::Text("Culling Settings");
 	ImGui::PopStyleColor();
 
-	if (ImGui::Checkbox("Cull Backface", &renderer.parms.cull_backface)) {} /*renderer.parms.cull_backface = !renderer.parms.cull_backface;*/
+	if (ImGui::Checkbox("Cull Backface", &renderer.parms.cull_backface)) {
+
+		std::cout << "Enable Cullbf ? " << renderer.parms.cull_backface << "\n";
+
+	
+	} /*renderer.parms.cull_backface = !renderer.parms.cull_backface;*/
 
 	// Renderer - PostProcess Settings
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));

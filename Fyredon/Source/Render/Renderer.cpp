@@ -12,6 +12,7 @@
 #include "Fyredon/Render/Framebuffer.h"
 #include "Fyredon/Render/Light.h"
 #include "Fyredon/Render/Assets.h"
+#include "Fyredon/Render/Material.h"
 
 // Ext Headers
 #include "GLEW/glew.h"  // GLEW
@@ -302,6 +303,22 @@ void Fyredon::Renderer::render_camera(Camera* cam_ref)
 // Info : Return Renderer primary colour attachement (resolved from multisampled-->standard texture)
 Fyredon::Texture* Fyredon::Renderer::get_colour_attachment()
 { return view_framebuffers.render_col_tex_s; }
+
+// Info : Called when material parameter is changed, to call rebuild shader on all drawable meshes materials.
+//        Do this call from renderer oppose to ECS_World so only drawable meshes are affected. 
+void Fyredon::Renderer::rebuild_material_shaders()
+{
+	for (Mesh* mesh : draw_lists.meshes)
+	{
+		mesh->material->build_mesh_shader();
+	}
+
+	if (viewer_prims.ground)    viewer_prims.ground->material->build_mesh_shader();
+	if (viewer_prims.axis)      viewer_prims.axis->material->build_mesh_shader();
+	if (viewer_prims.test_mesh) viewer_prims.test_mesh->material->build_mesh_shader();
+	
+
+}
 
 // =========================================== DEBUG CODE ===========================================
 

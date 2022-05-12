@@ -45,15 +45,16 @@ void main()
 	//frag_colour = vec4(1.0, 0.0, 0.0, 1.0); 
 	//frag_colour = vec4(normal_world, 1.0); 
 	
-	frag_colour = vec4(amb_col, 1.0); 
-	
-	/* --------------- DEBUGGING UNIFORMS...
+
 	// Test Branch
 	#ifdef BRANCH_LIGHT_SUN
 	frag_colour = vec4(1.0, 0.0, 0.0, 1.0); 
 	return; 
 	#endif
 	
+	frag_colour = vec4(amb_col, 1.0); 
+	
+	/* --------------- DEBUGGING UNIFORMS...
 	// Diffuse Colour 
 	#ifdef BRANCH_DIFF_MAP
 	diff_col = vec3(texture(textures.tex_diffuse, vec2(uvw.x, uvw.y))); 
