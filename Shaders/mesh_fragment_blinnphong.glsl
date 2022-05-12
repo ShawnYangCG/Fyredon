@@ -37,27 +37,19 @@ uniform float m_exp_gloss;
 
 void main()
 {
-	vec3 amb_col  = m_colour_ambient * m_coeff_ambient;
+	vec3 amb_col  = m_colour_ambient;
 	vec3 diff_col = m_colour_diffuse; 
 	vec3 spec_col = m_colour_specular;
+	float sun_strength = s_strength; 
 	
-	//frag_colour = vec4((s_colour + direction) * strength, 1.0); 
-	//frag_colour = vec4(1.0, 0.0, 0.0, 1.0); 
-	//frag_colour = vec4(normal_world, 1.0); 
-	
-
-	// Test Branch
-	#ifdef BRANCH_LIGHT_SUN
-	frag_colour = vec4(1.0, 0.0, 0.0, 1.0); 
-	return; 
+	// Directional Light (Sun)
+	#ifndef BRANCH_LIGHT_SUN
+	sun_strength = 0.0;
 	#endif
-	
-	frag_colour = vec4(amb_col, 1.0); 
-	
-	/* --------------- DEBUGGING UNIFORMS...
+
 	// Diffuse Colour 
 	#ifdef BRANCH_DIFF_MAP
-	diff_col = vec3(texture(textures.tex_diffuse, vec2(uvw.x, uvw.y))); 
+	diff_col = vec3(texture(textures.m_tex_diffuse, vec2(uvw.x, uvw.y))); 
 	#endif
 	#ifdef BRANCH_DIFF_VERTCOLOUR
 	diff_col = colour;
@@ -65,33 +57,33 @@ void main()
 	
 	// Specular Map
 	#ifdef BRANCH_SPEC_MAP
-	spec_col = spec_col * (texture(textures.tex_specular, vec2(uvw.x, uvw.y))).x; 
+	spec_col = spec_col * (texture(textures.m_tex_specular, vec2(uvw.x, uvw.y))).x; 
 	#endif
 	
 	// Blinn_Phong BRDF (Sun only) (WS calculations)	
 	// Sun Lighting Vectors
-	vec3 light_dir    = direction; 
-	vec3 view_dir     = normalize(camPos_world - pos_world);
+	vec3 light_dir    = s_direction; 
+	vec3 view_dir     = normalize(cam_pos_world - pos_world);
 	vec3 half_v       = normalize(light_dir + view_dir);
 	
 	// Basic Lambertian diffuse term
 	float lambertian = max(dot(normal_world, light_dir), 0.0);
 	
 	// Blinn Phong Specular Term
-	float bpspec = pow(max(dot(normal_world, half_v), 0.0), mat_parms.exp_gloss);
+	float bpspec = pow(max(dot(normal_world, half_v), 0.0), m_exp_gloss);
 		
 	// Shading Terms
 	vec3 ambient  = amb_col;
-	vec3 diffuse  = lambertian * diff_col * s_colour * strength; 
-	vec3 specular = bpspec * spec_col * strength;  
+	vec3 diffuse  = lambertian * diff_col * sun_strength * s_colour * m_coeff_diffuse; 
+	//vec3 specular = bpspec * spec_col * s_colour * s_strength * m_coeff_specular;  
+	vec3 specular = bpspec * spec_col *  sun_strength * m_coeff_specular;  
 
 	// Linear output
-	vec3 lin_col = ambient + diffuse + specular; 
+	vec3 out_c = ambient + diffuse + specular; 
 	
 	// Gamma correction
-	vec3 out_c = pow(lin_col, vec3(1.0 / 2.2)); 
+	out_c = pow(out_c, vec3(1.0 / 2.2)); 
 	
 	// Output
-	frag_colour = vec4(out_c, 1.0); 
-	*/
+	frag_colour = vec4(out_c, 1.0);  
 }

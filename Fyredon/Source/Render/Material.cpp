@@ -27,7 +27,7 @@ Fyredon::Material::Material(Mesh& ParentMesh)
 	parms.coeff_specular = 1.f; 
 	parms.exp_gloss      = 4.f; 
 
-	parms.colour_ambient = glm::vec3(0.2f);
+	parms.colour_ambient = glm::vec3(0.05f);
 	parms.colour_diffuse = glm::vec3(0.3f, 0.5f, 0.2f);
 	parms.colour_specular = glm::vec3(1.f); 
 

@@ -93,7 +93,6 @@ void Fyredon::Shader::build(std::vector<const char*>& frag_defines)
 	check_compile(vert_shader, "Vertex_Shader");
 
 	// Compile Fragment Shader
-	// Pass preprocessor define strings to prepend shader source
 	// [0]         : Version Directive
 	// [1 - (n-1)] : Branching Directives (from material)
 	// [n]         : Shader File Code
@@ -131,7 +130,7 @@ void Fyredon::Shader::set_bool(const std::string &name, bool value) const
 	if (!id){ 
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform bool: " << name << ".\n";
+		std::cerr << "INFO::Fyredon::Shader::" << this->name << "::invalid or optimised uniform bool: " << name << ".\n";
 		return;}
 	glUniform1i(id, (int)value); 
 }
@@ -144,7 +143,7 @@ void Fyredon::Shader::set_int(const std::string &name, int value) const
 	if (id == -1) { 
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform int: " << name << ".\n";
+		std::cerr << "INFO::Fyredon::Shader::" << this->name << "::invalid or optimised uniform int: " << name << ".\n";
 		return; }
 	glUniform1i(id, value);
 }
@@ -157,7 +156,7 @@ void Fyredon::Shader::set_float(const std::string &name, float value) const
 	if (id == -1) { 
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform float: " << name << ".\n"; 
+		std::cerr << "INFO::Fyredon::Shader::" << this->name << "::invalid or optimised uniform float: " << name << ".\n"; 
 		return; }
 	glUniform1f(id, value);
 }
@@ -170,7 +169,7 @@ void Fyredon::Shader::set_vec3(const std::string &name, const glm::vec3 &value) 
 	if (id == -1) { 
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform vec3: " << name << ".\n";
+		std::cerr << "INFO::Fyredon::Shader::" << this->name << "::invalid or optimised uniform vec3: " << name << ".\n";
 		return; }
 	glUniform3fv(id, 1, glm::value_ptr(value));
 }
@@ -183,7 +182,7 @@ void Fyredon::Shader::set_vec4(const std::string& name, const glm::vec4 &value) 
 	if (id == -1) {
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform vec4: " << name << ".\n";
+		std::cerr << "INFO::Fyredon::Shader::" << this->name << "::invalid or optimised uniform vec4: " << name << ".\n";
 		return;
 	}
 	glUniform4fv(id, 1, glm::value_ptr(value));
@@ -197,7 +196,7 @@ void Fyredon::Shader::set_mat3(const std::string &name, const glm::mat3x3 &value
 	if (id == -1) { 
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform mat3: " << name << ".\n"; 
+		std::cerr << "INFO::Fyredon::Shader::" << this->name << "::invalid or optimised uniform mat3: " << name << ".\n"; 
 		return; }
 	glUniformMatrix3fv(id, 1, GL_FALSE, glm::value_ptr(value));
 }
@@ -210,7 +209,7 @@ void Fyredon::Shader::set_mat4(const std::string &name, const glm::mat4x4 &value
 	if (id == -1) {
 		if (count > 1) return;
 		count++;
-		std::cerr << "ERROR::Fyredon::Shader::" << this->name << "::invalid or optimised uniform mat4: " << name << ".\n"; 
+		std::cerr << "INFO::Fyredon::Shader::" << this->name << "::invalid or optimised uniform mat4: " << name << ".\n"; 
 		return; }
 	glUniformMatrix4fv(id, 1, GL_FALSE, glm::value_ptr(value));
 }
@@ -252,32 +251,26 @@ void Fyredon::Shader::check_link()
 // ========================== Debug / Output Shader Code ========================== 
 void Fyredon::Shader::debug_vert()
 {
-	if (vert_shader_code.size() >= 1)
+	if (vert_shader_code.size())
 	{
 		std::cout << "DEBUG::Shader_" << name 
 			<< "\n==== Vertex Shader Code BEGIN ====\n" 
 			<< vert_shader_code
 			<< "\n==== Vertex Shader Code END ====\n";
+		return; 
 	}
-	else
-	{
-		std::cerr << "ERROR:Shader_" << name
-			<< " Invalid Vertex Shader Code" << std::endl;
-	}
+	std::cerr << "ERROR:Shader_" << name << " Invalid Vertex Shader Code" << std::endl;
 }
 
 void Fyredon::Shader::debug_frag()
 {
-	if (frag_shader_code.size() >= 1)
+	if (frag_shader_code.size())
 	{
 		std::cout << "DEBUG::Shader_" << name
 			<< "\n==== Fragment Shader Code BEGIN ====\n"
 			<< frag_shader_code
 			<< "\n==== Fragment Shader Code END ====\n";
+		return;
 	}
-	else
-	{
-		std::cerr << "ERROR:Shader_" << name
-			<< " Invalid Fragment Shader Code" << std::endl;
-	}
+	std::cerr << "ERROR:Shader_" << name << " Invalid Fragment Shader Code" << std::endl;
 }

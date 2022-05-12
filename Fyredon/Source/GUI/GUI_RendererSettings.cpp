@@ -49,38 +49,38 @@ void Fyredon::GUI_RendererSettings::draw()
 
 	if (ImGui::Button("Draw Test Mesh")) renderer.parms.draw_test_mesh = !renderer.parms.draw_test_mesh;
 		
-	// Renderer - Light Settings 
+	// =========== Renderer - Light Settings ===========
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
 	ImGui::Text("Light Settings");
 	ImGui::PopStyleColor();
 
-	// Renderer - Light Settings - Sun
-	if (ImGui::Checkbox("Enable Sun", &renderer.parms.enable_sun))
-	{
-		// Rebuild Material Shaders
+	// =========== Renderer - Light Settings - Sun
+	if (ImGui::Checkbox("Enable Sun", &renderer.parms.enable_sun)) {
 		renderer.rebuild_material_shaders();
 	}
 		
+	if (ImGui::SliderFloat("Sun Strength", &renderer.parms.sun_strength, 0.f, 10.f)) {
+		renderer.rebuild_material_shaders();
+	}
 
-	ImGui::SliderFloat("Sun Strength", &renderer.parms.sun_strength, 0.f, 10.f);
-
-	if (ImGui::SliderFloat3("Sun_Colour", sun_col, 0.f, 1.f))
-	{
+	if (ImGui::SliderFloat3("Sun_Colour", sun_col, 0.f, 1.f)) {
 		renderer.parms.sun_colour.x = sun_col[0];
 		renderer.parms.sun_colour.y = sun_col[1];
 		renderer.parms.sun_colour.z = sun_col[2];
 	}
 
-	if (ImGui::SliderFloat3("Sun_Direction", sun_dir, -1.f, 1.f))
-	{
+	if (ImGui::SliderFloat3("Sun_Direction", sun_dir, -1.f, 1.f)) {
 		renderer.parms.sun_direction.x = sun_dir[0];
 		renderer.parms.sun_direction.y = sun_dir[1];
 		renderer.parms.sun_direction.z = sun_dir[2];
 	}
 
-	if (ImGui::Button("Sun Shadows")) renderer.parms.sun_shadows = !renderer.parms.sun_shadows;
-
+	if (ImGui::Button("Sun Shadows")) {
+		renderer.parms.sun_shadows = !renderer.parms.sun_shadows;
+		renderer.rebuild_material_shaders();
+	}
+		
 	// Renderer - Culling Settings
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));

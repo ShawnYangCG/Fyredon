@@ -118,7 +118,7 @@ void Fyredon::Mesh::render()
 	set_shader_uniforms();
 
 	// Textures
-//	material->activate_bind_textures();
+	material->activate_bind_textures();
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
