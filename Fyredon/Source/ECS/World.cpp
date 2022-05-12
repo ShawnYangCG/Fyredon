@@ -77,13 +77,11 @@ void World::create_camera_entity(const std::string& name)
     auto& renderer = Fyredon::Renderer::get_renderer();
     if (name == "Scene_Camera") 
     {
-        Fyredon::camera_component *cam_comp = static_cast<Fyredon::camera_component*>(entity->getComponentByIndex(0));
-        Fyredon::Camera* raw_cam = cam_comp->camera;
-        // Scene Camera default pos
-        cam_comp->parms.pos[0] = 5.f, cam_comp->parms.pos[1] = 1.f, cam_comp->parms.pos[2] = -2.f;
-        raw_cam->position = glm::vec3(cam_comp->parms.pos[0], cam_comp->parms.pos[1], cam_comp->parms.pos[2]); 
+        scene_cam_entity = entity; 
 
-        scene_cam_entity = entity;
+        Fyredon::camera_component *cam_comp = static_cast<Fyredon::camera_component*>(entity->getComponentByIndex(0));
+        glm::vec3 scam_pos(3.f, 1.f, -2.f);
+        cam_comp->set_camera_pos(scam_pos);
     }
 
     if (name == "Game_Camera")  

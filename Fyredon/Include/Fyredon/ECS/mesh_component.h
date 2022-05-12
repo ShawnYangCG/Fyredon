@@ -21,6 +21,8 @@ public:
 	// get diffuse map  thumbnail
 	// get specular map thumbnail
 
+	// Ref material parms in mesh...
+
 public:
 
 	struct {
@@ -28,8 +30,4 @@ public:
 	} bounds;
 
 	Fyredon::Mesh* mesh;
-	Fyredon::Mesh* mesh_render;
 };
-
-
-// don't forget to add this header in ECS.h

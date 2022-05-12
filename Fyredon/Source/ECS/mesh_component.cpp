@@ -5,8 +5,7 @@ mesh_component::mesh_component(Fyredon::Mesh* mesh)
 {
 	this->componentName = "Mesh";
 	this->mesh = mesh;
-	this->mesh_render = new Fyredon::Mesh(*mesh);
-	Fyredon::Renderer::get_renderer().submit_mesh(this->mesh_render);
+	Fyredon::Renderer::get_renderer().submit_mesh(this->mesh);
 	this->memmory_size = sizeof(mesh_component);
 }
 
@@ -29,6 +28,5 @@ void mesh_component::GUI_struct()
 
 void mesh_component::tick()
 {
-	//this->render();
 	this->renderGUI();
 }

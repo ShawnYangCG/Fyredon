@@ -104,7 +104,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	renderer.init(window, MSAA_SAMPLES);
 
 	// ========= ECS World Setup =========
-	//ecs_world_setup();
+	ecs_world_setup();
 }
 
 // Info : Setup default ECS world state

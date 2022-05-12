@@ -292,6 +292,14 @@ void Fyredon::Renderer::render_camera(Camera* cam_ref)
 	// Not remaining bound for some reason ...
 	//view_framebuffers.render_framebuffer_ms->bind();
 
+	// ==================== Render Guide Meshes ====================
+	if (draw_lists.guides.size()) {
+		for (Mesh* p : draw_lists.guides)
+		{
+			p->render();
+		}
+	}
+
 	draw_viewer_prims();
 
 	// ==================== Post Render ====================
@@ -334,10 +342,10 @@ void Fyredon::Renderer::get_GLError(const char* file, int32_t line)
 
 void Fyredon::Renderer::create_test_mesh()
 {
-	viewer_prims.test_mesh = new Mesh_OBJ("test_pig", "..//Assets//Mesh//pighead.obj");
+	viewer_prims.test_mesh = new Mesh_OBJ("Test_Mesh", "..//Assets//Mesh//pighead.obj");
 	viewer_prims.test_mesh->load_obj();
-	viewer_prims.test_mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
 	viewer_prims.test_mesh->scale(glm::vec3(2.f));
+	viewer_prims.test_mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
 }
 
 // Info : Contain these test render prims here for now.

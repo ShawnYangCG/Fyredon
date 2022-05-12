@@ -23,6 +23,8 @@ public:
 
 	virtual void tick() override;
 
+	void set_camera_pos(const glm::vec3& pos);
+
 public:
 	Fyredon::Camera* camera;
 

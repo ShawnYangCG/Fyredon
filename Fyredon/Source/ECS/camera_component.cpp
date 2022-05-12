@@ -68,3 +68,15 @@ void Fyredon::camera_component::tick()
 		camera->aspect_ratio = parms.aspect; 
 	}
 }
+
+void Fyredon::camera_component::set_camera_pos(const glm::vec3& pos)
+{
+	// Update Camera Pos
+	parms.pos[0] = pos.x, parms.pos[1] = pos.y, parms.pos[2] = pos.z;
+	camera->position = pos;
+
+	// Update Guide Mesh Pos
+	guide_mesh->model = glm::inverse(guide_mesh->model);
+	guide_mesh->model = glm::mat4(1.f);
+	guide_mesh->translate(pos);
+}
