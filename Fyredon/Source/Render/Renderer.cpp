@@ -95,7 +95,7 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context, int8_t sample_count)
 	// Create Viewer Primitives
 	if (!flags.has_viewer_prims)
 	{
-	//	create_render_prims(); DEBUG REMOVED...
+	//	create_render_prims(); 
 		create_test_mesh();
 		flags.has_viewer_prims = true;
 	}
@@ -228,6 +228,7 @@ void Fyredon::Renderer::render()
 }
 
 // Info : Basic forward rendering pipeline from some camera, render to framebuffer.
+/*
 void Fyredon::Renderer::render_camera(Camera *cam_ref)
 {
 	flags.frame_complete = 0; 
@@ -273,6 +274,29 @@ void Fyredon::Renderer::render_camera(Camera *cam_ref)
 	glfwSwapBuffers(ogl_wincontext);
 	glfwPollEvents();
 #endif
+} */
+
+
+
+void Fyredon::Renderer::render_camera(Camera* cam_ref)
+{
+	flags.frame_complete = 0;
+
+	// Bind View MS Framebuffer
+	view_framebuffers.render_framebuffer_ms->bind_clear();
+	GL_ERROR();
+
+	// Not remaining bound for some reason ...
+	//view_framebuffers.render_framebuffer_ms->bind();
+
+	draw_viewer_prims();
+
+	// ==================== Post Render ====================
+	// Blind to S framebuffer
+	view_framebuffers.render_framebuffer_ms->blit_to_framebuffer_s(view_framebuffers.render_framebuffer_s);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	flags.frame_complete = 1;
 }
 
 // Info : Return Renderer primary colour attachement (resolved from multisampled-->standard texture)

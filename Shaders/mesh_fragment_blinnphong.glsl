@@ -16,40 +16,38 @@ in vec3 normal_world;
 out vec4 frag_colour; 
 
 // ======= Uniforms ======= 
-uniform vec3 camPos_world; 
-
+// Camera
+uniform vec3 cam_pos_world; 
 // Sun directional light 
-uniform light_directional
-{
-	vec3 colour; 
-	vec3 direction; 
-	float strength; 
-} sun; 
-
-// Texture Maps
-uniform sampler2D tex_diffuse; 
-uniform sampler2D tex_specular; 
-
+uniform vec3  s_colour; 
+uniform vec3  s_direction; 
+uniform float s_strength;  
+// Material Texture Maps
+uniform sampler2D m_tex_diffuse; 
+uniform sampler2D m_tex_specular; 
 // Material Parameters
-uniform material
-{
-	vec3 colour_ambient; 
-	vec3 colour_diffuse;
-	vec3 colour_specular; 
-	
-	float coeff_ambient;
-	float coeff_diffuse; 
-	float coeff_specular;
-	float exp_gloss; 
-} mat_parms; 
+uniform vec3  m_colour_ambient; 
+uniform vec3  m_colour_diffuse;
+uniform vec3  m_colour_specular; 
+uniform float m_coeff_ambient;
+uniform float m_coeff_diffuse; 
+uniform float m_coeff_specular;
+uniform float m_exp_gloss; 
 
 
 void main()
 {
-	vec3 amb_col  = mat_parms.colour_ambient;
-	vec3 diff_col = mat_parms.colour_diffuse; 
-	vec3 spec_col = mat_parms.colour_specular;
+	vec3 amb_col  = m_colour_ambient * m_coeff_ambient;
+	vec3 diff_col = m_colour_diffuse; 
+	vec3 spec_col = m_colour_specular;
 	
+	//frag_colour = vec4((s_colour + direction) * strength, 1.0); 
+	//frag_colour = vec4(1.0, 0.0, 0.0, 1.0); 
+	//frag_colour = vec4(normal_world, 1.0); 
+	
+	frag_colour = vec4(amb_col, 1.0); 
+	
+	/* --------------- DEBUGGING UNIFORMS...
 	// Test Branch
 	#ifdef BRANCH_LIGHT_SUN
 	frag_colour = vec4(1.0, 0.0, 0.0, 1.0); 
@@ -71,7 +69,7 @@ void main()
 	
 	// Blinn_Phong BRDF (Sun only) (WS calculations)	
 	// Sun Lighting Vectors
-	vec3 light_dir    = sun.direction; 
+	vec3 light_dir    = direction; 
 	vec3 view_dir     = normalize(camPos_world - pos_world);
 	vec3 half_v       = normalize(light_dir + view_dir);
 	
@@ -83,8 +81,8 @@ void main()
 		
 	// Shading Terms
 	vec3 ambient  = amb_col;
-	vec3 diffuse  = lambertian * diff_col * sun.strength; 
-	vec3 specular = bpspec * spec_col * sun.strength;  
+	vec3 diffuse  = lambertian * diff_col * s_colour * strength; 
+	vec3 specular = bpspec * spec_col * strength;  
 
 	// Linear output
 	vec3 lin_col = ambient + diffuse + specular; 
@@ -94,4 +92,5 @@ void main()
 	
 	// Output
 	frag_colour = vec4(out_c, 1.0); 
+	*/
 }

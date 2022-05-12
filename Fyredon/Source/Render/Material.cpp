@@ -85,19 +85,19 @@ void Fyredon::Material::set_uniforms()
 	Shader& shad = parent_mesh.shader;
 
 	// Term Coeffs
-	shad.set_float("mat_parms.coeff_ambient",  parms.coeff_ambient);
-	shad.set_float("mat_parms.coeff_diffuse",  parms.coeff_diffuse);
-	shad.set_float("mat_parms.coeff_specular", parms.coeff_specular);
-	shad.set_float("mat_parms.exp_gloss",      parms.exp_gloss);
+	shad.set_float("m_coeff_ambient",  parms.coeff_ambient);
+	shad.set_float("m_coeff_diffuse",  parms.coeff_diffuse);
+	shad.set_float("m_coeff_specular", parms.coeff_specular);
+	shad.set_float("m_exp_gloss",      parms.exp_gloss);
 
 	// Term Colours
-	shad.set_vec3("mat_parms.colour_ambient",  parms.colour_ambient);
-	shad.set_vec3("mat_parms.colour_diffuse",  parms.colour_diffuse);
-	shad.set_vec3("mat_parms.colour_specular", parms.colour_specular);
+	shad.set_vec3("m_colour_ambient",  parms.colour_ambient);
+	shad.set_vec3("m_colour_diffuse",  parms.colour_diffuse);
+	shad.set_vec3("m_colour_specular", parms.colour_specular);
 
 	// Reset Texture Sampler Uniforms
-	shad.set_int("tex_diffuse",  0);  // Unit_0
-	shad.set_int("tex_specular", 1);  // Unit_1
+	shad.set_int("m_tex_diffuse",  0);  // Unit_0
+	shad.set_int("m_tex_specular", 1);  // Unit_1
 }
 
 // Info : Activate Bind textures used for maps (only if textures are allocated)

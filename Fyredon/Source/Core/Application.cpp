@@ -416,6 +416,18 @@ void Fyredon::EditorApplication::update_inputs()
 		camera.aspect_ratio = ar;
 	} 
 	*/
+
+	// Old, Old !
+	// Update Camera State
+	camera.update_camera(window, 1.f, dt, GLFWState.delta_yaw, GLFWState.delta_pitch);
+
+	// Update Aspect Ratio if changed
+	if (GLFWState.width && GLFWState.height)
+	{
+		float ar = width / height;
+		camera.aspect_ratio = 1.1f;
+	}
+
 }
 
 // ============= ImGui GUI Setup =============

@@ -82,7 +82,7 @@ void Fyredon::GUI_RendererSettings::draw()
 	ImGui::Text("Culling Settings");
 	ImGui::PopStyleColor();
 
-	if (ImGui::Button("Cull Backface")) renderer.parms.cull_backface = !renderer.parms.cull_backface;
+	if (ImGui::Checkbox("Cull Backface", &renderer.parms.cull_backface)) {} /*renderer.parms.cull_backface = !renderer.parms.cull_backface;*/
 
 	// Renderer - PostProcess Settings
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
