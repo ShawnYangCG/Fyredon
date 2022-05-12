@@ -29,7 +29,7 @@ namespace Fyredon
 	protected:
 		virtual void draw() override;
 
-		World* world;
+		World* world = nullptr;
 
 		const char* title;
 		GUIConfig* guiConfig;

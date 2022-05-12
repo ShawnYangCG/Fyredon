@@ -145,8 +145,6 @@ public:
 		uint8_t inds_data_set : 1;
 		uint8_t buffers_set   : 1;
 		uint8_t shader_set    : 1;
-		uint8_t camera_set    : 1;
-		uint8_t texture_set   : 1;
 	} flags;
 
 

@@ -2,8 +2,7 @@
 /*=============================================================================
 	ground.vert : Vertex Shader for Ground Plane Grid : Niall
 =============================================================================*/
-
-#version 400 core 
+#version 450 core 
 
 // Input 
 layout (location = 0) in vec3 v_P;

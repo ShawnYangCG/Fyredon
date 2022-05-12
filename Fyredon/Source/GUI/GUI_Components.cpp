@@ -15,6 +15,7 @@ Fyredon::GUI_Components::GUI_Components(const char* Title, GUIConfig* guiConfig,
 
 void Fyredon::GUI_Components::tick()
 {
+	if (!world) return; 
 	draw();
 }
 
@@ -42,6 +43,7 @@ void Fyredon::GUI_Components::resize()
 
 void Fyredon::GUI_Components::draw()
 {
+	if (!world->gui_org) return; 
 	resize();
 	ImGui::SetNextWindowPos(ImVec2(this->posX, this->posY));
 	ImGui::SetNextWindowSize(ImVec2(this->width, this->height));

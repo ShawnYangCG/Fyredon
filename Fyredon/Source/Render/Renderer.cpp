@@ -95,7 +95,7 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context, int8_t sample_count)
 	// Create Viewer Primitives
 	if (!flags.has_viewer_prims)
 	{
-		create_render_prims();
+	//	create_render_prims(); DEBUG REMOVED...
 		create_test_mesh();
 		flags.has_viewer_prims = true;
 	}

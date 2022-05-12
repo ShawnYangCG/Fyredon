@@ -67,7 +67,7 @@ Fyredon::EditorApplication::EditorApplication()
 {
 	// ToDo : remove
 	// Camera (to move to ECS world)
-	//camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, RENDER_RES_X / RENDER_RES_Y, true);
+	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, RENDER_RES_X / RENDER_RES_Y, true);
 
 	gui_org = new GUI_PanelOrgnizer();
 }
@@ -104,7 +104,7 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	renderer.init(window, MSAA_SAMPLES);
 
 	// ========= ECS World Setup =========
-	ecs_world_setup();
+	//ecs_world_setup();
 }
 
 // Info : Setup default ECS world state
@@ -204,6 +204,7 @@ void Fyredon::EditorApplication::tick_engine()
 	guiConfig.AppWidth = width;
 
 	// Render
+	Renderer::get_renderer().set_active_camera(&camera);
 	Renderer::get_renderer().render();
 
 	// On Play, switch to game cam

@@ -20,7 +20,8 @@ Fyredon::GUI_Asset::GUI_Asset(const char* Title, GUIConfig* guiConfig, World* wo
 	: GUI_Panel(Title), guiConfig(guiConfig), world(world), path_changed(false)
 {
 	// Default Path
-	cur_path = std::filesystem::current_path().string();
+	//cur_path = std::filesystem::current_path().string();
+	cur_path = std::filesystem::path("..//Assets//").string();
 	
 	// Icon Setup
 	icon_dir = new TextureImage("..//Assets//Images//Icons//open-folder.png", "dir_icon", 0, false);
@@ -46,6 +47,8 @@ void Fyredon::GUI_Asset::resize()
 	this->posY = this->guiConfig->menuHeight + yheight;
 }
 
+// Info : ImGUI uses each texture handle to define ImageButton ID, so reuse of textures reuses button IDs.
+// ToDo : Make each Imagebutton use a unique texture and thus ID. 
 void Fyredon::GUI_Asset::draw()
 {
 	resize();

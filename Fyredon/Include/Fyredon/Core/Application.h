@@ -128,7 +128,7 @@ namespace Fyredon {
 		GUI_PanelOrgnizer* gui_org;
 		MenuAction* menuAction;
 
-		// Camera 
+		// Camera (deprecated, camera in ECS world)...
 		Camera camera;
 	
 		// Editor State

@@ -34,8 +34,7 @@ Fyredon::Mesh::Mesh(const char *Name)
 	flags.vert_data_set = 0; 
 	flags.inds_data_set = 0;
 	flags.shader_set    = 0;
-	flags.camera_set    = 0;
-	flags.texture_set   = 0;
+	//flags.texture_set   = 0;
 
 	material = new Material(*this);
 
@@ -51,8 +50,7 @@ Fyredon::Mesh::Mesh(const char* Name, Mesh_Type Type)
 	flags.vert_data_set = 0;
 	flags.inds_data_set = 0;
 	flags.shader_set    = 0;
-	flags.camera_set    = 0;
-	flags.texture_set   = 0;
+	//flags.texture_set   = 0;
 
 	material = new Material(*this);
 
@@ -119,7 +117,6 @@ void Fyredon::Mesh::render()
 
 	// Textures
 	material->activate_bind_textures();
-
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -426,7 +423,7 @@ void Fyredon::Mesh::set_shader_uniforms()
 // Flags that need to be set for rendering to be valid
 bool Fyredon::Mesh::check_state() const
 {
-	return flags.buffers_set & flags.camera_set & flags.vert_data_set & flags.inds_data_set & flags.shader_set;
+	return flags.buffers_set & flags.vert_data_set & flags.inds_data_set & flags.shader_set;
 }
 
 // ===================== Model Matrix Transformations =====================
