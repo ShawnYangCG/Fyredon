@@ -57,6 +57,7 @@ void AddComponentButtonAction::addComponent(int ALL_COMPONENTS)
 		this->parent->addComponent(navCom);
 	}
 	if (ALL_COMPONENTS == ScriptComponent) {
-		this->parent->addComponent();
+		Component* navigation = new test_move_component();
+		this->parent->addComponent(navigation);
 	}
 }

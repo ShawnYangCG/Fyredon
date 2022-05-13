@@ -36,6 +36,9 @@ void World::addCamera(Entity* entity)
 
 void World::init()
 {
+    for (int i = 0; i < this->cameras.size(); i++) {
+        this->cameras[i]->init();
+    }
     for (int i = 0; i < this->entities.size(); i++) {
         this->entities[i]->init();
     }
@@ -43,6 +46,9 @@ void World::init()
 
 void World::tick()
 {
+    for (int i = 0; i < this->cameras.size(); i++) {
+        this->cameras[i]->tick();
+    }
     for (int i = 0; i < this->entities.size(); i++) {
         this->entities[i]->tick();
     }
@@ -50,6 +56,9 @@ void World::tick()
 
 void World::reset()
 {
+    for (int i = 0; i < this->cameras.size(); i++) {
+        this->cameras[i]->reset();
+    }
     for (int i = 0; i < this->entities.size(); i++) {
         this->entities[i]->reset();
     }
@@ -57,6 +66,9 @@ void World::reset()
 
 void World::stop()
 {
+    for (int i = 0; i < this->cameras.size(); i++) {
+        this->cameras[i]->stop();
+    }
     for (int i = 0; i < this->entities.size(); i++) {
         this->entities[i]->stop();
     }

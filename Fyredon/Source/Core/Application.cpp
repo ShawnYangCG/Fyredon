@@ -119,6 +119,9 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// ========== setup system ===============
 	// render system
 	this->renderSys = new EngineRenderSystem(this->ECSworld, &renderer);
+	this->ECSworld->aniSys = new AnimationSystem();
+	this->ECSworld->navSys = new NavigationSystem(this->ECSworld);
+	this->ECSworld->navSys->enrenSys = this->renderSys;
 
 	// set a default camera
 	camera_entity* camEntity = new camera_entity();
@@ -221,8 +224,25 @@ void Fyredon::EditorApplication::tick_engine()
 void Fyredon::EditorApplication::tick_play()
 {
 	if (((GUI_Menu*)gui_org->gui_panels["Menu"])->menu_state.play) {
-		std::cout << "play" << std::endl;
+		//================== play ==================
+		this->ECSworld->init();
+		//================== play ==================
+		this->ECSworld->navSys->tick();
+		this->ECSworld->aniSys->run();
 	}
+	else {
+		this->ECSworld->stop();
+	}
+
+	if (((GUI_Menu*)gui_org->gui_panels["Menu"])->menu_state.reset) {
+		this->ECSworld->reset();
+
+		((GUI_Menu*)gui_org->gui_panels["Menu"])->menu_state.reset = false;
+	}
+
+	//============ only for test =================
+	this->ECSworld->navSys->randerWalls();
+	//============================================
 }
 
 // Info : All operations done within the editor application for a single tick

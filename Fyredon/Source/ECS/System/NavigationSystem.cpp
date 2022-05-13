@@ -5,12 +5,13 @@ NavigationSystem::NavigationSystem(World* world)
 {
 	this->world = world;
 
-	wall = new Fyredon::Mesh("wall", "./wall.obj");
+	wall = new Fyredon::Mesh("wall", "..//Assets//Mesh//wall.obj");
 	wall->load_obj(false);
-	wall->set_shader("../../shaders/mesh4.vert", "../../shaders/mesh4.frag");
+	wall->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	wall->set_colour(glm::vec3(0.0f, 0.0f, 1.0f));
 	wall->mode = Fyredon::Render_Mode::RENDER_MESH;
 	wall->scale(glm::vec3(1.f, 2.f, 1.f));
+	//Fyredon::Renderer::get_renderer().submit_primitive(wall);
 }
 
 void NavigationSystem::tick()
@@ -134,14 +135,17 @@ void NavigationSystem::printMap(list<glm::vec2> path) {
 
 void NavigationSystem::randerWalls()
 {
-	navigation_component* navCom = (navigation_component*)this->map->getComponentByName("Navigation");
+	if (this->map) {
+		if (this->map->getComponentByName("Navigation")) {
+			navigation_component* navCom = (navigation_component*)this->map->getComponentByName("Navigation");
+			for (int i = 0; i < navCom->walls.size(); i++) {
+				glm::vec2 pos = navCom->Pos2Position(navCom->walls[i]);
 
-	for (int i = 0; i < navCom->walls.size(); i++) {
-		glm::vec2 pos = navCom->Pos2Position(navCom->walls[i]);
-
-		wall->translate(glm::vec3(pos[0], 0.25f, pos[1]));
-		this->enrenSys->renderMesh(wall);
-		wall->translate(glm::vec3(-pos[0], -0.25f, -pos[1]));
+				wall->translate(glm::vec3(pos[0], 0.25f, pos[1]));
+				this->enrenSys->renderMesh(wall);
+				wall->translate(glm::vec3(-pos[0], -0.25f, -pos[1]));
+			}
+		}
 	}
 }
 

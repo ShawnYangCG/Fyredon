@@ -15,6 +15,12 @@ void transform_component::GUI_struct()
 	checkChanged();
 }
 
+void transform_component::reset()
+{
+	Component::reset();
+	this->isChanged = true;
+}
+
 void transform_component::checkChanged()
 {
 	if ((matrixTranslation_check[0] != matrixTranslation[0] ||

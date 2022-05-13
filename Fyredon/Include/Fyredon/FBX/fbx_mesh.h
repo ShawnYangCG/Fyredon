@@ -30,7 +30,7 @@ public:
 	void reFreshMeshWithCurrentTime(double time = 0);
 	void reFreshMeshWithCurrentFrame(double time = 0);
 	void playCurrentFrame(int frameIndex = 0);
-	void refreshTransform(fbxObjectData *fbxMeshData,FbxMatrix transformMatrix);
+	void refreshTransform(fbxObjectData* fbxMeshData, FbxMatrix transformMatrix);
 	void loadAnimation(double startTime = 0, double endTime = 1.0, double timeStep = 0.02);
 	void obj_data_backup();
 	void loadFbxMeshToRender();

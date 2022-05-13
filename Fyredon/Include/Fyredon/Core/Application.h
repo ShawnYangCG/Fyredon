@@ -15,6 +15,8 @@
 #include "Fyredon/GUI/GUI_NewProjectWindow.h"
 #include "Fyredon/Action/MenuAction.h"
 #include "Fyredon/ECS/System/EngineRenderSystem.h"
+#include "Fyredon/ECS/System/AnimationSystem.h"
+#include "Fyredon/ECS/System/NavigationSystem.h"
 #include "Fyredon/GUI/GUI_Viewport.h"
 #include "Fyredon/ECS/camera_entity.h"
 

@@ -5,7 +5,7 @@
 #include "Fyredon/ECS/fbx_property_component.h"
 // 1.
 // include your own header file
-#include <Fyredon/FBX/fbx_mesh.h>
+#include "Fyredon/FBX/fbx_mesh.h"
 // 2.
 // inherit the entity class
 class fbx_entity : public Entity
@@ -13,7 +13,7 @@ class fbx_entity : public Entity
 public:
 	// 3.
 	// add your own veriable here
-	
+	fbx_mesh* FBXmesh;
 
 	// 4.
 	// rewrite the constructor

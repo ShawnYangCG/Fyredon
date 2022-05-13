@@ -22,3 +22,28 @@ void fbx_property_component::GUI_struct()
 	ImGui::InputFloat("end time", &this->endTime);
 	ImGui::InputFloat("current frame", &this->currentFrameIndex);
 }
+
+void fbx_property_component::reset()
+{
+	Component::reset();
+	((fbx_entity*)this->parent)->FBXmesh->playCurrentFrame(this->currentFrameIndex);
+}
+
+void fbx_property_component::tick()
+{
+	Component::tick();
+	checkChanged();
+	if (this->isChanged) {
+		((fbx_entity*)this->parent)->FBXmesh->playCurrentFrame(this->currentFrameIndex);
+		this->isChanged = false;
+	}
+}
+
+void fbx_property_component::checkChanged()
+{
+	if (currentFrameIndex_check != currentFrameIndex
+		&& this->isChanged == false) {
+		currentFrameIndex_check = currentFrameIndex;
+		this->isChanged = true;
+	}
+}

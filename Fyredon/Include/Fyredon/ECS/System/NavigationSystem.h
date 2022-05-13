@@ -4,17 +4,19 @@
 #include "Fyredon/ECS/test_move_component.h"
 #include "Fyredon/ECS/navigation_component.h"
 #include "Fyredon/ECS/System/EngineRenderSystem.h"
+class World;
+class EngineRenderSystem;
 class NavigationSystem
 {
 public:
-	World* world;
-	EngineRenderSystem* enrenSys;
+	World* world = nullptr;
+	EngineRenderSystem* enrenSys = nullptr;
 	clock_t lastTime;
 	std::vector<Entity*> entities;
-	Fyredon::Mesh* wall;
-	Entity* destPoint;
+	Fyredon::Mesh* wall = nullptr;
+	Entity* destPoint = nullptr;
 	glm::vec3 targetPosition;
-	Entity* map;
+	Entity* map = nullptr;
 	float deltaTime = 0.04;	// second
 	NavigationSystem(World* world);
 	void tick();

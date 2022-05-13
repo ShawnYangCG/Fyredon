@@ -1,5 +1,6 @@
 #pragma once
-#include "Fyredon/ECS/ECS.h"
+#include "Fyredon/ECS/Component.h"
+#include "Fyredon/ECS/fbx_entity.h"
 // 1.
 // create your own component by inherit Component class
 class fbx_property_component:public Component
@@ -18,11 +19,16 @@ public:
 	float startTime = 0;
 	float endTime = 0;
 	float currentFrameIndex = 0;
+	float currentFrameIndex_check = 0;
+	bool isChanged = false;
 	// ==============
 	
 	// 4.
 	// rewrite this function to create your own component GUI
 	virtual void GUI_struct() override;
+	virtual void reset() override;
+	virtual void tick() override;
+	void checkChanged();
 };
 // 5.
 // don't forget to add this header in ECS.h

@@ -21,6 +21,7 @@ public:
 	// 4.
 	// rewrite this function to create your own component GUI
 	virtual void GUI_struct() override;
+	virtual void reset() override;
 	void checkChanged();
 	// virtual void tick() override;
 	// virtual void render() override;

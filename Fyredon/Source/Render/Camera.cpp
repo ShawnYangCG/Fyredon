@@ -7,8 +7,8 @@
 // Implments
 #include "Fyredon/Render/Camera.h"
 
-// Ext Headers 
-#include "GLFW/glfw3.h" 
+// Ext Headers
+#include "GLFW/glfw3.h"
 
 // Std Headers (use PCH)
 //#include <iostream>
