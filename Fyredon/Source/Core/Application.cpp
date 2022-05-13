@@ -111,9 +111,6 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// ========== setup system ===============
 	// render system
 	this->renderSys = new EngineRenderSystem(this->ECSworld, &renderer);
-	this->ECSworld->aniSys = new AnimationSystem();
-	this->ECSworld->navSys = new NavigationSystem(this->ECSworld);
-	this->ECSworld->navSys->enrenSys = this->renderSys;
 
 	// set a default camera
 	camera_entity* camEntity = new camera_entity();
@@ -232,8 +229,6 @@ void Fyredon::EditorApplication::tick_play()
 		//================== play ==================
 		this->ECSworld->init();
 		//================== play ==================
-		this->ECSworld->navSys->tick();
-		this->ECSworld->aniSys->run();
 	}
 	else {
 		this->ECSworld->stop();
@@ -246,7 +241,7 @@ void Fyredon::EditorApplication::tick_play()
 	}
 
 	//============ only for test =================
-	this->ECSworld->navSys->randerWalls();
+
 	//============================================
 }
 

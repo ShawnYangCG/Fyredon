@@ -1,7 +1,6 @@
 #pragma once
 #include "Fyredon/ECS/Entity.h"
 #include "Fyredon/ECS/transform_component.h"
-#include "Fyredon/ECS/navigation_component.h"
 #include "Fyredon/ECS/test_move_component.h"
 // Extern Includes
 #include "dearimgui/imgui.h"
