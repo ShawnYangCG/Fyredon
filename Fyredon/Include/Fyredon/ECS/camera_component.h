@@ -2,8 +2,8 @@
 /*=============================================================================
 	Camera_Component.h: ECS Camera Component : Niall, Shawn
 =============================================================================*/
-
 #pragma once
+
 #include "Fyredon/ECS/Component.h"
 
 #include "Fyredon/Render/Camera.h"
@@ -18,6 +18,7 @@ class camera_component : public Component
 {
 public:
 	camera_component(Entity *parent);
+	virtual ~camera_component();
 
 	virtual void GUI_struct() override;
 

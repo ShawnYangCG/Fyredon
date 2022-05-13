@@ -1,19 +1,41 @@
+// Copyright Fyredon. All Rights Reserved.
+/*=============================================================================
+	Mesh_Component.cpp: ECS Mesh Component : Niall, Shawn
+=============================================================================*/
 #include "Fyredon/Other/pch.h"
+// Implements
 #include "Fyredon/ECS/mesh_component.h"
 
-mesh_component::mesh_component(Fyredon::Mesh* mesh)
+#include "Fyredon/ECS/World.h"
+
+mesh_component::mesh_component(Entity* parent)
 {
-	this->componentName = "Mesh";
-	this->mesh = mesh;
+	World& world = World::get_world();
+
+	componentName = std::string("Mesh_") + std::to_string(world.counts.mesh_count++);
+
+	// Default Mesh OBJ 
+	mesh = new Fyredon::Mesh_OBJ(componentName.c_str(), "..//Assets//Mesh//pighead.obj");
+	mesh->load_obj();
+
 	Fyredon::Renderer::get_renderer().submit_mesh(this->mesh);
 	this->memmory_size = sizeof(mesh_component);
+
+	/*
+	* 	viewer_prims.test_mesh = new Mesh_OBJ("Test_Mesh", "..//Assets//Mesh//pighead.obj");
+	viewer_prims.test_mesh->load_obj();
+	viewer_prims.test_mesh->scale(glm::vec3(2.f));
+	viewer_prims.test_mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
+	*/
 }
 
-// Remove mesh from render_list if component deleted
+// Remove mesh from render_list if component deleted, then delete mesh.
 mesh_component::mesh_component::~mesh_component()
 {
 	//auto& ren = Fyredon::Renderer::get_renderer();
 	//ren.delete_mesh ...;
+
+	delete mesh; 
 }
 
 void mesh_component::GUI_struct()

@@ -21,7 +21,7 @@ World World::world;
 
 World& World::get_world() { return world; }
 
-// Assume ownership is in world class
+// Info : Entity ownership within World, each entitiy is responsible for deleting its components. 
 World::~World()
 {
     if (entities.size()) {
@@ -65,7 +65,7 @@ void World::create_camera_entity()
     counts.camera_entity_count++;
 }
 
-// Info : Checks for named camera (Scene or Game) to initalize and reference explicitlly within world. 
+// Info : overload checks for named camera (Scene or Game) to override pos and reference explicitlly within world. 
 void World::create_camera_entity(const std::string& name)
 {
     Fyredon::camera_entity* entity = new Fyredon::camera_entity();
@@ -83,7 +83,6 @@ void World::create_camera_entity(const std::string& name)
         glm::vec3 scam_pos(3.f, 1.f, -2.f);
         cam_comp->set_camera_pos(scam_pos);
     }
-
     if (name == "Game_Camera")  
     {
         game_cam_entity = entity;
@@ -93,12 +92,10 @@ void World::create_camera_entity(const std::string& name)
         renderer.set_active_camera(raw_cam);
     }
 
+    // Add to ECS World Entity List
     this->addEntity(entity);
-
-    // Probs should use camera_array oppose to just general entities ?
-    // But kinda redundant now we store scene and game cam explicit ptrs. 
+    // Probs should use camera_array oppose to just general entities, but we also store in cam ptrs. 
     cameraList[name] = entityList.size() - 1; 
-
     counts.camera_entity_count++;
 }
 

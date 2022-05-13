@@ -12,6 +12,7 @@
 #include "Fyredon/Core/Application.h"
 #include "Fyredon/Render/Assets.h"
 
+// Info : Initalize Camera Component with default state (to later be modified by user).
 Fyredon::camera_component::camera_component(Entity* parent)
 	: Component(std::string("Camera"), parent)
 {
@@ -32,6 +33,12 @@ Fyredon::camera_component::camera_component(Entity* parent)
 	guide_mesh->mode = Fyredon::Render_Mode::RENDER_LINES;
 
 	Fyredon::Renderer::get_renderer().submit_mesh_guide(guide_mesh);
+}
+
+Fyredon::camera_component::~camera_component()
+{
+	if (camera)     delete camera; 
+	if (guide_mesh) delete guide_mesh; 
 }
 
 // Info : Expose key parms to component GUI

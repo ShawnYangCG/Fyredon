@@ -18,6 +18,7 @@ class Entity
 public:
 	Entity();
 	Entity(std::string name);
+	virtual ~Entity();
 
 	virtual void tick();
 

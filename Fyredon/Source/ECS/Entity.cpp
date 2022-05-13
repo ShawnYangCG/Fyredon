@@ -12,6 +12,20 @@ Entity::Entity(std::string name)
     this->name = name;
 }
 
+// Info : Entity deletes components, components then delete their heap allocated members. 
+Entity::~Entity()
+{
+    for (Component* component : components)
+    {
+        if (component)
+        {
+            delete component;
+            component = nullptr; 
+        }
+    }
+    parent = nullptr;
+}
+
 /*
 void Entity::addComponent()
 {
