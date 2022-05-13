@@ -50,9 +50,8 @@ public:
 	void update_camera(GLFWwindow *window, float Camera_Speed, float dt, float yaw, float pitch);
 
 	std::ostringstream debug();
-
-private:
 	void calc_basis();
+	
 };
 }
 

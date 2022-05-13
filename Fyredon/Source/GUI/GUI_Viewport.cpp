@@ -1,7 +1,10 @@
 #include "Fyredon/Other/pch.h"
+// Implements
 #include "Fyredon/GUI/GUI_Viewport.h"
+
 // Extern Includes
 #include "dearimgui/imgui.h"
+
 Fyredon::GUI_Viewport::GUI_Viewport(const char* Title, GUIConfig* guiConfig) 
 	: GUI_Panel(), title(Title), guiConfig(guiConfig)
 {
@@ -39,7 +42,7 @@ void Fyredon::GUI_Viewport::draw()
 		{
 			// Flip V Min. 
 			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
-			ImVec2 uv_max = ImVec2(1.0f, 0.0f);
+			ImVec2 uv_max = ImVec2(1.0f, 0.0f); // flip.
 			ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 			ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f);
 			ImGui::Image(tex->get_imgui_texture(), ImVec2(tex->width, tex->height), uv_min, uv_max, tint_col, border_col);

@@ -7,6 +7,7 @@
 
 // Implements
 #include "Fyredon/Render/GroundPlane.h"
+#include "Fyredon/Render/Texture.h"
 
 // Extern
 #include "glm/common.hpp"
@@ -16,10 +17,10 @@
 // =================== Ground Plane Implementation ===================
 
 Fyredon::GroundPlane::GroundPlane()
-	: Mesh("Ground_Plane", "..//Assets//Mesh//grid.obj")
+	: Mesh_OBJ("Ground_Plane", "..//Assets//Mesh//grid.obj")
 {
 	size = 1.f, tile = 2.f; 
-	load_obj(true);
+	load_obj();
 	set_shader("..//Shaders//ground.vert", "..//Shaders//ground.frag");
 	load_texture("..//Assets//Images//Misc//grid_RGB.png", 0);
 	tex->set_params(Texture::filter_type::LINEAR);
@@ -30,21 +31,21 @@ Fyredon::GroundPlane::GroundPlane()
 void Fyredon::GroundPlane::set_size(float Size)
 {
 	size = Size; 
-	for (vert &v : obj_data.verts)
+	for (Vert &v : vert_data)
 	{
 		v.pos *= size; 
 	}
-	// Reset Mesh with scaled pos
-	set_data_mesh(obj_data.verts);
+	// Update Mesh with scaled Position
+	update_data_mesh(vert_data);
 }
 
 void Fyredon::GroundPlane::set_tile(float Tile)
 {
 	tile = Tile;
-	for (vert &v : obj_data.verts)
+	for (Vert &v : vert_data)
 	{
 		v.uv *= tile;
 	}
-	// Reset Mesh with scaled pos
-	set_data_mesh(obj_data.verts);
+	// Update Mesh with scaled UV's.
+	update_data_mesh(vert_data);
 }

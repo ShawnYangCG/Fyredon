@@ -1,26 +1,27 @@
+// Copyright Fyredon. All Rights Reserved.
+
+/*=============================================================================
+	FBXMesh.h: Xiaoyuan Yang
+=============================================================================*/
 #pragma once
-#include "Fyredon/Render/Mesh.h"
+#include "Fyredon/Render/Mesh_OBJ.h"
 #include "FBXLoader.h"
+
 class fbxObjectData { // 
 public:
 	FbxNode* pNode;
-	struct
+	struct mesh_data
 	{
 		std::vector<glm::vec3> v_p;
 		std::vector<glm::vec3> v_n;
-		std::vector<glm::vec2> v_t;
-		std::vector<Fyredon::vert> verts;
-	} fbx_obj_data;
-	struct
-	{
-		std::vector<glm::vec3> v_p;
-		std::vector<glm::vec3> v_n;
-		std::vector<glm::vec2> v_t;
-		std::vector<Fyredon::vert> verts;
-	} fbx_obj_data_backup;
+		std::vector<glm::vec3> v_t;
+		std::vector<Fyredon::Vert> verts;
+	};
+	mesh_data fbx_obj_data;
+	mesh_data fbx_obj_data_backup;
 };
 
-class fbx_mesh : public Fyredon::Mesh
+class fbx_mesh : public Fyredon::Mesh_OBJ
 {
 public:
 	fbx_mesh(const char* name, const char* filePath);

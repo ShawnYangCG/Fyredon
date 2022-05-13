@@ -1,4 +1,8 @@
-// COMP5823M - A2 : Niall Horn - ground.frag
+// Copyright Fyredon. All Rights Reserved.
+/*=============================================================================
+	ground.frag : Fragment Shader for Ground Plane Grid : Niall
+=============================================================================*/
+
 #version 400 core 
 
 #define debug 0

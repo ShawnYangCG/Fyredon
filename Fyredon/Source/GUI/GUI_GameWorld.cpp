@@ -32,7 +32,7 @@ void Fyredon::GUI_GameWorld::draw()
 	if (ImGui::Button("Create Sphere"))
 	{
 		auto s = world.prims.size();
-		world.create_mesh((std::string("Sphere_") + std::to_string(s)).c_str(), "..//Assets//Mesh//sphere.obj");
+		world.create_mesh_obj((std::string("Sphere_") + std::to_string(s)).c_str(), "..//Assets//Mesh//sphere.obj");
 	}
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));

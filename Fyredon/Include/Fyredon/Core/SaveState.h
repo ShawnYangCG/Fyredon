@@ -22,14 +22,10 @@ namespace Fyredon {
 		void operator=(const SaveState&) = delete;
 
 		void tick(glm::vec3& cam_pos, float yaw, float pitch); // updates engine state
+		void load(); // loads in engine state from dat file
 
 		bool update; // mark state to be updated
-
-	private:
-		SaveState();
-		static SaveState instance;
-
-		void encode();
+		bool loaded; // mark state to be loaded in
 
 		// State var storag
 		// Camera
@@ -38,5 +34,14 @@ namespace Fyredon {
 		float pitch;
 		// Lights
 		// Assets
+
+	private:
+		SaveState();
+		static SaveState instance;
+
+		void encode();
+		void decode();
+
+		
 	};
 }

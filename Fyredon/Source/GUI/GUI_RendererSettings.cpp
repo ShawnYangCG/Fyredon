@@ -6,6 +6,7 @@
 #include "Fyredon/Other/pch.h"
 // Implements 
 #include "Fyredon/GUI/GUI_RendererSettings.h"
+#include "Fyredon/Render/Renderer.h"
 
 // Extern Includes
 #include "dearimgui/imgui.h"
@@ -19,6 +20,15 @@ Fyredon::GUI_RendererSettings::GUI_RendererSettings()
 	state.light_strength = 2.0f;
 	state.light_pos = glm::vec3(0.f, 5.f, 3.f);
 	state.test_mesh_pos = glm::vec3(0.f, 1.f, 0.f);
+
+	// Hook renderer flags to GUI
+	Renderer& renderer = Renderer::get_renderer();
+	renderer.flags.draw_axis = &state.draw_axis;
+	renderer.flags.draw_grid = &state.draw_grid;
+	renderer.flags.draw_test_prims = &state.draw_testmesh;
+	renderer.flags.light_pos = &state.light_pos;
+	renderer.flags.light_str = &state.light_strength;
+	renderer.flags.test_pos = &state.test_mesh_pos;
 }
 
 void Fyredon::GUI_RendererSettings::tick()
@@ -46,7 +56,7 @@ void Fyredon::GUI_RendererSettings::draw()
 	ImGui::Begin(t_title);
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-	ImGui::Text("Renderer Draw Settings");
+	ImGui::Text("Viewer Settings");
 	ImGui::PopStyleColor();
 	if (ImGui::Button("Draw Grid")) {
 		state.draw_grid = !state.draw_grid;
@@ -65,7 +75,7 @@ void Fyredon::GUI_RendererSettings::draw()
 	}
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-	ImGui::Text("Renderer Light Settings");
+	ImGui::Text("(temp) Light Settings");
 	ImGui::PopStyleColor();
 	ImGui::SliderFloat("Light Strength", &state.light_strength, 0.f, 10.f);
 	if (ImGui::SliderFloat3("Light Position", light_pos, -100.f, 100.f))

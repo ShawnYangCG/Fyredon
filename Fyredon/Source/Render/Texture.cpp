@@ -21,36 +21,59 @@
 
 #pragma warning( disable : 26812) // Ignore unscoped Enums 
 
-// ====================== Texture Class Implementation ======================
+// ====================== Texture_Base Implementation ======================
 
-Fyredon::Texture::Texture(const char* Tex_Name, GLuint Tex_Unit, std::size_t Width, std::size_t Height)
+Fyredon::Texture_Base::Texture_Base(const char* Tex_Name, GLuint Tex_Unit, std::size_t Width, std::size_t Height)
 	: name(Tex_Name), unit(Tex_Unit), width(Width), height(Height), channels(3)
 {
 	valid_state = false;
 	ID = -1;
 	filter = filter_type::NEAREST;
+}
 
+Fyredon::Texture_Base::~Texture_Base()
+{
+	glDeleteTextures(1, &ID);
+}
+
+void Fyredon::Texture_Base::activate()
+{
+	if (unit > 32) std::cerr << "ERROR::Fyredon::Texture::" << name << ":: texture unit out of bounds" << std::endl;
+	glActiveTexture(0x84C0 + unit);
+}
+
+void Fyredon::Texture_Base::deactivate() 
+{
+	glActiveTexture(0); 
+}
+
+ImTextureID Fyredon::Texture_Base::get_imgui_texture()
+{
+	return reinterpret_cast<ImTextureID>(ID);
+}
+
+// ====================== Texture Class Implementation ======================
+
+Fyredon::Texture::Texture(const char* Tex_Name, GLuint Tex_Unit, std::size_t Width, std::size_t Height)
+	: Texture_Base(Tex_Name, Tex_Unit, Width, Height)
+{
 	// Gen Tex
 	glGenTextures(1, &ID);
 	glBindTexture(GL_TEXTURE_2D, ID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	// Set Parameters
 	set_params(filter);
 }
 
 // Default Constructor for fallback only.
-Fyredon::Texture::Texture() 
-	: name("Null"), unit(-1), width(1), height(1), channels(3)
+Fyredon::Texture::Texture()
+	: Texture_Base("Null", -1, 0, 0)
 {
 	// Gen Tex
 	glGenTextures(1, &ID);
 	std::cout << "Warning, Default Texture Construction\n";
-}
-
-Fyredon::Texture::~Texture()
-{
-	glDeleteTextures(1, &ID);
 }
 
 void Fyredon::Texture::set_params(filter_type filter)
@@ -58,49 +81,59 @@ void Fyredon::Texture::set_params(filter_type filter)
 	glBindTexture(GL_TEXTURE_2D, ID);
 	switch (filter)
 	{
-		case 0 : 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			break;
+	case 0:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		break;
 
-		case 1 : 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			break;
+	case 1:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		break;
 
-		default: 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	default:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
 	// Enforce mirrored repat. 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // X (S)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Y (T)
 	glBindTexture(GL_TEXTURE_2D, 0);
-}
 
-void Fyredon::Texture::activate()
-{
-	if (unit > 32) std::cerr << "ERROR::Fyredon::Texture::" << name << ":: texture unit out of bounds" << std::endl;
-	glActiveTexture(0x84C0 + unit);
+	valid_state = true; 
 }
-
-void Fyredon::Texture::deactivate() { glActiveTexture(0); }
 
 void Fyredon::Texture::bind() { glBindTexture(GL_TEXTURE_2D, ID); }
 
 void Fyredon::Texture::unbind() { glBindTexture(GL_TEXTURE_2D, 0); }
 
-ImTextureID Fyredon::Texture::get_imgui_texture()
+// ====================== Texture_MultiSample Implementation ======================
+
+Fyredon::Texture_MultiSample::Texture_MultiSample(const char* Tex_Name, GLuint Tex_Unit, std::size_t Width, std::size_t Height, std::size_t Samples)
+	: Fyredon::Texture_Base(Tex_Name, Tex_Unit, Width, Height), sample_count(Samples)
 {
-	return reinterpret_cast<ImTextureID>(ID);
+	// Gen Tex
+	glGenTextures(1, &ID);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, ID);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, sample_count, GL_RGB, width, height, GL_TRUE);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+
+	// Set Parameters
+	set_params(filter);
+	valid_state = true;
 }
+
+// Info : Multisampled textures have no supported params. 
+void Fyredon::Texture_MultiSample::set_params(filter_type filter) { return; }
+
+void Fyredon::Texture_MultiSample::bind() { glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, ID); }
+
+void Fyredon::Texture_MultiSample::unbind() { glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0); }
 
 // ====================== TextureImage Class Implementation ======================
 
 Fyredon::TextureImage::TextureImage(const char* File_Path, const char* Tex_Name, GLuint Tex_Unit, bool Flip)
-	: Fyredon::Texture(Tex_Name, Tex_Unit, -1, -1), file_path(File_Path), flip(Flip) 
-{
-}
+	: Fyredon::Texture(Tex_Name, Tex_Unit, 0, 0), file_path(File_Path), flip(Flip) {}
 
 // Info : Do loading after construction
 void Fyredon::TextureImage::load()

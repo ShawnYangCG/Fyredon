@@ -1,4 +1,8 @@
-// COMP5823M - A2 : Niall Horn - mesh.frag
+// Copyright Fyredon. All Rights Reserved.
+/*=============================================================================
+	mesh.frag : Mesh Fragment Shader : Niall
+=============================================================================*/
+
 #version 400 core 
 
 // Input

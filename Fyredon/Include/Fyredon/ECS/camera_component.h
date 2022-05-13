@@ -1,7 +1,7 @@
 #pragma once
 #include "Fyredon/ECS/Component.h"
 #include "Fyredon/Render/Camera.h"
-#include "Fyredon/Render/Primitive.h"
+#include "Fyredon/Render/Mesh.h"
 #include "Fyredon/Render/Renderer.h"
 // 1.
 // create your own component by inherit Component class
@@ -16,8 +16,8 @@ public:
 	// add your own variable here
 	// == variable ==
 	Fyredon::Camera* camera;
-	Fyredon::Primitive* outlook;
-	Fyredon::Primitive* outlook_render;
+	Fyredon::Mesh* outlook;
+	Fyredon::Mesh* outlook_render;
 	// ==============
 
 	// 4.
