@@ -15,6 +15,8 @@
 
 //TODO change namespace
 
+// Old (Need to merge Izzy's latest, this still uses old heightmaps)
+
 class TerrainGenerator
 {
 public:
@@ -25,33 +27,30 @@ public:
 
 	float heightFromIndex(int index);
 
-	void draw_water_quad();
 	float bilinear_interpolation(float x, float z);
+
 	float heightFromXZ(int x, int y);
 
 	void generate_mesh(int res);
+
 	float triangle_plane(float x, float z);
-	void load_terrain_image(std::string path);
+
 	void write_obj(std::string path);
+
 	void smooth_normals();
+
 	void load_obj(bool has_tex = false);
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 
-	int terrain_res;
-
 	Fyredon::Mesh *TerrainMesh;
-	Fyredon::Mesh *water_quad;
 
 	int image_width, image_height, image_n_channels;
-
-	//Fyredon::TextureImage grass;
 	unsigned char* image_data;
+
+	int terrain_res;
 	
 	bool terrain_loaded = false;
-
-private:
-
 };
 

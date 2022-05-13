@@ -25,7 +25,6 @@
 #include "Fyredon/GUI/GUI_RendererSettings.h"
 #include "Fyredon/GUI/GUI_EntityList.h"
 #include "Fyredon/GUI/GUI_Components.h"
-#include "Fyredon/GUI/GUI_GameWorld.h"
 #include "Fyredon/GUI/GUI_Asset.h"
 
 // Render

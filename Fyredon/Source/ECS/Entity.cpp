@@ -12,7 +12,7 @@ Entity::Entity(std::string name)
     this->name = name;
 }
 
-// Info : Entity deletes components, components then delete their heap allocated members. 
+// Info : Entity deletes components, components then delete their own internal allocated data. 
 Entity::~Entity()
 {
     for (Component* component : components)
@@ -26,35 +26,7 @@ Entity::~Entity()
     parent = nullptr;
 }
 
-/*
-void Entity::addComponent()
-{
-    std::string newName = "new component " + std::to_string((this->components.size() + 1));
-    if (this->componentList.count(newName) == 0) {
-        this->componentList[newName] = this->components.size();
-        Component* newComponent = new Component(newName);
-        newComponent->parent = this;
-        this->components.push_back(newComponent);
-    }
-    else {
-        std::cout << "Error: Entity [" << this->name << "] already contain component [" << newName << "]" << std::endl;
-    } 
-}
-
-void Entity::addComponent(std::string componentName)
-{
-    std::string newName = componentName;
-    if (this->componentList.count(newName) == 0) {
-        this->componentList[newName] = this->components.size();
-        Component* newComponent = new Component(componentName);
-        newComponent->parent = this;
-        this->components.push_back(newComponent);
-    }
-    else {
-        std::cout << "Error: Entity [" << this->name << "] already contain component [" << newName << "]" << std::endl;
-    }
-} */
-
+// Info :  Pass Pre-allocated Component pointer to reference, also transfers ownership of component to entity. 
 void Entity::addComponent(Component* component)
 {
     std::string newName = component->componentName;

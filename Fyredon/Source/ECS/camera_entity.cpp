@@ -7,10 +7,10 @@
 #include "Fyredon/ECS/camera_entity.h"
 
 // Project Includes
-#include "Fyredon/Render/Camera.h"
-
 #include "Fyredon/ECS/camera_component.h"
 #include "Fyredon/ECS/World.h"
+#include "Fyredon/Render/Camera.h"
+
 
 Fyredon::camera_entity::camera_entity()
 {

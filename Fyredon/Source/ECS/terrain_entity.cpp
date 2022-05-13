@@ -1,31 +1,29 @@
+// Copyright Fyredon. All Rights Reserved.
+/*=============================================================================
+	Terrain_Entity.cpp: ECS Entity with root Terrain_Component: Niall, Izzy
+=============================================================================*/
 #include "Fyredon/Other/pch.h"
 // Implements
 #include "Fyredon/ECS/terrain_entity.h"
 
-#include "Fyredon/Render/Mesh.h"
-#include "Fyredon/Render/Material.h"
+// Project Includes
+#include "Fyredon/ECS/terrain_component.h"
+#include "Fyredon/ECS/World.h"
+//#include "Fyredon/ECS/transform_component.h"
 
-
-terrain_entity::terrain_entity()
+Fyredon::terrain_entity::terrain_entity()
 {
-	// Allocate Terrain Generator itself
-	this->terrain_generator = new TerrainGenerator("heightmap1", "./assets/heightmap/Heightmap.png");
-	terrain_generator->read_height_map("Heightmap.png");
-	terrain_generator->generate_mesh(257 * 2);
-
-	// Override default Fyredon::Mesh Shader
-	terrain_generator->TerrainMesh->set_shader("..//Shaders//mesh_vert_common.glsl", "..//Shaders//mesh-terrain_fragment.glsl");
-
-	// Override default material paramters
-	terrain_generator->TerrainMesh->material->set_tex_diffuse("..//Assets//Images//Terrain//grass.jpg");
-	terrain_generator->TerrainMesh->material->parms.coeff_specular = 0.f; 
-	terrain_generator->TerrainMesh->name = "terrain";
-
-	// Terrain is Root Component
-	// Mesh Component from Terrain Generator
-	Component* terrainMesh = new mesh_component(terrain_generator->TerrainMesh);
-	this->addComponent(terrainMesh);
+	// Root Component is Terrain_Component
+	addComponent(new terrain_component(this));
+	// Default entitiy name.
+	this->setName(std::string("Terrain_") + std::to_string(World::get_world().counts.terrain_entity_count++));
 
 	// Transform Component atop
-	this->addTransformComponent();
+	//this->addTransformComponent();
+}
+
+Fyredon::terrain_component* Fyredon::terrain_entity::get_terrain_component()
+{
+	// Assume Terrain is 0th (root) component
+	return static_cast<terrain_component*>(getComponentByIndex(0));
 }

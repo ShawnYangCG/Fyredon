@@ -53,7 +53,7 @@ void World::addEntity(Entity* entity)
 
 void World::create_terrain_entity()
 {
-    terrain_entity* entity = new terrain_entity;
+    Fyredon::terrain_entity* entity = new Fyredon::terrain_entity;
     this->addEntity(entity);
     counts.terrain_entity_count++;
 }

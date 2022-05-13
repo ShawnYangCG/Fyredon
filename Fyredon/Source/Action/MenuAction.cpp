@@ -59,9 +59,7 @@ void Fyredon::MenuAction::createCamera()
 
 void Fyredon::MenuAction::createTerrainEntity()
 {
-	//terrain_entity* entity = new terrain_entity();
-	//entity->setName(entity->getName() + "_terrain");
-	//this->world->addEntity(entity);
+	World::get_world().create_terrain_entity();
 }
 
 void Fyredon::MenuAction::createPigHead()

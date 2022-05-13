@@ -74,6 +74,8 @@ void Fyredon::camera_component::tick()
 		parms.aspect = float(renderer.width) / renderer.height; 
 		camera->aspect_ratio = parms.aspect; 
 	}
+
+	Component::tick();
 }
 
 void Fyredon::camera_component::set_camera_pos(const glm::vec3& pos)

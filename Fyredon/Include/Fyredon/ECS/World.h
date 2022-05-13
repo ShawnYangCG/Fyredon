@@ -68,6 +68,7 @@ public:
 		uint8_t transform_count      : 6;
 		uint8_t light_count          : 6;
 		uint8_t camera_count         : 4;
+		uint8_t terrain_count        : 4;
 
 		// World Entity Counts
 		uint8_t camera_entity_count  : 4;

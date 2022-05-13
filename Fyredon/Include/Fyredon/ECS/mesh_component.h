@@ -32,6 +32,13 @@ public:
 public:
 
 	struct {
+		// Mesh parms
+		const char* file_path; 
+
+		// Material parms
+	} parms;
+
+	struct {
 		glm::vec3 min, max; 
 	} bounds;
 

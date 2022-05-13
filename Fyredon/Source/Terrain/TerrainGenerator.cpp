@@ -14,9 +14,11 @@ TerrainGenerator::TerrainGenerator(const char* name, const char* filePath){
 	//read_height_map("Heightmap.png");
 }
 
-TerrainGenerator::~TerrainGenerator() {
-
-};
+TerrainGenerator::~TerrainGenerator()
+{
+	if (TerrainMesh) delete TerrainMesh; 
+	if (image_data) delete  image_data; 
+}
 
 void TerrainGenerator::load_obj(bool has_tex) {
 
@@ -30,21 +32,10 @@ void TerrainGenerator::write_obj(std::string path) {
 
 void TerrainGenerator::read_height_map(std::string path) {
 
-	std::filesystem::path file = std::filesystem::current_path() / "..\\Assets\\Images\\Heightmaps" / path;
-
-	//std::cout << file.string().c_str() << "\n";
-
-	std::filesystem::path file2 = std::filesystem::current_path() / "..\\Assets\\heightmap" / "rewrite.png";
-
-	image_data = stbi_load(file.string().c_str(), &image_width, &image_height, &image_n_channels, 1);
+	image_data = stbi_load(path.c_str(), &image_width, &image_height, &image_n_channels, 1);
 
 	int x_res = image_width;
 	int z_res = image_height;
-
-	//std::cout << x_res << " x_res" << "\n";
-	//std::cout << z_res << " z_res" << "\n";
-	//std::cout << image_n_channels << " chan" << "\n";
-	//std::cout << image_width * image_height * image_n_channels << " image size" << "\n";
 }
 
 
@@ -137,13 +128,7 @@ float TerrainGenerator::triangle_plane(float x, float z){
 		return  B2.y + (x_fraction) * (C - B2).y + (1-z_fraction) * (A - B2).y;
 
 	}
-
-
-	//glm::vec3 v01 = glm::vec3(x, (vertex0.y * x_fraction) + (vertex1.y * (1 - x_fraction)), z_whole);
-	//glm::vec3 v23 = glm::vec3(x, (vertex2.y * x_fraction) + (vertex3.y * (1 - x_fraction)), z_whole + 1);
-	//glm::vec3 v0123 = glm::vec3(x, (v01.y * z_fraction) + (v23.y * (1 - z_fraction)), z);
-
-	return 0;// (v01.y * z_fraction) + (v0123.y * (1 - z_fraction));
+	return 0;
 }
 
 
@@ -151,14 +136,11 @@ float TerrainGenerator::triangle_plane(float x, float z){
 void TerrainGenerator::generate_mesh(int res) {
 	
 	// Allocate Primitive members 
+	if (TerrainMesh) delete TerrainMesh;
 	TerrainMesh = new Fyredon::Mesh("Terrain_Mesh");
 
 	// Temp storage
 	std::vector<Fyredon::Vert> verts;
-	std::vector<Fyredon::GLuint> inds;
-
-	//std::cout << "z res " << image_height/((float)image_height / (float)res) << "\n";
-	//std::cout << "x res " << image_width/((float)image_width / (float)res) << "\n";
 
 	for (float z = 0; z < image_height; z += ((float)image_height / (float)res)) {
 		for (float x = 0; x < image_width; x += ((float)image_width / (float)res)) {
@@ -234,9 +216,6 @@ void TerrainGenerator::generate_mesh(int res) {
 			verts.push_back(vertex3);
 		}
 	}
-
-	//std::cout << TerrainMesh.obj_data.verts.size() << " size\n";
-	//std::cout << "verts " << vertices.size() << "\n";
 
 	// Set Primtivie Data
 	TerrainMesh->set_data_mesh(verts);
@@ -397,48 +376,4 @@ float TerrainGenerator::heightFromXZ(int x, int z) {
 	return NULL;
 }
 
-void TerrainGenerator::draw_water_quad() {
-
-	water_quad  = new Fyredon::Mesh("Water Quad");
-	std::vector<Fyredon::Vert> verts; 
-
-	int res = 513;
-
-	for (size_t z = 0; z < res; z += res-1) {
-		for (size_t x = 0; x < res; x += res-1) {
-
-			glm::vec3 position = glm::vec3(x / 10.0, 10, z / 10.0);
-			//std::cout << position.x << " " << " "  << position.z  << " " << position.y << "\n";
-
-			Fyredon::Vert vertex;
-			vertex.pos = position;
-			vertex.uv = glm::vec3((x/(res - 1)), (z/(res - 1)), 0.f);
-			vertex.col = glm::vec3(0, 0, 1.f);
-			vertex.normal = glm::vec3(0, 1.f, 0);
-
-			verts.push_back(vertex);
-
-		}
-	}
-
-	// Set Primtivie Data
-	water_quad->set_data_mesh(verts);
-}
-
-//TODO return height from given (x,z)
-
-//TODO apply textures
-void TerrainGenerator::load_terrain_image(std::string path) {
-	std::filesystem::path file = std::filesystem::current_path() / "..\\Assets\\Images\\grass.jpg" / path;
-
-	const char* file_as_string = file.string().c_str();
-
-	//grass = Fyredon::TextureImage(file_as_string, "grass", 1);
-
-	//grass.load();
-	//std::cout << grass.valid_state << " valid state\n";
-
-}
-
-//TODO move verts based on (x,z) and radius
 

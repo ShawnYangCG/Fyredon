@@ -17,16 +17,12 @@ mesh_component::mesh_component(Entity* parent)
 	// Default Mesh OBJ 
 	mesh = new Fyredon::Mesh_OBJ(componentName.c_str(), "..//Assets//Mesh//pighead.obj");
 	mesh->load_obj();
+	mesh->scale(glm::vec3(2.f));
+	mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
 
 	Fyredon::Renderer::get_renderer().submit_mesh(this->mesh);
-	this->memmory_size = sizeof(mesh_component);
 
-	/*
-	* 	viewer_prims.test_mesh = new Mesh_OBJ("Test_Mesh", "..//Assets//Mesh//pighead.obj");
-	viewer_prims.test_mesh->load_obj();
-	viewer_prims.test_mesh->scale(glm::vec3(2.f));
-	viewer_prims.test_mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
-	*/
+	this->memmory_size = sizeof(mesh_component);
 }
 
 // Remove mesh from render_list if component deleted, then delete mesh.
