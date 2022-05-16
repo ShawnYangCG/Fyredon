@@ -14,10 +14,16 @@
 
 	includedirs{
 		"%{wks.location}/Fyredon/Include/",
-		"%{wks.location}/Extern/Include/"
+		"%{wks.location}/Extern/Include/"，
+		"%{wks.location}/Extern/Include/FBX/"        -- need abs fbx dir, for cases of : #include "fbxsdk/fbxsdk/fbxsdk_version.h"
 	}
-
+	
+	libdirs { 
+		"%{wks.location}/Extern/Binary/FBX/"
+	}
+	
 	links{
+		"libfbxsdk.lib"，
 		"Fyredon"
 	}
 
@@ -36,7 +42,8 @@
 	-- Debug configuration
 	filter "configurations:Debug"
 		defines{
-			"FD_DEBUG"
+			"FD_DEBUG",
+			"FBXSDK_SHARED"
 		}
 		runtime "Debug"
 		symbols "on"
@@ -45,7 +52,8 @@
 	-- Release configuration
 	filter "configurations:Release"
 		defines{
-			"FD_RELEASE"
+			"FD_RELEASE",
+			"FBXSDK_SHARED"
 		}
 
 		runtime "Release"
