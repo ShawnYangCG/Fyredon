@@ -6,6 +6,28 @@ World::World(GUI_PanelOrgnizer* gui_org)
     this->gui_org = gui_org;
 }
 
+World::~World()
+{
+    if (this->gui_org) {
+        this->gui_org->~GUI_PanelOrgnizer();
+        free(this->gui_org);
+    }
+    for (Entity* entity : entities) {
+        if (entity) {
+            entity->~Entity();
+            free(entity);
+        }
+    }
+    entities.clear();
+    for (Entity* camera : cameras) {
+        if (camera) {
+            camera->~Entity();
+            free(camera);
+        }
+    }
+    cameras.clear();
+}
+
 void World::addEntity(Entity* entity)
 {
     if (this->entityList.count(entity->getName()) == 0) {

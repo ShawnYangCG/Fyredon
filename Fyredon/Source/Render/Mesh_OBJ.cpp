@@ -93,11 +93,11 @@ void Fyredon::Mesh_OBJ::load_obj()
 
 					// Face Vertex Data
 					ss >> i_vp; // v_p index
-					ss.get(); // '/'
-					ss.get(); 
+					ss.get(c); // '/'
+					ss.get(c); 
 					ss >> i_vt; // 'v_t' index
-					ss.get(); 
-					ss.get();
+					ss.get(c); 
+					ss.get(c);
 					ss >> i_vn; // 'v_n' index
 
 					// Create Vertex

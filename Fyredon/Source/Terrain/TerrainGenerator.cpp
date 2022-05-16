@@ -296,7 +296,7 @@ void TerrainGenerator::generate_mesh(int res) {
 
 	//std::cout << TerrainMesh.obj_data.verts.size() << " size\n";
 	//std::cout << "verts " << vertices.size() << "\n";
-
+	
 	// Set Primtivie Data
 	TerrainMesh->set_data_mesh(verts);
 }

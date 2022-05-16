@@ -24,6 +24,7 @@ private:
 public:
 	Entity();
 	Entity(std::string name);
+	~Entity();
 
 	virtual void render();
 	virtual void tick();

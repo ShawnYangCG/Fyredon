@@ -6,6 +6,14 @@ AddComponentButtonAction::AddComponentButtonAction(Entity* parent)
 	this->parent = parent;
 }
 
+AddComponentButtonAction::~AddComponentButtonAction()
+{
+	if (this->parent) {
+		this->parent->~Entity();
+		if (this->parent)free(this->parent);
+	}
+}
+
 void AddComponentButtonAction::tick()
 {
 	if (ImGui::Button("add component"))

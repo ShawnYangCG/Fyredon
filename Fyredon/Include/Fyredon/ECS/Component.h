@@ -16,7 +16,7 @@ public:
 	// ==============
 private:
 	// you need to put value into this truct when initialize
-	Component* componentBackup = nullptr;
+	void* componentBackup = nullptr;
 
 protected:
 	int memmory_size = 0;
@@ -25,6 +25,7 @@ protected:
 public:
 	Component();
 	Component(std::string componentName);
+	~Component();
 	virtual void init();
 	virtual void reset();
 	virtual void tick();

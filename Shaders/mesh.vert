@@ -15,7 +15,7 @@ layout (location = 3) in vec2 v_UV;
 out vec3 colour; 
 out vec3 normal;
 out vec3 pos_world;
-out vec3 normal_world; 
+out vec3 normal_world;
 
 // Uniforms
 uniform mat4 model; 

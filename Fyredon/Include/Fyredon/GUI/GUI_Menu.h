@@ -20,7 +20,7 @@ public:
 	enum config { EDIT_VIEW_HELP_ABOUT = 0, DEBUG };
 
 	GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y_pad = 2);
-
+	~GUI_Menu();
 	virtual void tick() override;
 	virtual void resize() override;
 

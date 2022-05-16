@@ -16,6 +16,7 @@ public:
 	} ALL_COMPONENTS;
 	Entity* parent;
 	AddComponentButtonAction(Entity* parent);
+	~AddComponentButtonAction();
 	void tick();
 	void addComponent(int ALL_COMPONENTS);
 private:

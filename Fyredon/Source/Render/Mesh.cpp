@@ -413,7 +413,7 @@ void Fyredon::Mesh::load_texture(const char* filepath, GLuint unit)
 void Fyredon::Mesh::debug() const
 {
 	// Check for correct mesh_data size to vertex count with attributes. (11 * sizeof(float) per vert).
-	assert((vert_data.size() * sizeof(float)) == (vert_count * sizeof(float) * 11));
+	assert((vert_data.size() * sizeof(float)) == (vert_count * sizeof(float) * 12));
 
 	std::cout << "======== DEBUG::Mesh_" << name << "::Vertex_Data::BEGIN ========\n";
 	std::size_t i = 0; 
@@ -423,7 +423,7 @@ void Fyredon::Mesh::debug() const
 			<< "Pos =  [" << vert.pos.x    << ", " << vert.pos.y    << ","  << vert.pos.z    << "]\n"
 			<< "Norm = [" << vert.normal.x << ", " << vert.normal.y << ","  << vert.normal.z << "]\n"
 			<< "Col =  [" << vert.col.x    << ", " << vert.col.y    << ","  << vert.col.z    << "]\n"
-			<< "Tex =  [" << vert.uv.x     << ", " << vert.uv.y     << ", " << vert.uv.z     << "\n";
+			<< "Tex =  [" << vert.uv.x     << ", " << vert.uv.y     << ", " << vert.uv.z     << "]\n";
 		i++;
 	}
 	std::cout << "======== DEBUG::Mesh_" << name << "::Vertex_Data::END ========\n";

@@ -12,11 +12,12 @@ class fbx_entity : public Entity
 public:
 	// 3.
 	// add your own veriable here
-	
+	fbx_mesh* FBXmesh;
 
 	// 4.
 	// rewrite the constructor
-	fbx_entity(std::string name, std::string filePath, float startTime, float endTime, float timeStep);
+	fbx_entity(std::string name, std::string filePath);
+	void init(const char* shader_vert, const char* shader_frag, float startTime = 0.f, float endTime = 0.f, float timeStep = 0.f);
 };
 // 5.
 // don't forget to add this header in ECS.h

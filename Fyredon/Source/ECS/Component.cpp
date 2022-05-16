@@ -13,12 +13,16 @@ Component::Component(std::string componentName)
 	this->memmory_size = sizeof(Component);
 }
 
+Component::~Component()
+{
+	if (componentBackup)free(componentBackup);
+}
+
 void Component::init()
 {
 	if (this->isRunning == false) {
 		// if we want rewrite this method we must contain this backup
-		if(this->componentBackup)
-			free(this->componentBackup);
+		if (this->componentBackup)free(this->componentBackup);
 		this->componentBackup = (Component*)malloc(this->memmory_size);
 		memcpy((void*)this->componentBackup, (void*)this, this->memmory_size);
 		this->isRunning = true;

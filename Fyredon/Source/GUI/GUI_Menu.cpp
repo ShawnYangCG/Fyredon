@@ -25,6 +25,13 @@ Fyredon::GUI_Menu::GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y
 	set_title("Fyredon Engine Version 0.0.0");
 }
 
+Fyredon::GUI_Menu::~GUI_Menu()
+{
+	if (newProject)free(newProject);
+}
+
+
+
 void Fyredon::GUI_Menu::tick()
 {
 	// Draw Paenl GUI
@@ -137,7 +144,7 @@ void Fyredon::GUI_Menu::main_menu()
 					menu_state.play = false;
 					menu_state.pause = false;
 					//======== Reset ========
-
+					menu_state.reset = true;
 					//=======================
 				}
 				ImGui::PopStyleColor();

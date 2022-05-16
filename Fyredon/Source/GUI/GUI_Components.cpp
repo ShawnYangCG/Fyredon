@@ -58,6 +58,7 @@ void Fyredon::GUI_Components::draw()
 			}
 			if (this->selectedEntity != entity) {
 				this->selectedEntity = entity;
+				if (actionButton)free(actionButton);
 				actionButton = new AddComponentButtonAction(entity);
 			}
 			if (this->actionButton) {

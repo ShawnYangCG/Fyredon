@@ -77,6 +77,27 @@ Fyredon::EditorApplication::~EditorApplication()
 {
 	glfwDestroyWindow(window); window = nullptr;
 	glfwTerminate();
+	/*
+	if (gui_org) {
+		gui_org->~GUI_PanelOrgnizer();
+		free(gui_org);
+	}
+	
+	if (this->menuAction) {
+		this->menuAction->~MenuAction();
+		free(this->menuAction);
+	}
+
+	if (this->ECSworld) {
+		this->ECSworld->~World();
+		free(this->ECSworld);
+	}
+
+	if (this->renderSys) {
+		this->renderSys->~EngineRenderSystem();
+		free(this->renderSys);
+	}
+	*/
 }
 
 // Info : Called before application loop is ran, to do inital application setup. 
@@ -113,8 +134,8 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	this->renderSys = new EngineRenderSystem(this->ECSworld, &renderer);
 
 	// set a default camera
-	camera_entity* camEntity = new camera_entity();
-	this->ECSworld->addCamera(camEntity);
+	//camera_entity* camEntity = new camera_entity();
+	//this->ECSworld->addCamera(camEntity);
 }
 
 std::string Fyredon::EditorApplication::create_new_project()

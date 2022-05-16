@@ -12,6 +12,18 @@ Entity::Entity(std::string name)
     this->name = name;
 }
 
+Entity::~Entity()
+{
+    for (Entity* entity : this->childs) {
+        entity->~Entity();
+        if (entity)free(entity);
+    }
+    for (Component* component: this->components) {
+        component->~Component();
+        if (component)free(component);
+    }
+}
+
 void Entity::addComponent()
 {
     std::string newName = "new component " + std::to_string((this->components.size() + 1));

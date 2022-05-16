@@ -35,3 +35,12 @@ void mesh_component::render()
 {
 	this->mesh_render->render();
 }
+
+void mesh_component::changeMesh(Fyredon::Mesh* mesh, bool IsReplace = false)
+{
+	if (IsReplace)
+		free(this->mesh);
+	this->mesh = mesh;
+	if (this->mesh_render)free(this->mesh_render);
+	this->mesh_render = new Fyredon::Mesh(*mesh);
+}

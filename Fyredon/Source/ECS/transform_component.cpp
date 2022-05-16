@@ -18,6 +18,10 @@ void transform_component::GUI_struct()
 void transform_component::reset()
 {
 	Component::reset();
+	std::cout << this->matrixTranslation[0] 
+		<< this->matrixTranslation[1]
+		<< this->matrixTranslation[2] 
+		<< std::endl;
 	this->isChanged = true;
 }
 

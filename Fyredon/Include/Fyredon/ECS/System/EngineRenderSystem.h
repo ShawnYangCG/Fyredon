@@ -17,6 +17,7 @@ public:
 	float* light_strength;
 
 	EngineRenderSystem(World* world, Fyredon::Renderer* renderer);
+	~EngineRenderSystem();
 	void tick();
 	void setCamera(Fyredon::Camera* camera);
 	void setLight(glm::vec3* light_pos, float* light_strength);

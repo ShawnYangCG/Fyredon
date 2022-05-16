@@ -7,9 +7,11 @@
 #include "Fyredon/Render/Mesh_OBJ.h"
 #include "FBXLoader.h"
 
-class fbxObjectData { // 
+class fbxDataInOneFrame { // 
 public:
 	FbxNode* pNode;
+	std::vector<Fyredon::Vert> verts;
+	/*
 	struct mesh_data
 	{
 		std::vector<glm::vec3> v_p;
@@ -18,29 +20,30 @@ public:
 		std::vector<Fyredon::Vert> verts;
 	};
 	mesh_data fbx_obj_data;
-	mesh_data fbx_obj_data_backup;
+	mesh_data fbx_obj_data_backup;*/
 };
 
-class fbx_mesh : public Fyredon::Mesh_OBJ
+class fbx_mesh : public Fyredon::Mesh
 {
 public:
 	fbx_mesh(const char* name, const char* filePath);
 	~fbx_mesh();
-
 	void load_obj(bool has_tex = false);
-	void reFreshMeshWithCurrentTime(double time = 0);
+	std::vector<fbxDataInOneFrame> reFreshMeshWithCurrentTime(double time = 0);
 	void reFreshMeshWithCurrentFrame(double time = 0);
 	void playCurrentFrame(int frameIndex = 0);
-	void refreshTransform(fbxObjectData* fbxMeshData, FbxMatrix transformMatrix);
+	fbxDataInOneFrame refreshTransform(fbxDataInOneFrame* fbxMeshData, FbxMatrix transformMatrix);
 	void loadAnimation(double startTime = 0, double endTime = 1.0, double timeStep = 0.02);
 	void obj_data_backup();
 	void loadFbxMeshToRender();
 	void loadFbxMeshToRender(int FrameIndex);
+private:
+	std::string file_path;
+
 public:
-	std::vector<std::vector<fbxObjectData>> fbx_mesh_all_fream;
-	std::vector<fbxObjectData> fbxMeshData;
+	std::vector<std::vector<fbxDataInOneFrame>> fbx_mesh_all_fream;
+	std::vector<fbxDataInOneFrame> fbxMeshData;
+	//std::vector<fbxDataInOneFrame>* currentFrame;
 	FBXLoader* fbxloader;
-	bool mHasNormal;
-	bool mHasUV;
 };
 

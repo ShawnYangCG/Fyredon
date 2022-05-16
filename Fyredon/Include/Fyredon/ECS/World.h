@@ -3,8 +3,6 @@
 #include "Fyredon/GUI/GUI_PanelOrgnizer.h"
 #include <iostream>
 class Entity;
-class AnimationSystem;
-class NavigationSystem;
 class World
 {
 public:
@@ -13,10 +11,9 @@ public:
 	std::vector<Entity*> cameras;
 	std::map<std::string, int> cameraList;
 	GUI_PanelOrgnizer* gui_org;
-	AnimationSystem* aniSys;
-	NavigationSystem* navSys;
 
 	World(GUI_PanelOrgnizer* gui_org);
+	~World();
 	void addEntity(Entity* entity);
 	void addCamera(Entity* entity);
 	void init();

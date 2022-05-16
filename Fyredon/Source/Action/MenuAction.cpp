@@ -12,6 +12,13 @@ Fyredon::MenuAction::MenuAction(GUI_PanelOrgnizer* panelOrgnizer, World* world)
 	this->menuPanel = (GUI_Menu*)panelOrgnizer->gui_panels["Menu"];
 }
 
+Fyredon::MenuAction::~MenuAction()
+{
+	if(this->world)free(this->world);
+	if (this->panelOrgnizer)free(this->panelOrgnizer);
+	if (this->menuPanel)free(this->menuPanel);
+}
+
 void Fyredon::MenuAction::tick()
 {
 	if (menuPanel->menu_state.IsNew) {
@@ -89,20 +96,17 @@ void Fyredon::MenuAction::createTree1()
 
 void Fyredon::MenuAction::createDoll()
 {
-	/*
-	fbx_entity* fbxObject1 = new fbx_entity("human_walk", "./walking_2.fbx", 0.0, 1.0, 3.0);
-	Mesh* mesh = ((mesh_component*)fbxObject1->getComponentByName("Mesh"))->mesh;
-	mesh->set_shader("../../shaders/mesh.vert", "../../shaders/mesh.frag");
-	mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
-	mesh->translate(glm::vec3(0.f, 0.f, 0.f));
-	mesh->rotate(0.0f, glm::vec3(1.f, 0.f, 0.f));
-	mesh->scale(glm::vec3(1.f, 1.f, 1.f));
-	mesh->mode = Render_Mode::RENDER_MESH;
-	Component* navigation = new test_move_component();
-	fbxObject1->addComponent(navigation);
-	this->world->addEntity(fbxObject1);
+	fbx_entity* fbxObject = new fbx_entity("human_walk", "..//Assets//Mesh//walking_2_1.fbx");
+	//fbx_mesh* mesh = (fbx_mesh*)((mesh_component*)fbxObject->getComponentByName("Mesh"))->mesh;
+	//std::filesystem::path texture = std::filesystem::current_path() / "..\\Assets\\Images\\Terrain\\input_000_random_sample142.png";
+	//mesh->load_texture(texture.string().c_str(), 0);
+	fbxObject->init("..//Shaders//human.vert", "..//Shaders//human.frag", 0.0, 48.0, 3.0);
+	
+	
+	//Component* navigation = new test_move_component();
+	//fbxObject1->addComponent(navigation);
+	this->world->addEntity(fbxObject);
 	//this->aniSys->addFbxEntity(fbxObject1);
-	*/
 }
 
 void Fyredon::MenuAction::createCamera()
