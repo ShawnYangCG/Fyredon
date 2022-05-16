@@ -23,7 +23,7 @@
 	}
 	
 	links{
-		"libfbxsdk.lib"，
+		"libfbxsdk.lib",
 		"Fyredon"
 	}
 
