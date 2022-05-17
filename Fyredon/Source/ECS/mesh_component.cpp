@@ -28,11 +28,12 @@ void mesh_component::GUI_struct()
 void mesh_component::tick()
 {
 	//this->render();
-	this->renderGUI();
+	
 }
 
 void mesh_component::render()
 {
+	this->renderGUI();
 	this->mesh_render->render();
 }
 

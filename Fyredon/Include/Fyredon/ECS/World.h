@@ -25,5 +25,12 @@ public:
 	Entity* getEntityByName(std::string EntityName);
 	Entity* getCameraByIndex(int index);
 	Entity* getCameraByName(std::string CameraName);
+	bool isPlay();
+	bool isStop();
+	bool isReset();
+private:
+	bool is_play = false;
+	bool is_stop = true;
+	bool is_reset = false;
 };
 

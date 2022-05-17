@@ -30,6 +30,7 @@ public:
 	virtual void play() override;
 	virtual void stop() override;
 	virtual void reset() override;
+	void playAnimation();
 	void checkValid();
 	void setPlay();
 private:

@@ -18,6 +18,7 @@ public:
 	AddComponentButtonAction(Entity* parent);
 	~AddComponentButtonAction();
 	void tick();
+	void render();
 	void addComponent(int ALL_COMPONENTS);
 private:
 	int selectedComponent = -1;

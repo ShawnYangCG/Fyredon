@@ -16,6 +16,11 @@ AddComponentButtonAction::~AddComponentButtonAction()
 
 void AddComponentButtonAction::tick()
 {
+	
+}
+
+void AddComponentButtonAction::render()
+{
 	if (ImGui::Button("add component"))
 	{
 		this->isClicked = true;
@@ -38,7 +43,7 @@ void AddComponentButtonAction::tick()
 		ImGui::EndChild();
 		if (ImGui::Button("add"))
 		{
-			if(this->selectedComponent != -1)
+			if (this->selectedComponent != -1)
 				addComponent(this->selectedComponent);
 			this->selectedComponent = -1;
 			this->isClicked = false;

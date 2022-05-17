@@ -106,11 +106,13 @@ Component* Entity::getComponentByName(std::string componentName)
 
 void Entity::render()
 {
+    for (Component* component : components) {
+        component->render();
+    }
 }
 
 void Entity::tick()
 {
-    this->render();
     for (Component* component : components) {
         component->tick();
     }

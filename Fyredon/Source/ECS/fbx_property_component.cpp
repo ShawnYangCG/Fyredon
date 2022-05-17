@@ -54,17 +54,7 @@ void fbx_property_component::GUI_struct()
 
 void fbx_property_component::tick()
 {
-	renderGUI();
-	fbx_entity* FBXentity = (fbx_entity*)this->parent;
-	fbx_mesh* mesh = (fbx_mesh*)((mesh_component*)FBXentity->getComponentByName("Mesh"))->mesh;
-	if (this->isPlay) {
-		this->timer_current = clock();
-		time_t T1 = this->timer_current - this->timer_start;
-		this->currentFrameIndex = 
-			(int)(this->startTime + (T1 - this->pause_time) / this->secondPerFrame * this->speed)
-			% (int)(this->endTime - this->startTime);	
-	}
-	mesh->playCurrentFrame(this->currentFrameIndex);
+	playAnimation();
 }
 
 void fbx_property_component::play()
@@ -97,6 +87,20 @@ void fbx_property_component::reset()
 	this->isPlay = false;
 	this->isReset = true;
 	this->currentFrameIndex = this->startTime;
+}
+
+void fbx_property_component::playAnimation()
+{
+	fbx_entity* FBXentity = (fbx_entity*)this->parent;
+	fbx_mesh* mesh = (fbx_mesh*)((mesh_component*)FBXentity->getComponentByName("Mesh"))->mesh;
+	if (this->isPlay) {
+		this->timer_current = clock();
+		time_t T1 = this->timer_current - this->timer_start;
+		this->currentFrameIndex =
+			(int)(this->startTime + (T1 - this->pause_time) / this->secondPerFrame * this->speed)
+			% (int)(this->endTime - this->startTime);
+	}
+	mesh->playCurrentFrame(this->currentFrameIndex);
 }
 
 void fbx_property_component::checkValid()

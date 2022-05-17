@@ -78,6 +78,9 @@ void World::tick()
 
 void World::play()
 {
+    this->is_play = true;
+    this->is_stop = false;
+    this->is_reset = false;
     for (int i = 0; i < this->cameras.size(); i++) {
         this->cameras[i]->play();
     }
@@ -88,6 +91,9 @@ void World::play()
 
 void World::reset()
 {
+    this->is_play = false;
+    this->is_stop = false;
+    this->is_reset = true;
     for (int i = 0; i < this->cameras.size(); i++) {
         this->cameras[i]->reset();
     }
@@ -98,6 +104,9 @@ void World::reset()
 
 void World::stop()
 {
+    this->is_play = false;
+    this->is_stop = true;
+    this->is_reset = false;
     for (int i = 0; i < this->cameras.size(); i++) {
         this->cameras[i]->stop();
     }
@@ -140,4 +149,19 @@ Entity* World::getCameraByName(std::string CameraName)
         return nullptr;
     }
     return this->cameras[this->cameraList[CameraName]];
+}
+
+bool World::isPlay()
+{
+    return this->is_play;
+}
+
+bool World::isStop()
+{
+    return this->is_stop;
+}
+
+bool World::isReset()
+{
+    return this->is_reset;
 }

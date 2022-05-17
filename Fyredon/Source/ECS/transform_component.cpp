@@ -8,10 +8,14 @@ transform_component::transform_component() {
 
 void transform_component::GUI_struct()
 {
-	this->isChanged = false;
 	ImGui::InputFloat3("Position", this->matrixTranslation);
 	ImGui::InputFloat3("Rotation", this->matrixRotation);
 	ImGui::InputFloat3("Scale", this->matrixScale);
+}
+
+void transform_component::tick()
+{
+	this->isChanged = false;
 	checkChanged();
 }
 

@@ -36,8 +36,8 @@ void Component::reset()
 
 void Component::tick()
 {
-	render();
-	renderGUI();
+	//render();
+	
 }
 
 void Component::play()
@@ -46,6 +46,7 @@ void Component::play()
 
 void Component::render()
 {
+	renderGUI();
 }
 
 void Component::stop() {

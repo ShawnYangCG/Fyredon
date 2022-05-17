@@ -30,10 +30,11 @@
 #include "Fyredon/Render/Texture.h"
 #include "Fyredon/Render/Renderer.h"
 
+/*
 // Script
 #include "Fyredon/Script/LuaVM.h"
 #include <stdio.h>
-#include <direct.h>
+#include <direct.h>*/
 
 // Extern 
 #include "dearimgui/imgui.h"
@@ -142,12 +143,13 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	//camera_entity* camEntity = new camera_entity();
 	//this->ECSworld->addCamera(camEntity);
 
+	/*
 	// Script test (demo, should be removed)
 	Fyredon::LuaVM luaVM;
 	luaVM.LoadScript("script/test.lua");
 	int result = luaVM.Call<int, int, int>("test_func", 3, 2);
 	std::cout << "test_func return: " << result << std::endl;
-	//system("pause");
+	//system("pause");*/
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
@@ -253,7 +255,6 @@ void Fyredon::EditorApplication::tick_engine()
 		camera.calc_basis();
 		// 
 	}
-
 }
 
 void Fyredon::EditorApplication::tick_play()
@@ -265,7 +266,8 @@ void Fyredon::EditorApplication::tick_play()
 		this->ECSworld->play();
 	}
 	else {
-		this->ECSworld->stop();
+		if(!this->ECSworld->isStop())
+			this->ECSworld->stop();
 	}
 
 	if (((GUI_Menu*)gui_org->gui_panels["Menu"])->menu_state.reset) {
@@ -285,6 +287,7 @@ void Fyredon::EditorApplication::tick_editor()
 	paint_begin();
 
 	tick_gui();
+	this->ECSworld->tick();
 
 	paint_end();
 }
