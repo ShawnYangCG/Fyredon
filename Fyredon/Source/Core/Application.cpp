@@ -30,6 +30,11 @@
 #include "Fyredon/Render/Texture.h"
 #include "Fyredon/Render/Renderer.h"
 
+// Script
+#include "Fyredon/Script/LuaVM.h"
+#include <stdio.h>
+#include <direct.h>
+
 // Extern 
 #include "dearimgui/imgui.h"
 #include "dearimgui/imgui_impl_glfw.h"
@@ -136,6 +141,13 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	// set a default camera
 	//camera_entity* camEntity = new camera_entity();
 	//this->ECSworld->addCamera(camEntity);
+
+	// Script test (demo, should be removed)
+	Fyredon::LuaVM luaVM;
+	luaVM.LoadScript("script/test.lua");
+	int result = luaVM.Call<int, int, int>("test_func", 3, 2);
+	std::cout << "test_func return: " << result << std::endl;
+	//system("pause");
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
