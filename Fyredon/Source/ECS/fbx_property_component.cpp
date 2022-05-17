@@ -67,6 +67,38 @@ void fbx_property_component::tick()
 	mesh->playCurrentFrame(this->currentFrameIndex);
 }
 
+void fbx_property_component::play()
+{
+	if(!this->isPlay) {// pause -> play
+		this->isPlay = true;
+		if (!this->isReset) {
+			pause_time_end = clock();
+			this->pause_time += this->pause_time_end - this->pause_time_start;
+		}
+	}
+	if (this->isReset) {
+		pause_time_start = pause_time_end;
+		this->timer_start = clock();
+		this->isReset = false;
+		this->pause_time = 0;
+	}
+}
+
+void fbx_property_component::stop()
+{
+	if (this->isPlay) {//play -> pause
+		this->isPlay = false;
+		pause_time_start = clock();
+	}
+}
+
+void fbx_property_component::reset()
+{
+	this->isPlay = false;
+	this->isReset = true;
+	this->currentFrameIndex = this->startTime;
+}
+
 void fbx_property_component::checkValid()
 {
 	if (this->startTime < 0)

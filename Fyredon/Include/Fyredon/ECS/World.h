@@ -18,6 +18,7 @@ public:
 	void addCamera(Entity* entity);
 	void init();
 	void tick();
+	void play();
 	void reset();
 	void stop();
 	Entity* getEntityByIndex(int index);

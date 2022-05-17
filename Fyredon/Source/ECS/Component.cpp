@@ -40,6 +40,10 @@ void Component::tick()
 	renderGUI();
 }
 
+void Component::play()
+{
+}
+
 void Component::render()
 {
 }

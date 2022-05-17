@@ -250,6 +250,7 @@ void Fyredon::EditorApplication::tick_play()
 		//================== play ==================
 		this->ECSworld->init();
 		//================== play ==================
+		this->ECSworld->play();
 	}
 	else {
 		this->ECSworld->stop();

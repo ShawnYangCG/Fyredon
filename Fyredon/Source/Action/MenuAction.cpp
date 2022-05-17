@@ -47,6 +47,10 @@ void Fyredon::MenuAction::tick()
 		createCamera();
 		menuPanel->menu_state.createCamera = false;
 	}
+	if (menuPanel->menu_state.createNavigationDemo) {
+		createNavigationDemo();
+		menuPanel->menu_state.createNavigationDemo = false;
+	}
 	if (menuPanel->menu_state.view_renderer)
 	{
 		render_settings();
@@ -97,22 +101,66 @@ void Fyredon::MenuAction::createTree1()
 void Fyredon::MenuAction::createDoll()
 {
 	fbx_entity* fbxObject = new fbx_entity("human_walk", "..//Assets//Mesh//walking_2_1.fbx");
-	//fbx_mesh* mesh = (fbx_mesh*)((mesh_component*)fbxObject->getComponentByName("Mesh"))->mesh;
-	//std::filesystem::path texture = std::filesystem::current_path() / "..\\Assets\\Images\\Terrain\\input_000_random_sample142.png";
-	//mesh->load_texture(texture.string().c_str(), 0);
+
 	fbxObject->init("..//Shaders//human.vert", "..//Shaders//human.frag", 0.0, 48.0, 3.0);
 	
-	
-	//Component* navigation = new test_move_component();
-	//fbxObject1->addComponent(navigation);
 	this->world->addEntity(fbxObject);
-	//this->aniSys->addFbxEntity(fbxObject1);
 }
 
 void Fyredon::MenuAction::createCamera()
 {
 	camera_entity* entity = new camera_entity();
 	this->world->addCamera(entity);
+}
+
+void Fyredon::MenuAction::createNavigationDemo()
+{
+	navigation_entity* navigationSystem = new navigation_entity();
+	this->world->addEntity(navigationSystem);
+
+	// add doll
+	fbx_entity* fbxObject = new fbx_entity("human_walk", "..//Assets//Mesh//walking_2_1.fbx");
+	fbxObject->init("..//Shaders//human.vert", "..//Shaders//human.frag", 0.0, 48.0, 3.0);
+	Component* navigation = new test_move_component();
+	fbxObject->addComponent(navigation);
+	this->world->addEntity(fbxObject);
+	navigationSystem->addMoveObject(fbxObject);
+	//this->ECS_world->addEntity(fbxObject1);
+	//this->aniSys->addFbxEntity(fbxObject1);
+	//this->navSys->addEntity(fbxObject1);
+
+	// add target
+	Mesh_OBJ* mesh = new Mesh_OBJ("target", "..//Assets//Mesh//target.obj");
+	mesh->load_obj();
+	mesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	mesh->translate(glm::vec3(0.0f, 0.8f, -0.1f));
+	mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	mesh->scale(glm::vec3(1.f));
+	mesh->mode = Render_Mode::RENDER_MESH;
+
+	Entity* target = new Entity("target");
+	target->addTransformComponent();
+	mesh_component* meshCom1 = new mesh_component(mesh);
+	target->addComponent(meshCom1);
+	this->world->addEntity(target);
+	navigationSystem->setDest(target);
+
+	// add plane
+	Mesh_OBJ* plane5x5 = new Mesh_OBJ("plane5x5", "..//Assets//Mesh//plane5x5.obj");
+	plane5x5->load_obj();
+	plane5x5->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	plane5x5->set_colour(glm::vec3(0.2f, 0.2f, 0.2f));
+	plane5x5->scale(glm::vec3(1.f));
+	plane5x5->mode = Render_Mode::RENDER_MESH;
+
+	Entity* plane = new Entity("plane5x5");
+	plane->addTransformComponent();
+	mesh_component* meshCom2 = new mesh_component(plane5x5);
+	plane->addComponent(meshCom2);
+	navigation_component* navCop = new navigation_component(plane);
+	plane->addComponent(navCop);
+	this->world->addEntity(plane);
+	navigationSystem->setMap(plane);
 }
 
 void Fyredon::MenuAction::render_settings()

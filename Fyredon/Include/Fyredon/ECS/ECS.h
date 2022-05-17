@@ -7,6 +7,7 @@
 #include "Fyredon/ECS/camera_entity.h"
 #include "Fyredon/ECS/terrain_entity.h"
 #include "Fyredon/ECS/fbx_entity.h"
+#include "Fyredon/ECS/navigation_entity.h"
 
 // component
 #include "Fyredon/ECS/Component.h"

@@ -29,6 +29,7 @@ public:
 	virtual void init();
 	virtual void reset();
 	virtual void tick();
+	virtual void play();
 	virtual void render();
 	virtual void stop();
 	void renderGUI();

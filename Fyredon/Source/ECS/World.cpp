@@ -76,6 +76,16 @@ void World::tick()
     }
 }
 
+void World::play()
+{
+    for (int i = 0; i < this->cameras.size(); i++) {
+        this->cameras[i]->play();
+    }
+    for (int i = 0; i < this->entities.size(); i++) {
+        this->entities[i]->play();
+    }
+}
+
 void World::reset()
 {
     for (int i = 0; i < this->cameras.size(); i++) {

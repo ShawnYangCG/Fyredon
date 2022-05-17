@@ -27,6 +27,9 @@ public:
 	// rewrite this function to create your own component GUI
 	virtual void GUI_struct() override;
 	virtual void tick() override;
+	virtual void play() override;
+	virtual void stop() override;
+	virtual void reset() override;
 	void checkValid();
 	void setPlay();
 private:

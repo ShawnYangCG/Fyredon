@@ -116,6 +116,13 @@ void Entity::tick()
     }
 }
 
+void Entity::play()
+{
+    for (Component* component : components) {
+        component->play();
+    }
+}
+
 void Entity::init()
 {
     for (Component* component : components) {

@@ -5,7 +5,6 @@ fbx_entity::fbx_entity(std::string name, std::string filePath)
 {
 	this->setName(name);
 	this-> FBXmesh = new fbx_mesh(name.data(), filePath.data());
-	
 }
 
 void fbx_entity::init(const char* shader_vert, const char* shader_frag, float startTime, float endTime, float timeStep)
