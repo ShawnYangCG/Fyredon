@@ -44,27 +44,27 @@ void Fyredon::GUI_Components::resize()
 void Fyredon::GUI_Components::draw()
 {
 	if (!world->gui_org) return; 
+
 	resize();
 	ImGui::SetNextWindowPos(ImVec2(this->posX, this->posY));
 	ImGui::SetNextWindowSize(ImVec2(this->width, this->height));
 
 	ImGui::Begin(title);
 	{
-		if (this->world->gui_org->gui_panels["Hierarchy"]) {
-			Entity* entity = nullptr;
-			if (((GUI_EntityList*)this->world->gui_org->gui_panels["Hierarchy"])->getSelectedEntity()) {
-				entity = ((GUI_EntityList*)this->world->gui_org->gui_panels["Hierarchy"])->getSelectedEntity();
-			}
-			if (entity) {
-				entity->tick();
-			}
-			if (this->selectedEntity != entity) {
-				this->selectedEntity = entity;
-				actionButton = new AddComponentButtonAction(entity);
-			}
-			if (this->actionButton) {
-				this->actionButton->tick();
-			}
+		Entity* entity = nullptr;
+		if (((GUI_EntityList*)this->world->gui_org->gui_panels["Hierarchy"])->getSelectedEntity()) {
+			entity = ((GUI_EntityList*)this->world->gui_org->gui_panels["Hierarchy"])->getSelectedEntity();
+		}
+		if (entity) {
+			entity->tick();
+			entity->tick_gui();
+		}
+		if (this->selectedEntity != entity) {
+			this->selectedEntity = entity;
+			actionButton = new AddComponentButtonAction(entity);
+		}
+		if (this->actionButton) {
+			this->actionButton->tick();
 		}
 	}
 	ImGui::End();

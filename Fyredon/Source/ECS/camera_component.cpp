@@ -51,6 +51,7 @@ void Fyredon::camera_component::GUI_struct()
 	if (ImGui::SliderFloat3("Position", parms.pos, -1e+06, 1e+06))
 	{
 		camera->position = glm::vec3(parms.pos[0], parms.pos[1], parms.pos[2]);
+		std::cout << "Camera Pos Change \n";
 	}
 	if(ImGui::SliderFloat("FOV", &parms.fov, 1.f, 180.f))
 	{
@@ -75,8 +76,10 @@ void Fyredon::camera_component::tick()
 		camera->aspect_ratio = parms.aspect; 
 	}
 
-	Component::tick();
+	// ISSUE : GUI Tick, no ImGui Window In Context ? 
+	//Component::tick();
 }
+
 
 void Fyredon::camera_component::set_camera_pos(const glm::vec3& pos)
 {

@@ -86,6 +86,13 @@ void Entity::tick()
     }
 }
 
+void Entity::tick_gui()
+{
+    for (Component* component : components) {
+        component->tick_gui();
+    }
+}
+
 void Entity::init()
 {
     for (Component* component : components) {

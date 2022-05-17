@@ -216,6 +216,8 @@ void Fyredon::EditorApplication::tick_editor()
 {
 	paint_begin();
 
+	World::get_world();
+
 	tick_gui();
 
 	paint_end();
@@ -246,6 +248,7 @@ void Fyredon::EditorApplication::tick_gui()
 	for (iter = gui_org->gui_panels.begin(); iter != gui_org->gui_panels.end(); iter++) {
 		if (iter->second) iter->second->tick();
 	}
+
 
 	// GUI's action
 	this->menuAction->tick();

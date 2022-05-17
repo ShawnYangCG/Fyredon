@@ -14,6 +14,8 @@ public:
 
 	virtual void tick();
 
+	virtual void tick_gui();
+
 	virtual void stop();
 
 	void reset();

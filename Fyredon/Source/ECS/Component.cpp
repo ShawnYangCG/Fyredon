@@ -1,6 +1,8 @@
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/ECS/Component.h"
 
+#include "dearimgui/imgui_internal.h"
+
 Component::Component()
 {
 	this->componentName = "default new component";
@@ -32,6 +34,11 @@ void Component::reset()
 }
 
 void Component::tick()
+{
+	//renderGUI();
+}
+
+void Component::tick_gui()
 {
 	renderGUI();
 }

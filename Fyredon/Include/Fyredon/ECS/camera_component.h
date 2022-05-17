@@ -24,6 +24,8 @@ public:
 
 	virtual void tick() override;
 
+	//virtual void tick_gui() override; 
+
 	void set_camera_pos(const glm::vec3& pos);
 
 public:
