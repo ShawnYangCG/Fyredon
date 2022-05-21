@@ -21,11 +21,12 @@ Fyredon::GroundPlane::GroundPlane()
 {
 	size = 1.f, tile = 2.f; 
 	load_obj();
-	set_shader("..//Shaders//ground.vert", "..//Shaders//ground.frag");
+	//set_shader("..//Shaders//ground.vert", "..//Shaders//ground.frag");
 
-	tex = new TextureImage("..//Assets//Images//Misc//grid_RGB.png", "Ground_Tex", 0, true);
-	tex->load();
-	tex->set_params(Texture::filter_type::LINEAR);
+	//tex = new TextureImage("..//Assets//Images//Misc//grid_RGB.png", "Ground_Tex", 0, true);
+
+	//tex->load();
+	//tex->set_params(Texture::filter_type::LINEAR);
 
 	set_colour(glm::vec3(1.f, 0.f, 0.f));
 	mode = Render_Mode::RENDER_MESH;
@@ -33,7 +34,7 @@ Fyredon::GroundPlane::GroundPlane()
 
 Fyredon::GroundPlane::~GroundPlane()
 {
-	if (tex) delete tex; 
+	//if (tex) delete tex; 
 }
 
 void Fyredon::GroundPlane::set_size(float Size)

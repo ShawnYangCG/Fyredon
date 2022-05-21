@@ -21,7 +21,7 @@ public:
 	void set_size(float Size);
 	void set_tile(float Tile);
 
-	TextureImage* tex; 
+	//TextureImage* tex; 
 
 public:
 	float size, tile;
