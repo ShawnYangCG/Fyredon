@@ -55,8 +55,8 @@ Fyredon::Renderer::Renderer()
 	parms.cull_backface = false; 
 
 	// Viewport Parameters
-	bool draw_grid, draw_axis, draw_test_mesh;
-	bool draw_mesh_guides;
+	parms.draw_grid = true, parms.draw_axis = true, parms.draw_test_mesh = true;
+	parms.draw_mesh_guides = true;
 
 	// Internal State
 	sun_light = nullptr; 
@@ -231,7 +231,6 @@ void Fyredon::Renderer::render()
 }
 
 // Info : Basic forward rendering pipeline from some camera, render to framebuffer.
-/*
 void Fyredon::Renderer::render_camera(Camera *cam_ref)
 {
 	flags.frame_complete = 0; 
@@ -239,9 +238,6 @@ void Fyredon::Renderer::render_camera(Camera *cam_ref)
 	// Bind View MS Framebuffer
 	view_framebuffers.render_framebuffer_ms->bind_clear();
 	GL_ERROR();
-
-	// Not remaining bound for some reason ...
-	view_framebuffers.render_framebuffer_ms->bind();
 
 	// ==================== Render Game Meshes ====================
 	if (draw_lists.meshes.size()) {
@@ -277,38 +273,7 @@ void Fyredon::Renderer::render_camera(Camera *cam_ref)
 	glfwSwapBuffers(ogl_wincontext);
 	glfwPollEvents();
 #endif
-} */
-
-
-// TEST ONLY
-void Fyredon::Renderer::render_camera(Camera* cam_ref)
-{
-	flags.frame_complete = 0;
-
-	// Bind View MS Framebuffer
-	view_framebuffers.render_framebuffer_ms->bind_clear();
-	GL_ERROR();
-
-	// Not remaining bound for some reason ...
-	//view_framebuffers.render_framebuffer_ms->bind();
-
-	// ==================== Render Guide Meshes ====================
-	if (draw_lists.guides.size()) {
-		for (Mesh* p : draw_lists.guides)
-		{
-			p->render();
-		}
-	}
-
-	draw_viewer_prims();
-
-	// ==================== Post Render ====================
-	// Blind to S framebuffer
-	view_framebuffers.render_framebuffer_ms->blit_to_framebuffer_s(view_framebuffers.render_framebuffer_s);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	flags.frame_complete = 1;
-}
+} 
 
 // Info : Return Renderer primary colour attachement (resolved from multisampled-->standard texture)
 Fyredon::Texture* Fyredon::Renderer::get_colour_attachment()
@@ -326,8 +291,6 @@ void Fyredon::Renderer::rebuild_material_shaders()
 	if (viewer_prims.ground)    viewer_prims.ground->material->build_mesh_shader();
 	if (viewer_prims.axis)      viewer_prims.axis->material->build_mesh_shader();
 	if (viewer_prims.test_mesh) viewer_prims.test_mesh->material->build_mesh_shader();
-	
-
 }
 
 // =========================================== DEBUG CODE ===========================================
@@ -345,7 +308,7 @@ void Fyredon::Renderer::create_test_mesh()
 	viewer_prims.test_mesh = new Mesh_OBJ("Test_Mesh", "..//Assets//Mesh//pighead.obj");
 	viewer_prims.test_mesh->load_obj();
 	viewer_prims.test_mesh->scale(glm::vec3(2.f));
-	viewer_prims.test_mesh->translate(glm::vec3(0.f, 0.2f, 2.f));
+	viewer_prims.test_mesh->translate(glm::vec3(0.f, 0.2f, 0.f));
 }
 
 // Info : Contain these test render prims here for now.

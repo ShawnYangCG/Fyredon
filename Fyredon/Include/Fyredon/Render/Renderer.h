@@ -194,6 +194,8 @@ private:
 	// =========== Ext References ============
 	static Camera* active_cam;
 	GLFWwindow* ogl_wincontext; 
+
+	friend class GUI_RendererSettings; 
 };
 
 }

@@ -33,6 +33,8 @@ void Fyredon::GUI_RendererSettings::draw()
 	// Temporary GUI state
 	static float sun_dir[3] = {renderer.parms.sun_direction.x, renderer.parms.sun_direction.y, renderer.parms.sun_direction.z};
 	static float sun_col[3] = {renderer.parms.sun_colour.x,    renderer.parms.sun_colour.y,    renderer.parms.sun_colour.z   };
+	static float grid_scale = 1.f; 
+	static float grid_tile = 2.f; 
 
 	// ======= ImGui Renderer Draw =======
 	ImGui::Begin("Renderer Settings");
@@ -44,6 +46,12 @@ void Fyredon::GUI_RendererSettings::draw()
 	ImGui::PopStyleColor();
 
 	if (ImGui::Button("Draw Grid")) renderer.parms.draw_grid = !renderer.parms.draw_grid;
+
+	if (ImGui::SliderFloat("Grid_Size", &grid_scale, 1.f, 10.f))
+	{
+		renderer.viewer_prims.ground->set_size(grid_scale);
+		renderer.viewer_prims.ground->set_tile(grid_scale / 1.f);
+	}
 
 	if (ImGui::Button("Draw Axis")) renderer.parms.draw_axis = !renderer.parms.draw_axis; 
 
@@ -61,7 +69,7 @@ void Fyredon::GUI_RendererSettings::draw()
 	}
 		
 	if (ImGui::SliderFloat("Sun Strength", &renderer.parms.sun_strength, 0.f, 10.f)) {
-		renderer.rebuild_material_shaders();
+		// No need to rebuild for str
 	}
 
 	if (ImGui::SliderFloat3("Sun_Colour", sun_col, 0.f, 1.f)) {
@@ -88,11 +96,8 @@ void Fyredon::GUI_RendererSettings::draw()
 	ImGui::PopStyleColor();
 
 	if (ImGui::Checkbox("Cull Backface", &renderer.parms.cull_backface)) {
-
-		std::cout << "Enable Cullbf ? " << renderer.parms.cull_backface << "\n";
-
-	
-	} /*renderer.parms.cull_backface = !renderer.parms.cull_backface;*/
+		/*renderer.parms.cull_backface = !renderer.parms.cull_backface;*/
+	} 
 
 	// Renderer - PostProcess Settings
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));

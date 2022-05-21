@@ -8,7 +8,7 @@
 // Project Headers
 #include "Fyredon/Render/Mesh_OBJ.h"
 
-#include "Fyredon/Render/Texture.h"
+#include <vector>
 
 namespace Fyredon
 {
@@ -21,7 +21,7 @@ public:
 	void set_size(float Size);
 	void set_tile(float Tile);
 
-	//TextureImage* tex; 
+	std::vector<Vert> org; 
 
 public:
 	float size, tile;
