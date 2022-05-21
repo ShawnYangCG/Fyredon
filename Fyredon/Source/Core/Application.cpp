@@ -44,7 +44,7 @@
 #define EDITOR_WINDOW_RESIZE
 #define MSAA_SAMPLES 12 // Just testing, lower for release ! 
 
-#define GL_DETAILED_DEBUGGING 
+//#define GL_DETAILED_DEBUGGING 
 #define GL_DETAILED_ERROR_CHECK
 
 //#define EDITOR_FULLSCREEN 
@@ -69,6 +69,7 @@ Fyredon::EditorApplication::EditorApplication()
 	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, RENDER_RES_X / RENDER_RES_Y, true);
 
 	gui_org = new GUI_PanelOrgnizer();
+
 }
 
 // Static Members
@@ -337,6 +338,11 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	int yheight  = guiConfig.leftBar_height > guiConfig.rightBar_height ? guiConfig.leftBar_height : guiConfig.rightBar_height;
 	int newHeight = yheight - guiConfig.yOffset;
 	glViewport(0, 0, newWidth, newHeight);
+
+	// Check for GLFW Errors
+	const char* error;
+	glfwGetError(&error);
+	if (error != GLFW_NO_ERROR) std::cerr << "GLFW::ERROR " << error << "\n";
 }
 
 // Info : Setup OpenGL function loading via GLEW 
@@ -348,6 +354,10 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 		std::cerr << "Error::Viewer:: GLEW failed to initalize.\n";
 		throw std::runtime_error("GLEW Fail"); // Need to talk about exceptions use...
 	}
+
+	// ============= Setup Debug Messages =============
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(message_callback, 0);
 
 	// ============= Render Device =============
 	// Query GL Device and Version Info - 
@@ -363,10 +373,6 @@ void Fyredon::EditorApplication::setup_ogl_loading()
 	FD_DEBUG_BLOCK_MSG("DEVICE VERSION", "s", render_device.version);
 	FD_DEBUG_BLOCK_MSG("DEVICE SL VERSION", "s", render_device.sl_version);
 	FD_DEBUG_BLOCK_END();
-
-	// ============= Setup Debug Messages =============
-	glEnable(GL_DEBUG_OUTPUT);
-	glDebugMessageCallback(message_callback, 0);
 }
 
 GLFWwindow* Fyredon::EditorApplication::get_ogl_context()
@@ -491,7 +497,7 @@ void Fyredon::message_callback(GLenum source, GLenum type, GLuint id, GLenum sev
 	}
 #endif
 #ifdef GL_DETAILED_DEBUGGING
-	if (type == GL_DEBUG_TYPE_ERROR)
+	if (type != GL_DEBUG_TYPE_ERROR)
 	{
 		std::cerr << "GL_INFO:: " << "type: " << type << " severity: " << severity << " message: " << msg << std::endl;
 	}

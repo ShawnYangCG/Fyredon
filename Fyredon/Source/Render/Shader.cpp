@@ -30,6 +30,7 @@ Fyredon::Shader::Shader(const char *sname, const char *vertpath, const char *fra
 	valid_state = false;
 	flags.loaded = false, flags.built = false; 
 	vert_path = vertpath, frag_path = fragpath; 
+	vert_shader = 0, frag_shader = 0;
 } 
 
 // ToDo : Look into this seg fault ...

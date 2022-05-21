@@ -56,7 +56,7 @@ void Fyredon::GUI_Components::draw()
 			entity = ((GUI_EntityList*)this->world->gui_org->gui_panels["Hierarchy"])->getSelectedEntity();
 		}
 		if (entity) {
-			entity->tick();
+			entity->tick(); // Why tick the entity here ? should have already been ticked by the engine itself for this frame ? 
 			entity->tick_gui();
 		}
 		if (this->selectedEntity != entity) {
