@@ -12,6 +12,7 @@ layout (location = 3) in vec3 v_UV;
 
 // ======= Output ======= 
 out vec3 colour; 
+out vec3 pos_proj; 
 out vec3 pos_world;
 out vec3 normal_world; 
 out vec3 uvw;
@@ -33,6 +34,8 @@ void main()
 	normal_world = model_normal * v_N; 
 
 	// Pos output
-	gl_Position = proj * view * model * vec4(v_P, 1.0); 
+	vec4 out_pos = proj * view * model * vec4(v_P, 1.0); 
+	pos_proj =  out_pos.xyz; 
+	gl_Position = out_pos; 
 }
 

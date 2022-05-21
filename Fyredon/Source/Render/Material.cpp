@@ -47,13 +47,13 @@ void Fyredon::Material::build_mesh_shader()
 	// Set fragment shader preproc defines based on material params state
 	std::vector<const char*> frag_preproc; 
 
-	if (parms.use_diff_map) frag_preproc.push_back("#define BRANCH_DIFF_MAP");
-	if (parms.use_spec_map) frag_preproc.push_back("#define BRANCH_SPEC_MAP");
-	if (parms.use_vert_col) frag_preproc.push_back("#define BRANCH_DIFF_VERTCOLOUR");
+	if (parms.use_diff_map) frag_preproc.push_back("#define BRANCH_DIFF_MAP\n");
+	if (parms.use_spec_map) frag_preproc.push_back("#define BRANCH_SPEC_MAP\n");
+	if (parms.use_vert_col) frag_preproc.push_back("#define BRANCH_DIFF_VERTCOLOUR\n");
 
 	// Also check if lighting, shadows enabled in renderer class
 	Renderer& renderer = Renderer::get_renderer();
-	if (renderer.parms.enable_sun) frag_preproc.push_back("#define BRANCH_LIGHT_SUN");
+	if (renderer.parms.enable_sun) frag_preproc.push_back("#define BRANCH_LIGHT_SUN\n");
 
 	// Rebuild shader with new fragment preproc defines. 
 	parent_mesh.shader.build(frag_preproc);
@@ -65,8 +65,11 @@ void Fyredon::Material::set_tex_diffuse(const char* filepath)
 
 	std::string nm = parent_mesh.name + " Diffuse_Texture"; 
 	tex_diffuse = new TextureImage(filepath, nm.c_str(), 0, true);
+	tex_diffuse->filter = Texture::filter_type::LINEAR;
 	tex_diffuse->load();
 	parent_mesh.shader.set_int("textures.tex_diffuse", 0);
+
+	parms.use_diff_map = true; 
 }
 
 void Fyredon::Material::set_tex_specular(const char* filepath)
@@ -74,9 +77,12 @@ void Fyredon::Material::set_tex_specular(const char* filepath)
 	if (tex_specular) delete tex_specular;
 
 	std::string nm = parent_mesh.name + " Specular_Texture";
-	tex_specular = new TextureImage(filepath, nm.c_str(), 0, true);
+	tex_specular = new TextureImage(filepath, nm.c_str(), 1, true);
+	tex_specular->filter = Texture::filter_type::LINEAR;
 	tex_specular->load();
 	parent_mesh.shader.set_int("textures.tex_specular", 1);
+
+	parms.use_spec_map = true;
 }
 
 // Info : To be called by parent Mesh::set_shader_uniforms()

@@ -16,7 +16,7 @@ class GroundPlane : public Mesh_OBJ
 {
 public:
 	GroundPlane();
-	~GroundPlane();
+	~GroundPlane() = default;
 
 	void set_size(float Size);
 	void set_tile(float Tile);

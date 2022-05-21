@@ -33,6 +33,7 @@ void Component::reset()
 	if (componentBackup != nullptr) *this = *componentBackup;
 }
 
+// Should be pure virtual...
 void Component::tick()
 {
 	//renderGUI();

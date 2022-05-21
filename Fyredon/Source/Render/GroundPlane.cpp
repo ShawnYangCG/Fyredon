@@ -8,6 +8,7 @@
 // Implements
 #include "Fyredon/Render/GroundPlane.h"
 #include "Fyredon/Render/Texture.h"
+#include "Fyredon/Render/Material.h"
 
 // Extern
 #include "glm/common.hpp"
@@ -21,20 +22,12 @@ Fyredon::GroundPlane::GroundPlane()
 {
 	size = 1.f, tile = 2.f; 
 	load_obj();
-	//set_shader("..//Shaders//ground.vert", "..//Shaders//ground.frag");
 
-	//tex = new TextureImage("..//Assets//Images//Misc//grid_RGB.png", "Ground_Tex", 0, true);
+	// Override Default Mesh Uber Shader
+	set_shader("..//Shaders//mesh_vert_common.glsl", "..//Shaders//ground_fragment.glsl");
 
-	//tex->load();
-	//tex->set_params(Texture::filter_type::LINEAR);
-
-	set_colour(glm::vec3(1.f, 0.f, 0.f));
-	mode = Render_Mode::RENDER_MESH;
-}
-
-Fyredon::GroundPlane::~GroundPlane()
-{
-	//if (tex) delete tex; 
+	material->set_tex_diffuse("..//Assets//Images//Misc//grid_RGB.png");
+	material->build_mesh_shader();
 }
 
 void Fyredon::GroundPlane::set_size(float Size)

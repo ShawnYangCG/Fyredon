@@ -9,6 +9,7 @@
 // ======= Input ======= 
 in vec3 colour;
 in vec3 uvw;
+in vec3 pos_proj; 
 in vec3 pos_world;
 in vec3 normal_world; 
 
@@ -49,7 +50,7 @@ void main()
 
 	// Diffuse Colour 
 	#ifdef BRANCH_DIFF_MAP
-	diff_col = vec3(texture(textures.m_tex_diffuse, vec2(uvw.x, uvw.y))); 
+	diff_col = vec3(texture(m_tex_diffuse, vec2(uvw.x, uvw.y))); 
 	#endif
 	#ifdef BRANCH_DIFF_VERTCOLOUR
 	diff_col = colour;
@@ -57,7 +58,7 @@ void main()
 	
 	// Specular Map
 	#ifdef BRANCH_SPEC_MAP
-	spec_col = spec_col * (texture(textures.m_tex_specular, vec2(uvw.x, uvw.y))).x; 
+	spec_col = spec_col * (texture(m_tex_specular, vec2(uvw.x, uvw.y))).x; 
 	#endif
 	
 	// Blinn_Phong BRDF (Sun only) (WS calculations)	
