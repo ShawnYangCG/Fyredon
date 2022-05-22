@@ -45,17 +45,18 @@ void Fyredon::GUI_RendererSettings::draw()
 	ImGui::Text("Viewer Settings");
 	ImGui::PopStyleColor();
 
-	if (ImGui::Button("Draw Grid")) renderer.parms.draw_grid = !renderer.parms.draw_grid;
-
 	if (ImGui::SliderFloat("Grid_Size", &grid_scale, 1.f, 10.f))
 	{
 		renderer.viewer_prims.ground->set_size(grid_scale);
 		renderer.viewer_prims.ground->set_tile(grid_scale / 1.f);
 	}
+	ImGui::Checkbox("Draw Grid", &renderer.parms.draw_grid);
 
-	if (ImGui::Button("Draw Axis")) renderer.parms.draw_axis = !renderer.parms.draw_axis; 
+	ImGui::Checkbox("Draw Axis", &renderer.parms.draw_axis);
 
-	if (ImGui::Button("Draw Test Mesh")) renderer.parms.draw_test_mesh = !renderer.parms.draw_test_mesh;
+	ImGui::Checkbox("Draw Test Mesh", &renderer.parms.draw_test_mesh);
+
+	ImGui::Checkbox("Draw Guide Meshes", &renderer.parms.draw_mesh_guides);
 		
 	// =========== Renderer - Light Settings ===========
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -84,8 +85,7 @@ void Fyredon::GUI_RendererSettings::draw()
 		renderer.parms.sun_direction.z = sun_dir[2];
 	}
 
-	if (ImGui::Button("Sun Shadows")) {
-		renderer.parms.sun_shadows = !renderer.parms.sun_shadows;
+	if (ImGui::Checkbox("Sun Shadows", &renderer.parms.sun_shadows)) {
 		renderer.rebuild_material_shaders();
 	}
 		

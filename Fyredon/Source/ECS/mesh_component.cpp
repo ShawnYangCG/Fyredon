@@ -20,7 +20,7 @@ mesh_component::mesh_component(Entity* parent)
 	componentName = std::string("Mesh_") + std::to_string(world.counts.mesh_count++);
 
 	// Default Mesh OBJ 
-	mesh = new Fyredon::Mesh_OBJ(componentName.c_str(), "..//Assets//Mesh//shaderball.obj");
+	mesh = new Fyredon::Mesh_OBJ(componentName.c_str(), "..//Assets//Mesh//shaderballhr.obj");
 	mesh->load_obj();
 	mesh->scale(glm::vec3(2.f));
 	mesh->translate(glm::vec3(0.1f, 0.f, 0.1f));
@@ -149,7 +149,7 @@ void mesh_component::GUI_struct()
 	if (ImGui::SliderFloat3("Ambient_Col", col_amb, 0.f, 1.f)) {
 		mesh->material->parms.colour_ambient = glm::vec3(col_amb[0], col_amb[1], col_amb[2]);
 	}
-	ImGui::SliderFloat("Ambient_Strength", &mesh->material->parms.coeff_ambient, 0.f, 5.f);
+	ImGui::SliderFloat("Ambient_Strength", &mesh->material->parms.coeff_ambient, 0.f, 10.f);
 	// ======== Diffuse Term
 	ImGui::Separator();
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(200, 200, 200, 255));
@@ -161,7 +161,7 @@ void mesh_component::GUI_struct()
 	if (ImGui::Checkbox("Use Vert Colour", &mesh->material->parms.use_vert_col)) {
 		mesh->material->build_mesh_shader();
 	}
-	ImGui::SliderFloat("Diffuse_Strength", &mesh->material->parms.coeff_diffuse, 0.f, 5.f);
+	ImGui::SliderFloat("Diffuse_Strength", &mesh->material->parms.coeff_diffuse, 0.f, 10.f);
 	// ======== Specular Term
 	ImGui::Separator();
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(200, 200, 200, 255));

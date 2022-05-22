@@ -254,9 +254,8 @@ void Fyredon::Renderer::render_camera(Camera *cam_ref)
 	GL_ERROR(); 
 
 	// ==================== Render Guide Meshes ====================
-	if (draw_lists.guides.size()) {
-		for (Mesh* p : draw_lists.guides)
-		{
+	if (draw_lists.guides.size() && parms.draw_mesh_guides) {
+		for (Mesh* p : draw_lists.guides) {
 			p->render();
 		}
 	}
