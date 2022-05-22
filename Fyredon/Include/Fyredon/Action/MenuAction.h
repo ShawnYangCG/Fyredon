@@ -14,11 +14,19 @@ namespace Fyredon
 		World* world;
 		GUI_Menu* menuPanel;
 		MenuAction(GUI_PanelOrgnizer* panelOrgnizer, World* world);
+
 		void tick();
+
 		void createTerrainEntity();
+
 		void createPigHead();
+
 		void createDoll();
+
 		void createCamera();
+
+		void createShaderballEntity();
+
 		void render_settings();
 	};
 }

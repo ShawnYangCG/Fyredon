@@ -30,10 +30,6 @@ void Fyredon::MenuAction::tick()
 		createTerrainEntity();
 		menuPanel->menu_state.createTerrain = false;
 	}
-	if (menuPanel->menu_state.pigHead) {
-		createPigHead();
-		menuPanel->menu_state.pigHead = false;
-	}
 	if (menuPanel->menu_state.createDoll) {
 		createDoll();
 		menuPanel->menu_state.createDoll = false;
@@ -42,11 +38,14 @@ void Fyredon::MenuAction::tick()
 		createCamera();
 		menuPanel->menu_state.createCamera = false;
 	}
-
 	if (menuPanel->menu_state.view_renderer)
 	{
 		render_settings();
 		menuPanel->menu_state.view_renderer = false; 
+	}
+	if (menuPanel->menu_state.createShaderball) {
+		createShaderballEntity();
+		menuPanel->menu_state.createShaderball = false;
 	}
 }
 
@@ -62,9 +61,14 @@ void Fyredon::MenuAction::createTerrainEntity()
 	World::get_world().create_terrain_entity();
 }
 
+void Fyredon::MenuAction::createShaderballEntity()
+{
+	World::get_world().create_shaderball_entity();
+}
+
 void Fyredon::MenuAction::createPigHead()
 {
-	// Rewrite to create doll using Entity and Components only...
+	// Rewrite to create pig using Entity and Components only...
 	/*
 	Mesh_OBJ* mesh = new Mesh_OBJ("test_pig", "..//Assets//Mesh//pighead.obj");
 	mesh->load_obj();

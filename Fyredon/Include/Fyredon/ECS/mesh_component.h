@@ -1,6 +1,6 @@
 // Copyright Fyredon. All Rights Reserved.
 /*=============================================================================
-	Mesh_Component.h: ECS Mesh Component : Niall, Shawn
+	Mesh_Component.h: ECS Mesh Component : Niall
 =============================================================================*/
 #pragma once
 

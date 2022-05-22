@@ -9,6 +9,7 @@
 // Entites
 #include "Fyredon/ECS/terrain_entity.h"
 #include "Fyredon/ECS/camera_entity.h"
+#include "Fyredon/ECS/shaderball_entity.h"
 
 // ================= Singleton Instance =================
 World::World() : gui_org(nullptr) 
@@ -55,14 +56,18 @@ void World::create_terrain_entity()
 {
     Fyredon::terrain_entity* entity = new Fyredon::terrain_entity;
     this->addEntity(entity);
-    counts.terrain_entity_count++;
+}
+
+void World::create_shaderball_entity()
+{
+    Fyredon::shaderball_entity* entity = new Fyredon::shaderball_entity();
+    this->addEntity(entity);
 }
 
 void World::create_camera_entity()
 {
     Fyredon::camera_entity* entity = new Fyredon::camera_entity();
     this->addEntity(entity);
-    counts.camera_entity_count++;
 }
 
 // Info : overload checks for named camera (Scene or Game) to override pos and reference explicitlly within world. 
@@ -96,7 +101,6 @@ void World::create_camera_entity(const std::string& name)
     this->addEntity(entity);
     // Probs should use camera_array oppose to just general entities, but we also store in cam ptrs. 
     cameraList[name] = entityList.size() - 1; 
-    counts.camera_entity_count++;
 }
 
 void World::create_doll_entity()

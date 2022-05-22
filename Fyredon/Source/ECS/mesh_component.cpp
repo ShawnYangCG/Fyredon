@@ -1,6 +1,6 @@
 // Copyright Fyredon. All Rights Reserved.
 /*=============================================================================
-	Mesh_Component.cpp: ECS Mesh Component : Niall, Shawn
+	Mesh_Component.cpp: ECS Mesh Component : Niall
 =============================================================================*/
 #include "Fyredon/Other/pch.h"
 // Implements

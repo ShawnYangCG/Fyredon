@@ -21,8 +21,9 @@ Fyredon::GUI_Menu::GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y
 	menu_state.play = 0, menu_state.pause = 0, menu_state.reset = 0;
 	menu_state.about = 0,
 	menu_state.createTerrain = 0, menu_state.pigHead = 0, menu_state.createDoll = 0, menu_state.createCamera = 0;
+	menu_state.createShaderball = 0; 
 	newProject = new GUI_NewProjectWindow(this->gui_config->AppWidth, this->gui_config->AppHeight);
-	set_title("Fyredon Engine Version 0.0.0");
+	set_title("Fyredon Engine Version 0.0.1");
 }
 
 void Fyredon::GUI_Menu::tick()
@@ -82,15 +83,10 @@ void Fyredon::GUI_Menu::main_menu()
 				}
 				if (ImGui::BeginMenu("GameObject"))
 				{
+					if (ImGui::MenuItem("Shaderball")) { menu_state.createShaderball = true; }
 					if (ImGui::MenuItem("Terrain")) { menu_state.createTerrain = true; }
-					if (ImGui::BeginMenu("3D Object"))
-					{
-						if (ImGui::MenuItem("Pig Head")) { menu_state.pigHead = true; }
-						ImGui::EndMenu();
-					}
-					if (ImGui::MenuItem("Doll")) { menu_state.createDoll = true; }
 					if (ImGui::MenuItem("Camera")) { menu_state.createCamera = true; }
-					if (ImGui::MenuItem("PlaceHolder 2")) {}
+					if (ImGui::MenuItem("Doll")) { menu_state.createDoll = true; }
 					ImGui::EndMenu(); // End Edit Menu
 				}
 				if (ImGui::BeginMenu("View"))

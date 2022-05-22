@@ -45,12 +45,12 @@ private:
 public:
 	struct
 	{
-		int8_t IsNew, open, save, saveAs : 1;		// File menu
-		int8_t play, pause, reset : 1;				// Play menu
-		int8_t about : 1;							// About menu
-		int8_t savestate, loadstate : 1;			// Save/Load state
-		int8_t createTerrain, pigHead, createDoll, createCamera : 1;	  // GameObject menu
-		int8_t view_renderer : 1; 
+		uint8_t IsNew, open, save, saveAs : 1;		// File menu
+		uint8_t play, pause, reset : 1;				// Play menu
+		uint8_t about : 1;							// About menu
+		uint8_t savestate, loadstate : 1;			// Save/Load state
+		uint8_t createTerrain, pigHead, createDoll, createCamera, createShaderball : 1;	  // GameObject menu
+		uint8_t view_renderer : 1; 
 	} menu_state;
 	void new_project();
 };
