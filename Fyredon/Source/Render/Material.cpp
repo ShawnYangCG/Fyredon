@@ -22,13 +22,13 @@ Fyredon::Material::Material(Mesh& ParentMesh)
 {
 	parms.use_diff_map = false, parms.use_spec_map = false, parms.use_vert_col = false; 
 
-	parms.coeff_ambient  = 1.f;
+	parms.coeff_ambient  = 0.01f;
 	parms.coeff_diffuse  = 1.f;
 	parms.coeff_specular = 1.f; 
 	parms.exp_gloss      = 4.f; 
 
-	parms.colour_ambient = glm::vec3(0.05f);
-	parms.colour_diffuse = glm::vec3(0.3f, 0.5f, 0.2f);
+	parms.colour_ambient = glm::vec3(0.1f);
+	parms.colour_diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
 	parms.colour_specular = glm::vec3(1.f); 
 
 	parms_changed = false; 
@@ -41,7 +41,8 @@ Fyredon::Material::~Material()
 	if (tex_specular) delete tex_specular; 
 }
 
-// Info : Host side branching to avoid GPU side fragment branching (and thus execution divergence)
+// Info : Re/Build Mesh Shader based on material code path. 
+// Info : Host side branching to avoid GPU side fragment branching (and thus execution divergence).
 void Fyredon::Material::build_mesh_shader()
 {
 	// Set fragment shader preproc defines based on material params state

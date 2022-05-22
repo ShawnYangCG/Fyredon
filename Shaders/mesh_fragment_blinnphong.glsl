@@ -74,10 +74,10 @@ void main()
 	float bpspec = pow(max(dot(normal_world, half_v), 0.0), m_exp_gloss);
 		
 	// Shading Terms
-	vec3 ambient  = amb_col;
+	vec3 ambient  = amb_col * m_coeff_ambient;
 	vec3 diffuse  = lambertian * diff_col * sun_strength * s_colour * m_coeff_diffuse; 
 	//vec3 specular = bpspec * spec_col * s_colour * s_strength * m_coeff_specular;  
-	vec3 specular = bpspec * spec_col *  sun_strength * m_coeff_specular;  
+	vec3 specular = bpspec * spec_col * sun_strength * m_coeff_specular;  
 
 	// Linear output
 	vec3 out_c = ambient + diffuse + specular; 
