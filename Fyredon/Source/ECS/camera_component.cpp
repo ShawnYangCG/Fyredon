@@ -59,7 +59,7 @@ void Fyredon::camera_component::GUI_struct()
 	}
 }
 
-// Info : Update Camera State per tick
+// Info : Update Camera State per tick (No GUI Tick here, this is done via Component::tick_gui() in editortick)
 void Fyredon::camera_component::tick() 
 {
 	// Get engine singletons
@@ -75,9 +75,6 @@ void Fyredon::camera_component::tick()
 		parms.aspect = float(renderer.width) / renderer.height; 
 		camera->aspect_ratio = parms.aspect; 
 	}
-
-	// ISSUE : GUI Tick, no ImGui Window In Context ? 
-	//Component::tick();
 }
 
 

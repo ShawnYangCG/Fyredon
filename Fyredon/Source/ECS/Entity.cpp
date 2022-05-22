@@ -1,6 +1,7 @@
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/ECS/Entity.h"
 #include "Fyredon/ECS/transform_component.h"
+#include "Fyredon/ECS/mesh_component.h"
 
 Entity::Entity()
 {
@@ -123,6 +124,18 @@ void Entity::addTransformComponent()
         this->components.push_back(Tcomponent);
     }
     else {
-        std::cout << "Error: Entity [" << this->name << "] already contain component [Transform]" << std::endl;
+        std::cerr << "Error: Entity [" << this->name << "] already contain component [Transform]" << std::endl;
+    }
+}
+
+void Entity::addMeshComponent()
+{
+    Component* Mcomponent = new mesh_component(this);
+    if (this->componentList.count(Mcomponent->componentName) == 0) {
+        this->componentList[Mcomponent->componentName] = this->components.size();
+        this->components.push_back(Mcomponent);
+    }
+    else {
+        std::cerr << "Error: Entity [" << this->name << "] already contain component [Mesh]" << std::endl;
     }
 }

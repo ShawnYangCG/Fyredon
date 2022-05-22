@@ -14,6 +14,7 @@ public:
 		NavigationComponent,
 		ScriptComponent
 	} ALL_COMPONENTS;
+
 	Entity* parent;
 	AddComponentButtonAction(Entity* parent);
 	void tick();

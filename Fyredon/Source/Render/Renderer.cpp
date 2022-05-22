@@ -145,7 +145,7 @@ std::size_t Fyredon::Renderer::submit_mesh(Mesh* mesh, const std::function<void(
 	draw_lists.meshes.push_back(mesh);
 	// Store Render command
 	commands[mesh->name] = command; 
-	return draw_lists.meshes.size() - 1;
+	return (draw_lists.meshes.size() - 1);
 }
 
 std::size_t Fyredon::Renderer::submit_mesh(Mesh* mesh)
@@ -153,7 +153,7 @@ std::size_t Fyredon::Renderer::submit_mesh(Mesh* mesh)
 	draw_lists.meshes.push_back(mesh);
 	// No Render command passes, use empty lambda. 
 	commands[mesh->name] = [&]() {return;};
-	return draw_lists.meshes.size() - 1; 
+	return (draw_lists.meshes.size() - 1); 
 }
 
 // Info : For guide meshes (like camera frustum) created externally by ECS system
@@ -162,13 +162,13 @@ std::size_t Fyredon::Renderer::submit_mesh_guide(Mesh* mesh_guide)
 	draw_lists.guides.push_back(mesh_guide);
 	// No Render command passes, use empty lambda. 
 	commands[mesh_guide->name] = [&]() {return;};
-	return draw_lists.guides.size() - 1; 
+	return (draw_lists.guides.size() - 1); 
 }
 
 std::size_t Fyredon::Renderer::submit_point_light(Light_Point* light)
 {
 	point_lights.push_back(light);
-	return point_lights.size() - 1; 
+	return (point_lights.size() - 1); 
 }
 
 void Fyredon::Renderer::delete_mesh(std::size_t idx)

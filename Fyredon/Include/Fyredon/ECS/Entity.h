@@ -51,6 +51,7 @@ public:
 	// if you want to add some commonly used component you can call the functions bellow
 	// or you can add your own component when you inherit the entity class
 	void addTransformComponent();
+	void addMeshComponent();
 
 	std::vector<Entity*> childs;
 private:
