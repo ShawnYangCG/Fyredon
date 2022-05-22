@@ -7,6 +7,7 @@
 #include "Fyredon/ECS/mesh_component.h"
 
 #include "Fyredon/ECS/World.h"
+#include "Fyredon/Render/Material.h"
 
 mesh_component::mesh_component(Entity* parent)
 {
@@ -57,12 +58,18 @@ void mesh_component::mesh_changed()
 
 void mesh_component::GUI_struct()
 {
+	// Temp buffs (def paths)
 	static char file_buf[512]{ "..//Assets//Mesh//pighead.obj" };
-	static char diff_buf[512]{ "..//" };
-	static char spec_buf[512]{ "..//" };
+	static char diff_buf[512]{ "..//Assets//Images//Textures//uv_map.png" };
+	static char spec_buf[512]{ "..//Assets//Images//Textures//{empty}" };
 	
+	// ================ Mesh Properties ================
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
+	ImGui::Text("Mesh Properties");
+	ImGui::PopStyleColor();
 	std::string vertex = "Vertex: " + std::to_string(this->mesh->vert_count);
-	std::string face   = "Face: " + std::to_string(this->mesh->index_count / 3);
+	std::string face   = "Face: "   + std::to_string(this->mesh->index_count / 3);
 	ImGui::Text(vertex.data());
 	ImGui::Text(face.data());
 
@@ -72,7 +79,57 @@ void mesh_component::GUI_struct()
 		mesh_changed();
 	}
 
-	// Draw Material GUI
+	// ================ Draw Material GUI ================
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
+	ImGui::Text("Material Settings");
+	ImGui::PopStyleColor();
+	// Get Material Thumbnail ...
+	ImGui::Image(0, ImVec2(128, 128), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+
+	// ================ Material Maps ================
+	// ======== Diffuse Map
+	ImGui::Text("Diffuse Map");
+	if (ImGui::Checkbox("Use Diff", &parms.use_diff)) {
+		// Update Material ()
+	}
+	// Diff Map Thumbnail
+	ImVec4 diff_border = parms.use_diff ? ImVec4(1.0f, 1.0f, 1.0f, 0.5f) : ImVec4(1.0f, 0.0f, 0.0f, 0.5f);
+	ImGui::Image(0, ImVec2(64, 64), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), diff_border);
+	// Diff Map File
+	if (ImGui::InputText("Diff Map", diff_buf, 512)) parms.diff_path = diff_buf;
+	if (ImGui::Button("Load Diff Map")) 
+	{
+		parms.diff_path = diff_buf;
+		// Update Material
+		mesh->material->parms.use_diff_map = true;
+		mesh->material->set_tex_diffuse(parms.diff_path);
+		// Rebuild Material
+		if (parms.use_diff) mesh->material->build_mesh_shader();
+	}
+
+	// ======== Spec Map
+	ImGui::Text("Specular Map");
+	if (ImGui::Checkbox("Use Spec", &parms.use_spec)) {
+		// Update Material ()
+	}
+	// Spec Map Thumbnail
+	ImVec4 spec_border = parms.use_diff ? ImVec4(1.0f, 1.0f, 1.0f, 0.5f) : ImVec4(1.0f, 0.0f, 0.0f, 0.5f);
+	ImGui::Image(0, ImVec2(64, 64), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), spec_border);
+	// Spec Map File
+	if (ImGui::InputText("Spec Map", diff_buf, 512)) parms.spec_path = spec_buf;
+	if (ImGui::Button("Load Spec Map")) 
+	{
+		parms.spec_path = spec_buf;
+		// Update Material
+		mesh->material->parms.use_spec_map = true;
+		mesh->material->set_tex_specular(parms.spec_path);
+		// Rebuild Material
+		if (parms.use_spec) mesh->material->build_mesh_shader();
+	}
+
+
+
 }
 
 // Info : Update Camera State per tick (No GUI Tick here, this is done via Component::tick_gui() in editortick)

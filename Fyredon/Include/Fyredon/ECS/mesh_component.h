@@ -22,13 +22,6 @@ public:
 
 	virtual void tick() override;
 
-	// Material
-	// get shaderball thumbnail
-	// get diffuse map  thumbnail
-	// get specular map thumbnail
-
-	// Ref material parms in mesh...
-
 private:
 	void mesh_changed();
 	std::size_t ren_idx; 
@@ -38,8 +31,13 @@ public:
 	struct {
 		// Mesh parms
 		const char* file_path; 
+		const char* diff_path;
+		const char* spec_path;
 
-		// Material parms (expose from inner mesh directly) 
+		bool use_diff = false;
+		bool use_spec = false; 
+
+		// Other Material parms (expose from inner mesh directly) 
 	} parms;
 
 	struct {
