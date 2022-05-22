@@ -11,6 +11,7 @@
 
 mesh_component::mesh_component(Entity* parent)
 {
+
 	bounds.min = glm::vec3(0.f), bounds.max = glm::vec3(1.f); 
 	parms.file_path = "..//";
 	ren_idx = 0; 
@@ -19,13 +20,19 @@ mesh_component::mesh_component(Entity* parent)
 
 	componentName = std::string("Mesh_") + std::to_string(world.counts.mesh_count++);
 
-	// Default Mesh OBJ 
+	// Default Mesh OBJ (Shaderball)
 	mesh = new Fyredon::Mesh_OBJ(componentName.c_str(), "..//Assets//Mesh//shaderballhr.obj");
 	mesh->load_obj();
 	mesh->scale(glm::vec3(2.f));
-	mesh->translate(glm::vec3(0.1f, 0.f, 0.1f));
+	//mesh->translate(glm::vec3(0.1f, 0.f, 0.1f));
 
+	// Submit mesh to renderer draw list 
 	ren_idx = Fyredon::Renderer::get_renderer().submit_mesh(this->mesh);
+
+	// Default GUI Thumbnail Textures
+	parms.thumb_diff = new Fyredon::TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk", 0, true); parms.thumb_diff->load();
+	parms.thumb_spec = new Fyredon::TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk", 1, true); parms.thumb_spec->load();
+	parms.thumb_mat  = new Fyredon::TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk", 2, true); parms.thumb_mat->load();
 
 	this->parent = parent;
 	this->memmory_size = sizeof(mesh_component);
@@ -63,6 +70,8 @@ void mesh_component::GUI_struct()
 	static char diff_buf[512]{ "..//Assets//Images//Textures//uv_map.png" };
 	static char spec_buf[512]{ "..//Assets//Images//Textures//spec_mapb.jpg" };
 
+	static float trans[3] = { 0.f, 0.f, 0.f };
+
 	// Temp GUI vec3s 
 	static float col_amb[3] = { mesh->material->parms.colour_ambient.x, mesh->material->parms.colour_ambient.y, mesh->material->parms.colour_ambient.z };
 	static float col_dif[3] = { mesh->material->parms.colour_diffuse.x, mesh->material->parms.colour_diffuse.y, mesh->material->parms.colour_diffuse.z };
@@ -84,14 +93,22 @@ void mesh_component::GUI_struct()
 		mesh_changed();
 	}
 
+	// This is a hack as the Transform Component is broken and I dont have time to fix it..!
+	if (ImGui::SliderFloat3("Translate", trans, -5.f, 5.f))
+	{
+		mesh->model = glm::mat4(1.f);
+		mesh->scale(glm::vec3(2.f));
+		mesh->translate(glm::vec3(trans[0], trans[1], trans[2]));
+	}
+
 	// ================ Draw Material GUI ================
 	ImGui::Separator();
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
 	ImGui::Text("Material Settings");
 	ImGui::PopStyleColor();
-	// Get Material Thumbnail ...
-	ImGui::Image(0, ImVec2(128, 128), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+	// Material Thumbnail
+	ImGui::Image(parms.thumb_mat->get_imgui_texture(), ImVec2(128, 128), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
 
 	// ================ Material Maps ================
 	// ======== Diffuse Map
@@ -103,13 +120,18 @@ void mesh_component::GUI_struct()
 	}
 	// Diff Map Thumbnail
 	ImVec4 diff_border = parms.use_diff ? ImVec4(1.0f, 1.0f, 1.0f, 0.5f) : ImVec4(1.0f, 0.0f, 0.0f, 0.5f);
-	ImGui::Image(0, ImVec2(64, 64), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), diff_border);
+	ImTextureID tex = parms.use_diff ? parms.thumb_diff->get_imgui_texture() : 0;
+	ImGui::Image(tex, ImVec2(64, 64), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), diff_border);
+
 	// Diff Map File
 	if (ImGui::InputText("0", diff_buf, 512)) parms.diff_path = diff_buf;
 	ImGui::SameLine();
 	if (ImGui::Button("Load Diff Map")) 
 	{
 		parms.diff_path = diff_buf;
+		// Update Thumb
+		if (parms.thumb_diff) delete parms.thumb_diff;
+		parms.thumb_diff = new Fyredon::TextureImage(diff_buf, "thumb_diff", 1, true); parms.thumb_diff->load();
 		// Update Material
 		mesh->material->parms.use_diff_map = true;
 		mesh->material->set_tex_diffuse(parms.diff_path);
@@ -161,7 +183,7 @@ void mesh_component::GUI_struct()
 	if (ImGui::Checkbox("Use Vert Colour", &mesh->material->parms.use_vert_col)) {
 		mesh->material->build_mesh_shader();
 	}
-	ImGui::SliderFloat("Diffuse_Strength", &mesh->material->parms.coeff_diffuse, 0.f, 10.f);
+	ImGui::SliderFloat("Diffuse_Strength", &mesh->material->parms.coeff_diffuse, 0.f, 25.f);
 	// ======== Specular Term
 	ImGui::Separator();
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(200, 200, 200, 255));
@@ -170,8 +192,8 @@ void mesh_component::GUI_struct()
 	if (ImGui::SliderFloat3("Specular_Col", col_spc, 0.f, 1.f)) {
 		mesh->material->parms.colour_specular = glm::vec3(col_spc[0], col_spc[1], col_spc[2]);
 	}
-	ImGui::SliderFloat("Specular_Stength", &mesh->material->parms.coeff_specular, 0.f, 5.f);
-	ImGui::SliderFloat("Specular_Exp",     &mesh->material->parms.exp_gloss,     0.f, 20.f);
+	ImGui::SliderFloat("Specular_Stength", &mesh->material->parms.coeff_specular, 0.f, 25.f);
+	ImGui::SliderFloat("Specular_Exp",     &mesh->material->parms.exp_gloss,     0.f, 25.f);
 
 	ImGui::Separator();
 	ImGui::Separator();

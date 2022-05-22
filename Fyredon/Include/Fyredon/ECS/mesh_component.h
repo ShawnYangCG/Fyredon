@@ -11,6 +11,8 @@
 #include "Fyredon/Render/Mesh_OBJ.h"
 #include "Fyredon/Render/Renderer.h"
 
+#include "Fyredon/Render/Texture.h"
+
 class mesh_component : public Component
 {
 public:
@@ -36,6 +38,11 @@ public:
 
 		bool use_diff = false;
 		bool use_spec = false; 
+
+		// Material Thumbnails
+		Fyredon::TextureImage* thumb_diff;
+		Fyredon::TextureImage* thumb_spec; 
+		Fyredon::TextureImage* thumb_mat; 
 
 		// Other Material parms (expose from inner mesh directly) 
 	} parms;

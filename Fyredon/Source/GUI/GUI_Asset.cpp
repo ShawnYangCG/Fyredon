@@ -21,11 +21,11 @@ Fyredon::GUI_Asset::GUI_Asset(const char* Title, GUIConfig* guiConfig, World* wo
 {
 	// Default Path
 	//cur_path = std::filesystem::current_path().string();
-	cur_path = std::filesystem::path("..//Assets//").string();
+	cur_path = std::filesystem::path("..//Assets//Mesh//").string();
 	
 	// Icon Setup
-	icon_dir = new TextureImage("..//Assets//Images//Icons//open-folder.png", "dir_icon", 0, false);
-	icon_unk_file = new TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk_file_icon", 0, false);
+	icon_dir      = new TextureImage("..//Assets//Images//Icons//open-folder.png", "dir_icon", 0, false);
+	icon_unk_file = new TextureImage("..//Assets//Images//Icons//fire-icon.png", "unk_file_icon", 0, false);
 	icon_dir->load(), icon_unk_file->load();
 }
 

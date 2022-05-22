@@ -41,7 +41,7 @@ Fyredon::Renderer::Renderer()
 	parms.enable_sun = true, parms.sun_shadows = false;
 	parms.sun_strength = 1.f;
 	parms.shadowmap_res_sqr = 512; 
-	parms.sun_colour = glm::vec3(1.f, 1.f, 0.4f);
+	parms.sun_colour = glm::vec3(1.f, 1.f, 0.8f);
 	parms.sun_direction = glm::vec3(1.f, 1.f, 1.f);
 
 	// Skybox

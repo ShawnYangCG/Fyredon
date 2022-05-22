@@ -143,7 +143,9 @@ void Fyredon::TextureImage::load()
 	if (!file.is_open())
 	{
 		std::cerr << "ERROR::Fyredon::Texture::" << name << ":: file does not exist." << std::endl;
-		std::terminate();
+		//std::terminate();
+		// Don't terminate, use default tex
+		file_path = "..//Assets//Images//Textures//uv_map.png";
 	}
 	file.close();
 
