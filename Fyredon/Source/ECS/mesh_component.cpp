@@ -39,12 +39,13 @@ mesh_component::mesh_component::~mesh_component()
 
 void mesh_component::mesh_changed()
 {
+	/*
 	std::ifstream test(parms.file_path);
 	if (!test.is_open()) {
 		std::cerr << "ERROR::Mesh_Component::Invalid Mesh File Path." << std::endl;
 		return;
-	}
-	
+	} */
+
 	if (mesh) {
 		Fyredon::Renderer::get_renderer().delete_mesh(ren_idx);
 		delete mesh;
@@ -56,10 +57,20 @@ void mesh_component::mesh_changed()
 
 void mesh_component::GUI_struct()
 {
+	static char file_buf[512]{ "..//Assets//Mesh//pighead.obj" };
+	static char diff_buf[512]{ "..//" };
+	static char spec_buf[512]{ "..//" };
+	
 	std::string vertex = "Vertex: " + std::to_string(this->mesh->vert_count);
 	std::string face   = "Face: " + std::to_string(this->mesh->index_count / 3);
 	ImGui::Text(vertex.data());
 	ImGui::Text(face.data());
+
+	if (ImGui::InputText("Mesh File", file_buf, 512)) parms.file_path = file_buf; 
+	if (ImGui::Button("Load Mesh")) {
+		parms.file_path = file_buf; 
+		mesh_changed();
+	}
 
 	// Draw Material GUI
 }

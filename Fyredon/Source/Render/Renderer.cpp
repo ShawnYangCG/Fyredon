@@ -55,7 +55,7 @@ Fyredon::Renderer::Renderer()
 	parms.cull_backface = false; 
 
 	// Viewport Parameters
-	parms.draw_grid = true, parms.draw_axis = true, parms.draw_test_mesh = true;
+	parms.draw_grid = true, parms.draw_axis = true, parms.draw_test_mesh = false;
 	parms.draw_mesh_guides = true;
 
 	// Internal State
@@ -173,17 +173,19 @@ std::size_t Fyredon::Renderer::submit_point_light(Light_Point* light)
 
 void Fyredon::Renderer::delete_mesh(std::size_t idx)
 {
+	if (!draw_lists.meshes.size()) return; 
 	draw_lists.meshes.erase(draw_lists.meshes.begin() + idx);
 }
 
 void Fyredon::Renderer::delete_mesh_guide(std::size_t idx)
 {
+	if (!draw_lists.guides.size()) return; 
 	draw_lists.guides.erase(draw_lists.guides.begin() + idx);
 }
 
 void Fyredon::Renderer::delete_point_light(std::size_t idx)
 {
-	draw_lists.guides.erase(draw_lists.guides.begin() + idx);
+	//draw_lists.guides.erase(draw_lists.guides.begin() + idx);
 }
 
 void Fyredon::Renderer::resize(int width, int height)
@@ -275,7 +277,7 @@ void Fyredon::Renderer::render_camera(Camera *cam_ref)
 #endif
 } 
 
-// Info : Return Renderer primary colour attachement (resolved from multisampled-->standard texture)
+// Info : Return View Framebuffer Renderer primary colour attachement (resolved from multisampled-->standard texture)
 Fyredon::Texture* Fyredon::Renderer::get_colour_attachment()
 { return view_framebuffers.render_col_tex_s; }
 
