@@ -119,9 +119,9 @@ void mesh_component::GUI_struct()
 		mesh->material->build_mesh_shader();
 	}
 	// Diff Map Thumbnail
-	ImVec4 diff_border = parms.use_diff ? ImVec4(1.0f, 1.0f, 1.0f, 0.5f) : ImVec4(1.0f, 0.0f, 0.0f, 0.5f);
-	ImTextureID tex = parms.use_diff ? parms.thumb_diff->get_imgui_texture() : 0;
-	ImGui::Image(tex, ImVec2(64, 64), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), diff_border);
+	ImVec4 diff_border = parms.use_diff ? ImVec4(0.f, 1.f, 0.f, .5f) : ImVec4(1.f, 1.f, 1.f, .5f);
+	ImTextureID d_tex = parms.use_diff ? parms.thumb_diff->get_imgui_texture() : 0;
+	ImGui::Image(d_tex, ImVec2(64, 64), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), diff_border);
 
 	// Diff Map File
 	if (ImGui::InputText("0", diff_buf, 512)) parms.diff_path = diff_buf;
@@ -147,14 +147,18 @@ void mesh_component::GUI_struct()
 		mesh->material->build_mesh_shader();
 	}
 	// Spec Map Thumbnail
-	ImVec4 spec_border = parms.use_spec ? ImVec4(1.0f, 1.0f, 1.0f, 0.5f) : ImVec4(1.0f, 0.0f, 0.0f, 0.5f);
-	ImGui::Image(0, ImVec2(64, 64), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), spec_border);
+	ImVec4 spec_border = parms.use_spec ? ImVec4(0.f, 1.f, 0.f, .5f) : ImVec4(1.f, 1.f, 1.f, .5f);
+	ImTextureID s_tex = parms.use_spec ? parms.thumb_spec->get_imgui_texture() : 0;
+	ImGui::Image(s_tex, ImVec2(64, 64), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), spec_border);
 	// Spec Map File
 	if (ImGui::InputText("1", spec_buf, 512)) parms.spec_path = spec_buf; 
 	ImGui::SameLine();
 	if (ImGui::Button("Load Spec Map")) 
 	{
 		parms.spec_path = spec_buf;
+		// Update Thumb
+		if (parms.thumb_spec) delete parms.thumb_spec;
+		parms.thumb_spec = new Fyredon::TextureImage(spec_buf, "thumb_spec", 2, true); parms.thumb_spec->load();
 		// Update Material
 		mesh->material->parms.use_spec_map = true;
 		mesh->material->set_tex_specular(parms.spec_path);
