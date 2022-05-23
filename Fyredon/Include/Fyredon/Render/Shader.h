@@ -58,7 +58,6 @@ public:
 	} flags;
 	bool valid_state;
 
-private:
 	std::string vert_path, frag_path;
 	std::string vert_shader_code, frag_shader_code;
 };

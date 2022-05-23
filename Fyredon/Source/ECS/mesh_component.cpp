@@ -21,7 +21,7 @@ mesh_component::mesh_component(Entity* parent)
 	componentName = std::string("Mesh_") + std::to_string(world.counts.mesh_count++);
 
 	// Default Mesh OBJ (Shaderball)
-	mesh = new Fyredon::Mesh_OBJ(componentName.c_str(), "..//Assets//Mesh//shaderballhr.obj");
+	mesh = new Fyredon::Mesh_OBJ(componentName.c_str(), "..//Assets//Mesh//shaderball.obj");
 	mesh->load_obj();
 	mesh->scale(glm::vec3(2.f));
 	//mesh->translate(glm::vec3(0.1f, 0.f, 0.1f));
@@ -199,6 +199,26 @@ void mesh_component::GUI_struct()
 	ImGui::SliderFloat("Specular_Stength", &mesh->material->parms.coeff_specular, 0.f, 25.f);
 	ImGui::SliderFloat("Specular_Exp",     &mesh->material->parms.exp_gloss,     0.f, 25.f);
 
+	if (ImGui::Button("Show Shader Code"))
+	{
+		parms.show_shader = !parms.show_shader; 
+	}
+
+	// If Show Shader Code 
+	ImGui::Separator();
+	if (parms.show_shader)
+	{
+		ImGui::Begin("Uber Shader Code - BlinnPhongLambertian");
+
+		ImGui::Dummy(ImVec2(0.0f, 10.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
+		ImGui::PopStyleColor();
+		ImGui::Text(mesh->shader.frag_shader_code.c_str());
+
+		ImGui::End();
+	}
+
+	// End Mesh Component GUI
 	ImGui::Separator();
 	ImGui::Separator();
 }

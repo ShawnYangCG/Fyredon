@@ -44,6 +44,8 @@ public:
 		Fyredon::TextureImage* thumb_spec; 
 		Fyredon::TextureImage* thumb_mat; 
 
+		bool show_shader = false; 
+
 		// Other Material parms (expose from inner mesh directly) 
 	} parms;
 
