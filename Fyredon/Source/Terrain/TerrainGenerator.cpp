@@ -12,6 +12,9 @@
 
 TerrainGenerator::TerrainGenerator(const char* name, const char* filePath){
 	//read_height_map("Heightmap.png");
+
+	TerrainMesh = nullptr; 
+	image_data = nullptr; 
 }
 
 TerrainGenerator::~TerrainGenerator()
