@@ -56,7 +56,7 @@ Fyredon::Renderer::Renderer()
 
 	// Viewport Parameters
 	parms.draw_grid = true, parms.draw_axis = true, parms.draw_test_mesh = false;
-	parms.draw_mesh_guides = true;
+	parms.draw_mesh_guides = false;
 
 	// Internal State
 	sun_light = nullptr; 

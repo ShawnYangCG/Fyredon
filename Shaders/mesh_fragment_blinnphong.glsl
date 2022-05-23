@@ -72,7 +72,7 @@ void main()
 	float bump_u = texture(m_tex_bump, vec2(uvw.x + eps, uvw.y)).x - texture(m_tex_bump, vec2(uvw.x - eps, uvw.y)).x; 
 	float bump_v = texture(m_tex_bump, vec2(uvw.x, uvw.y + eps)).x - texture(m_tex_bump, vec2(uvw.x, uvw.y - eps)).x; 
 	vec3 bump = vec3(bump_u * r_eps, bump_v * r_eps, 0.0); 
-	normal = normalize(normal_world + bump * m_coeff_bump);
+	normal = normalize(normal_world + (bump * m_coeff_bump * 0.01));
 	//frag_colour = vec4(normal, 1.0); 
 	//return; 
 	//frag_colour = vec4(bump, 1.0); 
