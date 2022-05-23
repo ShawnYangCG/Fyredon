@@ -46,6 +46,11 @@ public:
 
 		bool show_shader = false; 
 
+		// Temp Buffers
+		char file_buf[512];
+		char diff_buf[512];
+		char spec_buf[512];
+
 		// Other Material parms (expose from inner mesh directly) 
 	} parms;
 

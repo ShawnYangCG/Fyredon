@@ -11,29 +11,37 @@
 
 mesh_component::mesh_component(Entity* parent)
 {
-
-	bounds.min = glm::vec3(0.f), bounds.max = glm::vec3(1.f); 
-	parms.file_path = "..//";
-	ren_idx = 0; 
+	bounds.min = glm::vec3(0.f), bounds.max = glm::vec3(1.f);
+	ren_idx = 0;
 
 	World& world = World::get_world();
-
 	componentName = std::string("Mesh_") + std::to_string(world.counts.mesh_count++);
 
+	// ======== Allocate Inner MeshOBJ Instance 
 	// Default Mesh OBJ (Shaderball)
 	mesh = new Fyredon::Mesh_OBJ(componentName.c_str(), "..//Assets//Mesh//shaderball.obj");
 	mesh->load_obj();
-	mesh->scale(glm::vec3(2.f));
+	// def transforms (will be overriden when changed)
+	mesh->scale(glm::vec3(2.f)); 
 	//mesh->translate(glm::vec3(0.1f, 0.f, 0.1f));
 
-	// Submit mesh to renderer draw list 
+	// ======== Submit mesh to renderer draw list 
 	ren_idx = Fyredon::Renderer::get_renderer().submit_mesh(this->mesh);
 
-	// Default GUI Thumbnail Textures
+	// ======== Init Parms
+	parms.file_path = "..//";
+
+	// ======== Default GUI Thumbnail Textures
 	parms.thumb_diff = new Fyredon::TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk", 0, true); parms.thumb_diff->load();
 	parms.thumb_spec = new Fyredon::TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk", 1, true); parms.thumb_spec->load();
 	parms.thumb_mat  = new Fyredon::TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk", 2, true); parms.thumb_mat->load();
 
+	// ======== Default Temp Buffers
+	strcpy_s(parms.file_buf, 511, "..//Assets//Mesh//shaderball.obj");
+	strcpy_s(parms.diff_buf, 511, "..//Assets//Images//Textures//uv_map.png");
+	strcpy_s(parms.spec_buf, 511, "..//Assets//Images//Textures//spec_mapb.jpg");
+
+	// ======== ECS State
 	this->parent = parent;
 	this->memmory_size = sizeof(mesh_component);
 }
@@ -65,10 +73,8 @@ void mesh_component::mesh_changed()
 
 void mesh_component::GUI_struct()
 {
-	// Temp GUI buffs (def paths)
-	static char file_buf[512]{ "..//Assets//Mesh//pighead.obj" };
-	static char diff_buf[512]{ "..//Assets//Images//Textures//uv_map.png" };
-	static char spec_buf[512]{ "..//Assets//Images//Textures//spec_mapb.jpg" };
+
+
 
 	static float trans[3] = { 0.f, 0.f, 0.f };
 
@@ -87,9 +93,9 @@ void mesh_component::GUI_struct()
 	ImGui::Text(vertex.data());
 	ImGui::Text(face.data());
 
-	if (ImGui::InputText("Mesh File", file_buf, 512)) parms.file_path = file_buf; 
+	ImGui::InputText("Mesh File", parms.file_buf, 512);
 	if (ImGui::Button("Load Mesh")) {
-		parms.file_path = file_buf; 
+		parms.file_path = parms.file_buf;
 		mesh_changed();
 	}
 
@@ -124,14 +130,14 @@ void mesh_component::GUI_struct()
 	ImGui::Image(d_tex, ImVec2(64, 64), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), diff_border);
 
 	// Diff Map File
-	if (ImGui::InputText("0", diff_buf, 512)) parms.diff_path = diff_buf;
+	ImGui::InputText("0", parms.diff_buf, 512);
 	ImGui::SameLine();
 	if (ImGui::Button("Load Diff Map")) 
 	{
-		parms.diff_path = diff_buf;
+		parms.diff_path = parms.diff_buf;
 		// Update Thumb
 		if (parms.thumb_diff) delete parms.thumb_diff;
-		parms.thumb_diff = new Fyredon::TextureImage(diff_buf, "thumb_diff", 1, true); parms.thumb_diff->load();
+		parms.thumb_diff = new Fyredon::TextureImage(parms.diff_buf, "thumb_diff", 1, true); parms.thumb_diff->load();
 		// Update Material
 		mesh->material->parms.use_diff_map = true;
 		mesh->material->set_tex_diffuse(parms.diff_path);
@@ -151,14 +157,14 @@ void mesh_component::GUI_struct()
 	ImTextureID s_tex = parms.use_spec ? parms.thumb_spec->get_imgui_texture() : 0;
 	ImGui::Image(s_tex, ImVec2(64, 64), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), spec_border);
 	// Spec Map File
-	if (ImGui::InputText("1", spec_buf, 512)) parms.spec_path = spec_buf; 
+	ImGui::InputText("1", parms.spec_buf, 512);
 	ImGui::SameLine();
 	if (ImGui::Button("Load Spec Map")) 
 	{
-		parms.spec_path = spec_buf;
+		parms.spec_path = parms.spec_buf;
 		// Update Thumb
 		if (parms.thumb_spec) delete parms.thumb_spec;
-		parms.thumb_spec = new Fyredon::TextureImage(spec_buf, "thumb_spec", 2, true); parms.thumb_spec->load();
+		parms.thumb_spec = new Fyredon::TextureImage(parms.spec_buf, "thumb_spec", 2, true); parms.thumb_spec->load();
 		// Update Material
 		mesh->material->parms.use_spec_map = true;
 		mesh->material->set_tex_specular(parms.spec_path);
