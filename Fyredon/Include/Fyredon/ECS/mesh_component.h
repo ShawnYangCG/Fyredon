@@ -35,13 +35,16 @@ public:
 		const char* file_path; 
 		const char* diff_path;
 		const char* spec_path;
+		const char* bump_path;
 
 		bool use_diff = false;
 		bool use_spec = false; 
+		bool use_bump = false; 
 
 		// Material Thumbnails
 		Fyredon::TextureImage* thumb_diff;
 		Fyredon::TextureImage* thumb_spec; 
+		Fyredon::TextureImage* thumb_bump;
 		Fyredon::TextureImage* thumb_mat; 
 
 		bool show_shader = false; 
@@ -50,6 +53,7 @@ public:
 		char file_buf[512];
 		char diff_buf[512];
 		char spec_buf[512];
+		char bump_buf[512];
 
 		// Other Material parms (expose from inner mesh directly) 
 	} parms;

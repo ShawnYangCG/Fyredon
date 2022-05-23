@@ -18,14 +18,15 @@
 #include <vector>
 
 Fyredon::Material::Material(Mesh& ParentMesh)
-	: parent_mesh(ParentMesh), tex_diffuse(nullptr), tex_specular(nullptr)
+	: parent_mesh(ParentMesh), tex_diffuse(nullptr), tex_specular(nullptr), tex_bump(nullptr)
 {
-	parms.use_diff_map = false, parms.use_spec_map = false, parms.use_vert_col = false; 
+	parms.use_diff_map = false, parms.use_spec_map = false, parms.use_bump_map = false, parms.use_vert_col = false; 
 
 	parms.coeff_ambient  = 0.01f;
 	parms.coeff_diffuse  = 1.f;
 	parms.coeff_specular = 1.f; 
 	parms.exp_gloss      = 4.f; 
+	parms.coeff_bump     = 0.5f; 
 
 	parms.colour_ambient = glm::vec3(0.1f);
 	parms.colour_diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
@@ -50,6 +51,7 @@ void Fyredon::Material::build_mesh_shader()
 
 	if (parms.use_diff_map) frag_preproc.push_back("#define BRANCH_DIFF_MAP\n");
 	if (parms.use_spec_map) frag_preproc.push_back("#define BRANCH_SPEC_MAP\n");
+	if (parms.use_bump_map) frag_preproc.push_back("#define BRANCH_BUMP_MAP\n");
 	if (parms.use_vert_col) frag_preproc.push_back("#define BRANCH_DIFF_VERTCOLOUR\n");
 
 	// Also check if lighting, shadows enabled in renderer class
@@ -68,7 +70,7 @@ void Fyredon::Material::set_tex_diffuse(const char* filepath)
 	tex_diffuse = new TextureImage(filepath, nm.c_str(), 0, true);
 	tex_diffuse->filter = Texture::filter_type::LINEAR;
 	tex_diffuse->load();
-	parent_mesh.shader.set_int("textures.tex_diffuse", 0);
+	//parent_mesh.shader.set_int("textures.tex_diffuse", 0);
 
 	parms.use_diff_map = true; 
 }
@@ -81,9 +83,22 @@ void Fyredon::Material::set_tex_specular(const char* filepath)
 	tex_specular = new TextureImage(filepath, nm.c_str(), 1, true);
 	tex_specular->filter = Texture::filter_type::LINEAR;
 	tex_specular->load();
-	parent_mesh.shader.set_int("textures.tex_specular", 1);
+	//parent_mesh.shader.set_int("textures.tex_specular", 1);
 
 	parms.use_spec_map = true;
+}
+
+void Fyredon::Material::set_tex_bump(const char* filepath)
+{
+	if (tex_bump) delete tex_bump;
+
+	std::string nm = parent_mesh.name + " Bump_Texture";
+	tex_bump = new TextureImage(filepath, nm.c_str(), 2, true);
+	tex_bump->filter = Texture::filter_type::LINEAR;
+	tex_bump->load();
+	//parent_mesh.shader.set_int("textures.tex_bump", 2);
+
+	parms.use_bump_map = true;
 }
 
 // Info : To be called by parent Mesh::set_shader_uniforms()
@@ -96,6 +111,7 @@ void Fyredon::Material::set_uniforms()
 	shad.set_float("m_coeff_diffuse",  parms.coeff_diffuse);
 	shad.set_float("m_coeff_specular", parms.coeff_specular);
 	shad.set_float("m_exp_gloss",      parms.exp_gloss);
+	shad.set_float("m_coeff_bump",     parms.coeff_bump);
 
 	// Term Colours
 	shad.set_vec3("m_colour_ambient",  parms.colour_ambient);
@@ -105,6 +121,7 @@ void Fyredon::Material::set_uniforms()
 	// Reset Texture Sampler Uniforms
 	shad.set_int("m_tex_diffuse",  0);  // Unit_0
 	shad.set_int("m_tex_specular", 1);  // Unit_1
+	shad.set_int("m_tex_bump",     2);  // Unit_2
 }
 
 // Info : Activate Bind textures used for maps (only if textures are allocated)
@@ -119,5 +136,10 @@ void Fyredon::Material::activate_bind_textures()
 	{
 		glActiveTexture(GL_TEXTURE1);
 		tex_specular->bind();
+	}
+	if (tex_bump)
+	{
+		glActiveTexture(GL_TEXTURE2);
+		tex_bump->bind();
 	}
 }

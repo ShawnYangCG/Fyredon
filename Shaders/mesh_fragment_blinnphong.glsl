@@ -26,6 +26,7 @@ uniform float s_strength;
 // Material Texture Maps
 uniform sampler2D m_tex_diffuse; 
 uniform sampler2D m_tex_specular; 
+uniform sampler2D m_tex_bump; 
 // Material Parameters
 uniform vec3  m_colour_ambient; 
 uniform vec3  m_colour_diffuse;
@@ -34,6 +35,7 @@ uniform float m_coeff_ambient;
 uniform float m_coeff_diffuse; 
 uniform float m_coeff_specular;
 uniform float m_exp_gloss; 
+uniform float m_coeff_bump;
 
 
 void main()
@@ -42,6 +44,8 @@ void main()
 	vec3 diff_col = m_colour_diffuse; 
 	vec3 spec_col = m_colour_specular;
 	float sun_strength = s_strength; 
+	
+	vec3 normal = normal_world; 
 	
 	// Directional Light (Sun)
 	#ifndef BRANCH_LIGHT_SUN
@@ -61,6 +65,20 @@ void main()
 	spec_col = spec_col * (texture(m_tex_specular, vec2(uvw.x, uvw.y))).x; 
 	#endif
 	
+	// Bump Mapping
+	#ifdef BRANCH_BUMP_MAP
+	float eps = 0.01; 
+	float r_eps = (1.0 / eps) * 2.f; 
+	float bump_u = texture(m_tex_bump, vec2(uvw.x + eps, uvw.y)).x - texture(m_tex_bump, vec2(uvw.x - eps, uvw.y)).x; 
+	float bump_v = texture(m_tex_bump, vec2(uvw.x, uvw.y + eps)).x - texture(m_tex_bump, vec2(uvw.x, uvw.y - eps)).x; 
+	vec3 bump = vec3(bump_u * r_eps, bump_v * r_eps, 0.0); 
+	normal = normalize(normal_world + bump * m_coeff_bump);
+	//frag_colour = vec4(normal, 1.0); 
+	//return; 
+	//frag_colour = vec4(bump, 1.0); 
+	//return; 
+	#endif
+	
 	// Blinn_Phong BRDF (Sun only) (WS calculations)	
 	// Sun Lighting Vectors
 	vec3 light_dir    = s_direction; 
@@ -68,16 +86,20 @@ void main()
 	vec3 half_v       = normalize(light_dir + view_dir);
 	
 	// Basic Lambertian diffuse term
+	//float lambertian = max(dot(normal, light_dir), 0.0);
+	
 	float lambertian = max(dot(normal_world, light_dir), 0.0);
 	
 	// Blinn Phong Specular Term
-	float bpspec = pow(max(dot(normal_world, half_v), 0.0), m_exp_gloss);
+	float bpspec = pow(max(dot(normal, half_v), 0.0), m_exp_gloss);
+	//vec3 refl_dir = reflect(-light_dir, normal);
+    //float pspec = max(dot(refl_dir, view_dir), 0.0);
 		
 	// Shading Terms
 	vec3 ambient  = amb_col * m_coeff_ambient;
 	vec3 diffuse  = lambertian * diff_col * sun_strength * s_colour * m_coeff_diffuse; 
-	//vec3 specular = bpspec * spec_col * s_colour * s_strength * m_coeff_specular;  
-	vec3 specular = bpspec * spec_col * sun_strength * m_coeff_specular;  
+	vec3 specular = bpspec * spec_col * s_colour * s_strength * m_coeff_specular;  
+	//vec3 specular = pspec * spec_col * sun_strength * m_coeff_specular;  
 
 	// Linear output
 	vec3 out_c = ambient + diffuse + specular; 
@@ -87,4 +109,5 @@ void main()
 	
 	// Output
 	frag_colour = vec4(out_c, 1.0);  
+	//frag_colour = vec4(normal, 1.0);  
 }

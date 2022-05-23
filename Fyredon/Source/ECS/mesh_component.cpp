@@ -34,12 +34,14 @@ mesh_component::mesh_component(Entity* parent)
 	// ======== Default GUI Thumbnail Textures
 	parms.thumb_diff = new Fyredon::TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk", 0, true); parms.thumb_diff->load();
 	parms.thumb_spec = new Fyredon::TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk", 1, true); parms.thumb_spec->load();
+	parms.thumb_bump = new Fyredon::TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk", 1, true); parms.thumb_bump->load();
 	parms.thumb_mat  = new Fyredon::TextureImage("..//Assets//Images//Icons//unknown-icon.png", "unk", 2, true); parms.thumb_mat->load();
 
 	// ======== Default Temp Buffers
 	strcpy_s(parms.file_buf, 511, "..//Assets//Mesh//shaderball.obj");
 	strcpy_s(parms.diff_buf, 511, "..//Assets//Images//Textures//uv_map.png");
 	strcpy_s(parms.spec_buf, 511, "..//Assets//Images//Textures//spec_mapb.jpg");
+	strcpy_s(parms.bump_buf, 511, "..//Assets//Images//Textures//spec_mapb.jpg");
 
 	// ======== ECS State
 	this->parent = parent;
@@ -73,9 +75,6 @@ void mesh_component::mesh_changed()
 
 void mesh_component::GUI_struct()
 {
-
-
-
 	static float trans[3] = { 0.f, 0.f, 0.f };
 
 	// Temp GUI vec3s 
@@ -104,7 +103,7 @@ void mesh_component::GUI_struct()
 	{
 		mesh->model = glm::mat4(1.f);
 		mesh->scale(glm::vec3(2.f));
-		mesh->translate(glm::vec3(trans[0], trans[1], trans[2]));
+		mesh->translate(glm::vec3(trans[0], std::fmax(trans[1], 0.f), trans[2]));
 	}
 
 	// ================ Draw Material GUI ================
@@ -114,7 +113,7 @@ void mesh_component::GUI_struct()
 	ImGui::Text("Material Settings");
 	ImGui::PopStyleColor();
 	// Material Thumbnail
-	ImGui::Image(parms.thumb_mat->get_imgui_texture(), ImVec2(128, 128), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+	//ImGui::Image(parms.thumb_mat->get_imgui_texture(), ImVec2(128, 128), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
 
 	// ================ Material Maps ================
 	// ======== Diffuse Map
@@ -171,6 +170,32 @@ void mesh_component::GUI_struct()
 		// Rebuild Material
 		if (parms.use_spec) mesh->material->build_mesh_shader();
 	}
+	// ======== Bump Map
+	ImGui::Separator();
+	ImGui::Text("Bump Map");
+	if (ImGui::Checkbox("Use Bump", &parms.use_bump)) {
+		// Update Material
+		mesh->material->build_mesh_shader();
+	}
+	// Bump Map Thumbnail
+	ImVec4 bump_border = parms.use_bump ? ImVec4(0.f, 1.f, 0.f, .5f) : ImVec4(1.f, 1.f, 1.f, .5f);
+	ImTextureID b_tex = parms.use_bump ? parms.thumb_bump->get_imgui_texture() : 0;
+	ImGui::Image(b_tex, ImVec2(64, 64), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), bump_border);
+	// Bump Map File
+	ImGui::InputText("2", parms.bump_buf, 512);
+	ImGui::SameLine();
+	if (ImGui::Button("Load Bump Map"))
+	{
+		parms.bump_path = parms.bump_buf;
+		// Update Thumb
+		if (parms.thumb_bump) delete parms.thumb_bump;
+		parms.thumb_bump = new Fyredon::TextureImage(parms.bump_buf, "thumb_bump", 2, true); parms.thumb_bump->load();
+		// Update Material
+		mesh->material->parms.use_bump_map = true;
+		mesh->material->set_tex_bump(parms.bump_path);
+		// Rebuild Material
+		if (parms.use_bump) mesh->material->build_mesh_shader();
+	}
 	// ================ Material Parms ================
 	// Info : No need to rebuild material shaders for these parms (uniforms, not branches).
 	// ======== Ambient Term
@@ -204,12 +229,14 @@ void mesh_component::GUI_struct()
 	}
 	ImGui::SliderFloat("Specular_Stength", &mesh->material->parms.coeff_specular, 0.f, 25.f);
 	ImGui::SliderFloat("Specular_Exp",     &mesh->material->parms.exp_gloss,     0.f, 25.f);
+	// ======== Bump Term
+	ImGui::SliderFloat("Bump_Strength", &mesh->material->parms.coeff_bump, 0.f, 1.f);
 
+	// ======== Shader Code
 	if (ImGui::Button("Show Shader Code"))
 	{
 		parms.show_shader = !parms.show_shader; 
 	}
-
 	// If Show Shader Code 
 	ImGui::Separator();
 	if (parms.show_shader)
