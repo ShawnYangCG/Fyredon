@@ -13,9 +13,15 @@ public:
 	// add your own veriable here
 	TerrainGenerator* terrain_generator;
 
+	std::string fileName = "";
+	int res = 512;
+	bool flat_normals = false;
+
+
 	// 4.
 	// rewrite the constructor
 	terrain_entity();
+	void redrawMesh();
 };
 // 5.
 // don't forget to add this header in ECS.h

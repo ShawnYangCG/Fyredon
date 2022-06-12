@@ -34,7 +34,7 @@ void TerrainGenerator::read_height_map(std::string path) {
 
 	std::cout << file.string().c_str() << "\n";
 
-	stbi_set_flip_vertically_on_load(0);
+	stbi_set_flip_vertically_on_load(1);
 	image_data = stbi_load(file.string().c_str(), &image_width, &image_height, &image_n_channels, 1);
 
 	int x_res = image_width;
@@ -84,8 +84,6 @@ void TerrainGenerator::read_height_map(std::string path) {
 
 	std::cout << x_res << " x_res" << "\n";
 	std::cout << z_res << " z_res" << "\n";
-	//std::cout << image_n_channels << " chan" << "\n";
-	//std::cout << image_width * image_height * image_n_channels << " image size" << "\n";
 }
 
 
@@ -189,8 +187,6 @@ void TerrainGenerator::generate_mesh(int res) {
 	std::vector<Fyredon::Vert> verts;
 	std::vector<Fyredon::GLuint> inds;
 
-	//std::cout << "z res " << image_height/((float)image_height / (float)res) << "\n";
-	//std::cout << "x res " << image_width/((float)image_width / (float)res) << "\n";
 
 	terrain_res = res;
 
