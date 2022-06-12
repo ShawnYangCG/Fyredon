@@ -20,7 +20,7 @@ public:
 	enum config { EDIT_VIEW_HELP_ABOUT = 0, DEBUG };
 
 	GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y_pad = 2);
-
+	~GUI_Menu();
 	virtual void tick() override;
 	virtual void resize() override;
 
@@ -50,6 +50,7 @@ public:
 		int8_t about : 1;							// About menu
 		int8_t savestate, loadstate : 1;			// Save/Load state
 		int8_t createTerrain, pigHead, createDoll, createCamera, tree1 : 1;	  // GameObject menu
+		int8_t createNavigationDemo : 1;
 		int8_t view_renderer : 1; 
 	} menu_state;
 	void new_project();

@@ -13,6 +13,15 @@ navigation_component::navigation_component(Entity* parent)
 		std::cout << "Error: parent do not contain entity [Mesh]" << std::endl;
 	}
 	this->memmory_size = sizeof(navigation_component);
+
+	////////////wall test///////////////
+	wall = new Fyredon::Mesh_OBJ("wall", "..//Assets//Mesh//wall.obj");
+	wall->load_obj();
+	wall->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
+	wall->set_colour(glm::vec3(0.0f, 0.0f, 1.0f));
+	wall->mode = Fyredon::Render_Mode::RENDER_MESH;
+	wall->scale(glm::vec3(1.f, 2.f, 1.f));
+
 }
 
 void navigation_component::GUI_struct()
@@ -36,7 +45,8 @@ void navigation_component::GUI_struct()
 	if (ImGui::Button("Create grid"))
 	{
 		createGrid();
-		//addWalls();
+		addWalls();
+		walls2renderer();
 	}
 }
 
@@ -66,16 +76,16 @@ void navigation_component::createGrid()
 void navigation_component::getMeshDetail() 
 {
 	if (this->mesh->vert_data.size() > 0) {
-		this->min_X = this->max_X = this->mesh->vert_data[0].pos[0];
-		this->max_X = this->max_X = this->mesh->vert_data[0].pos[0];
-		this->min_Z = this->max_X = this->mesh->vert_data[0].pos[2];
-		this->max_Z = this->max_X = this->mesh->vert_data[0].pos[2];
+		this->min_X = this->mesh->vert_data[0].pos[0];
+		this->max_X = this->mesh->vert_data[0].pos[0];
+		this->min_Z = this->mesh->vert_data[0].pos[2];
+		this->max_Z = this->mesh->vert_data[0].pos[2];
 	}
-	for (int i = 0; i < this->mesh->vert_count; i++) {
+	for (int i = 0; i < this->mesh->vert_data.size(); i++) {
 		if (this->mesh->vert_data[i].pos[0] < this->min_X) {
 			this->min_X = this->mesh->vert_data[i].pos[0];
 		}
-		if (this->mesh->vert_data[i].pos[0]> this->max_X) {
+		if (this->mesh->vert_data[i].pos[0] > this->max_X) {
 			this->max_X = this->mesh->vert_data[i].pos[0];
 		}
 		if (this->mesh->vert_data[i].pos[2] < this->min_Z) {
@@ -181,5 +191,15 @@ void navigation_component::addWalls()
 	for (Pos p : walls) {
 		this->walls.push_back(p);
 		addWall(p.x, p.y);
+	}
+}
+
+void navigation_component::walls2renderer()
+{
+	for (int i = 0; i < walls.size(); i++) {
+		glm::vec2 pos = Pos2Position(walls[i]);
+		Fyredon::Mesh *newMesh = new Fyredon::Mesh(*wall);
+		newMesh->translate(glm::vec3(pos[0], 0.25f, pos[1]));
+		Fyredon::Renderer::get_renderer().submit_mesh(newMesh);
 	}
 }

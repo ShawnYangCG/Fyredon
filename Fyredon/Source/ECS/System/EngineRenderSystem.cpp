@@ -7,6 +7,18 @@ EngineRenderSystem::EngineRenderSystem(World* world, Fyredon::Renderer* renderer
 	this->renderer = renderer;
 }
 
+EngineRenderSystem::~EngineRenderSystem()
+{
+	if (renderer) {
+		renderer->~Renderer();
+		free(renderer);
+	}
+	if (camera) {
+		camera->~Camera();
+		free(camera);
+	}
+}
+
 void EngineRenderSystem::tick()
 {
 	// render camera

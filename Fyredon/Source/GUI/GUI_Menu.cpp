@@ -21,9 +21,17 @@ Fyredon::GUI_Menu::GUI_Menu(config menu_config, GUIConfig* gui_config, int32_t y
 	menu_state.play = 0, menu_state.pause = 0, menu_state.reset = 0;
 	menu_state.about = 0,
 	menu_state.createTerrain = 0, menu_state.pigHead = 0, menu_state.createDoll = 0, menu_state.createCamera = 0, menu_state.tree1 = 0;
+	menu_state.createNavigationDemo = 0;
 	newProject = new GUI_NewProjectWindow(this->gui_config->AppWidth, this->gui_config->AppHeight);
 	set_title("Fyredon Engine Version 0.0.0");
 }
+
+Fyredon::GUI_Menu::~GUI_Menu()
+{
+	if (newProject)free(newProject);
+}
+
+
 
 void Fyredon::GUI_Menu::tick()
 {
@@ -91,6 +99,7 @@ void Fyredon::GUI_Menu::main_menu()
 					}
 					if (ImGui::MenuItem("Doll")) { menu_state.createDoll = true; }
 					if (ImGui::MenuItem("Camera")) { menu_state.createCamera = true; }
+					if (ImGui::MenuItem("Navigation Demo")) { menu_state.createNavigationDemo = true; }
 					if (ImGui::MenuItem("PlaceHolder 2")) {}
 					ImGui::EndMenu(); // End Edit Menu
 				}
@@ -137,7 +146,7 @@ void Fyredon::GUI_Menu::main_menu()
 					menu_state.play = false;
 					menu_state.pause = false;
 					//======== Reset ========
-
+					menu_state.reset = true;
 					//=======================
 				}
 				ImGui::PopStyleColor();

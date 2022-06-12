@@ -1,16 +1,9 @@
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/ECS/System/NavigationSystem.h"
 
-NavigationSystem::NavigationSystem(World* world)
+NavigationSystem::NavigationSystem()
 {
-	this->world = world;
 
-	wall = new Fyredon::Mesh_OBJ("wall", "./wall.obj");
-	wall->load_obj();
-	wall->set_shader("../../shaders/mesh4.vert", "../../shaders/mesh4.frag");
-	wall->set_colour(glm::vec3(0.0f, 0.0f, 1.0f));
-	wall->mode = Fyredon::Render_Mode::RENDER_MESH;
-	wall->scale(glm::vec3(1.f, 2.f, 1.f));
 }
 
 void NavigationSystem::tick()
@@ -130,19 +123,6 @@ void NavigationSystem::printMap(list<glm::vec2> path) {
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
-}
-
-void NavigationSystem::randerWalls()
-{
-	navigation_component* navCom = (navigation_component*)this->map->getComponentByName("Navigation");
-
-	for (int i = 0; i < navCom->walls.size(); i++) {
-		glm::vec2 pos = navCom->Pos2Position(navCom->walls[i]);
-
-		wall->translate(glm::vec3(pos[0], 0.25f, pos[1]));
-		this->enrenSys->renderMesh(wall);
-		wall->translate(glm::vec3(-pos[0], -0.25f, -pos[1]));
-	}
 }
 
 #include <windows.h>

@@ -4,6 +4,8 @@
 #include "Fyredon/ECS/transform_component.h"
 #include "Fyredon/Render/Mesh.h"
 #include "Fyredon/Navigation/AStarFindPath.h"
+//#include "Fyredon/ECS/navigation_entity.h"
+//class navigation_entity;
 // 1.
 // create your own component by inherit Component class
 class navigation_component : public Component
@@ -22,17 +24,18 @@ public:
 	float min_width = 0.5;
 	list<Pos>* posList;
 	list<glm::vec2> path;
+	Fyredon::Mesh_OBJ* wall;
 	
-	float grid_width = 0;
-	float min_X_tran = 0, max_X_tran = 0, min_Z_tran = 0, max_Z_tran = 0;
-	float mid_X_tran = 0, mid_Z_tran = 0;
-	float width_tran = 0, length_tran = 0;
+	float grid_width;
+	float min_X_tran, max_X_tran, min_Z_tran, max_Z_tran;
+	float mid_X_tran, mid_Z_tran;
+	float width_tran, length_tran;
 	int widthCount = 0;
 	int lengthCount = 0;
 	// ==============
-	float min_X = 0, max_X = 0, min_Z = 0, max_Z = 0;
-	float mid_X = 0, mid_Z = 0;
-	float width = 0, length = 0;
+	float min_X, max_X, min_Z, max_Z;
+	float mid_X, mid_Z;
+	float width, length;
 
 	float min_X_grid = 0, max_X_grid = 0, min_Z_grid = 0, max_Z_grid = 0;
 	float width_grid = 0, length_grid = 0;
@@ -50,6 +53,7 @@ public:
 	glm::vec2 Pos2Position(Pos pos);
 	void addWall(int x, int y);
 	void addWalls();
+	void walls2renderer();
 	// virtual void render() override;
 private:
 	

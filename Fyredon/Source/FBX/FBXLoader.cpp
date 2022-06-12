@@ -1831,9 +1831,10 @@ bool VBOMesh::Initialize(const FbxMesh* pMesh)
 					this->lVertices[lVertexCount * VERTEX_STRIDE + 1] = static_cast<float>(lCurrentVertex[1]);
 					this->lVertices[lVertexCount * VERTEX_STRIDE + 2] = static_cast<float>(lCurrentVertex[2]);
 					this->lVertices[lVertexCount * VERTEX_STRIDE + 3] = 1;
+					/*
 					std::cout << lCurrentVertex[0]
 						<< lCurrentVertex[1]
-						<< lCurrentVertex[2] << std::endl;
+						<< lCurrentVertex[2] << std::endl;*/
 					if (mHasNormal)
 					{
 						pMesh->GetPolygonVertexNormal(lPolygonIndex, lVerticeIndex, lCurrentNormal);

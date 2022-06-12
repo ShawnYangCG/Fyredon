@@ -30,6 +30,12 @@
 #include "Fyredon/Render/Texture.h"
 #include "Fyredon/Render/Renderer.h"
 
+/*
+// Script
+#include "Fyredon/Script/LuaVM.h"
+#include <stdio.h>
+#include <direct.h>*/
+
 // Extern 
 #include "dearimgui/imgui.h"
 #include "dearimgui/imgui_impl_glfw.h"
@@ -77,6 +83,27 @@ Fyredon::EditorApplication::~EditorApplication()
 {
 	glfwDestroyWindow(window); window = nullptr;
 	glfwTerminate();
+	/*
+	if (gui_org) {
+		gui_org->~GUI_PanelOrgnizer();
+		free(gui_org);
+	}
+	
+	if (this->menuAction) {
+		this->menuAction->~MenuAction();
+		free(this->menuAction);
+	}
+
+	if (this->ECSworld) {
+		this->ECSworld->~World();
+		free(this->ECSworld);
+	}
+
+	if (this->renderSys) {
+		this->renderSys->~EngineRenderSystem();
+		free(this->renderSys);
+	}
+	*/
 }
 
 // Info : Called before application loop is ran, to do inital application setup. 
@@ -113,8 +140,16 @@ void Fyredon::EditorApplication::init(std::size_t Width, std::size_t Height, con
 	this->renderSys = new EngineRenderSystem(this->ECSworld, &renderer);
 
 	// set a default camera
-	camera_entity* camEntity = new camera_entity();
-	this->ECSworld->addCamera(camEntity);
+	//camera_entity* camEntity = new camera_entity();
+	//this->ECSworld->addCamera(camEntity);
+
+	/*
+	// Script test (demo, should be removed)
+	Fyredon::LuaVM luaVM;
+	luaVM.LoadScript("script/test.lua");
+	int result = luaVM.Call<int, int, int>("test_func", 3, 2);
+	std::cout << "test_func return: " << result << std::endl;
+	//system("pause");*/
 }
 
 std::string Fyredon::EditorApplication::create_new_project()
@@ -220,14 +255,30 @@ void Fyredon::EditorApplication::tick_engine()
 		camera.calc_basis();
 		// 
 	}
-
 }
 
 void Fyredon::EditorApplication::tick_play()
 {
 	if (((GUI_Menu*)gui_org->gui_panels["Menu"])->menu_state.play) {
-		std::cout << "play" << std::endl;
+		//================== play ==================
+		this->ECSworld->init();
+		//================== play ==================
+		this->ECSworld->play();
 	}
+	else {
+		if(!this->ECSworld->isStop())
+			this->ECSworld->stop();
+	}
+
+	if (((GUI_Menu*)gui_org->gui_panels["Menu"])->menu_state.reset) {
+		this->ECSworld->reset();
+
+		((GUI_Menu*)gui_org->gui_panels["Menu"])->menu_state.reset = false;
+	}
+
+	//============ only for test =================
+
+	//============================================
 }
 
 // Info : All operations done within the editor application for a single tick
@@ -236,6 +287,7 @@ void Fyredon::EditorApplication::tick_editor()
 	paint_begin();
 
 	tick_gui();
+	this->ECSworld->tick();
 
 	paint_end();
 }

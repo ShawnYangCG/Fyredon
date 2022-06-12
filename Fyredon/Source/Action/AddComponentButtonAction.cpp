@@ -6,7 +6,20 @@ AddComponentButtonAction::AddComponentButtonAction(Entity* parent)
 	this->parent = parent;
 }
 
+AddComponentButtonAction::~AddComponentButtonAction()
+{
+	if (this->parent) {
+		this->parent->~Entity();
+		if (this->parent)free(this->parent);
+	}
+}
+
 void AddComponentButtonAction::tick()
+{
+	
+}
+
+void AddComponentButtonAction::render()
 {
 	if (ImGui::Button("add component"))
 	{
@@ -30,7 +43,7 @@ void AddComponentButtonAction::tick()
 		ImGui::EndChild();
 		if (ImGui::Button("add"))
 		{
-			if(this->selectedComponent != -1)
+			if (this->selectedComponent != -1)
 				addComponent(this->selectedComponent);
 			this->selectedComponent = -1;
 			this->isClicked = false;
@@ -53,10 +66,11 @@ void AddComponentButtonAction::addComponent(int ALL_COMPONENTS)
 		this->parent->addComponent();
 	}
 	if (ALL_COMPONENTS == NavigationComponent) {
-		navigation_component* navCom = new navigation_component(this->parent);
-		this->parent->addComponent(navCom);
+		
+		this->parent->addComponent();
 	}
 	if (ALL_COMPONENTS == ScriptComponent) {
-		this->parent->addComponent();
+		Component* navigation = new test_move_component();
+		this->parent->addComponent(navigation);
 	}
 }

@@ -24,6 +24,7 @@ public:
 	virtual void GUI_struct() override;
 	virtual void tick() override;
 	virtual void render() override;
+	void changeMesh(Fyredon::Mesh* mesh, bool IsReplace);
 };
 // 5.
 // don't forget to add this header in ECS.h

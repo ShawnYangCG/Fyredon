@@ -24,9 +24,11 @@ private:
 public:
 	Entity();
 	Entity(std::string name);
+	~Entity();
 
 	virtual void render();
 	virtual void tick();
+	virtual void play();
 	virtual void init();
 	virtual void stop();
 	void reset();

@@ -6,6 +6,28 @@ World::World(GUI_PanelOrgnizer* gui_org)
     this->gui_org = gui_org;
 }
 
+World::~World()
+{
+    if (this->gui_org) {
+        this->gui_org->~GUI_PanelOrgnizer();
+        free(this->gui_org);
+    }
+    for (Entity* entity : entities) {
+        if (entity) {
+            entity->~Entity();
+            free(entity);
+        }
+    }
+    entities.clear();
+    for (Entity* camera : cameras) {
+        if (camera) {
+            camera->~Entity();
+            free(camera);
+        }
+    }
+    cameras.clear();
+}
+
 void World::addEntity(Entity* entity)
 {
     if (this->entityList.count(entity->getName()) == 0) {
@@ -36,6 +58,9 @@ void World::addCamera(Entity* entity)
 
 void World::init()
 {
+    for (int i = 0; i < this->cameras.size(); i++) {
+        this->cameras[i]->init();
+    }
     for (int i = 0; i < this->entities.size(); i++) {
         this->entities[i]->init();
     }
@@ -43,13 +68,35 @@ void World::init()
 
 void World::tick()
 {
+    for (int i = 0; i < this->cameras.size(); i++) {
+        this->cameras[i]->tick();
+    }
     for (int i = 0; i < this->entities.size(); i++) {
         this->entities[i]->tick();
     }
 }
 
+void World::play()
+{
+    this->is_play = true;
+    this->is_stop = false;
+    this->is_reset = false;
+    for (int i = 0; i < this->cameras.size(); i++) {
+        this->cameras[i]->play();
+    }
+    for (int i = 0; i < this->entities.size(); i++) {
+        this->entities[i]->play();
+    }
+}
+
 void World::reset()
 {
+    this->is_play = false;
+    this->is_stop = false;
+    this->is_reset = true;
+    for (int i = 0; i < this->cameras.size(); i++) {
+        this->cameras[i]->reset();
+    }
     for (int i = 0; i < this->entities.size(); i++) {
         this->entities[i]->reset();
     }
@@ -57,6 +104,12 @@ void World::reset()
 
 void World::stop()
 {
+    this->is_play = false;
+    this->is_stop = true;
+    this->is_reset = false;
+    for (int i = 0; i < this->cameras.size(); i++) {
+        this->cameras[i]->stop();
+    }
     for (int i = 0; i < this->entities.size(); i++) {
         this->entities[i]->stop();
     }
@@ -96,4 +149,19 @@ Entity* World::getCameraByName(std::string CameraName)
         return nullptr;
     }
     return this->cameras[this->cameraList[CameraName]];
+}
+
+bool World::isPlay()
+{
+    return this->is_play;
+}
+
+bool World::isStop()
+{
+    return this->is_stop;
+}
+
+bool World::isReset()
+{
+    return this->is_reset;
 }

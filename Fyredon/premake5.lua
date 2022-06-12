@@ -11,6 +11,7 @@ project "Fyredon"
 	files{
 		"Source/**/**.cpp",    -- Source/<dir>/*.cpp
 		"Source/**/**/**.cpp", -- Source/extern/dearimgui/*.cpp
+		"Source/**/**/**.c",   -- extern/lua-5.4.4/
 		"Include/**/**.h"
 	}
 
@@ -19,6 +20,8 @@ project "Fyredon"
 		"%{wks.location}/Extern/Include/",
 		"%{wks.location}/Extern/Include/dearimgui/", -- need abs dearimgui dir, for cases of : #include "imgui.h" etc.
 		"%{wks.location}/Extern/Include/FBX/",        -- need abs fbx dir, for cases of : #include "fbxsdk/fbxsdk/fbxsdk_version.h"
+		"%{wks.location}/Extern/Include/lua-5.4.4",
+		"%{wks.location}/Extern/Include/LuaBridge"
 	}
 
 	-- precompiled headers
@@ -74,3 +77,6 @@ project "Fyredon"
 
 		runtime "Release"
 		optimize "on"
+
+	filter "files:Source/Extern/lua-5.4.4/**.c"
+        flags { "NoPCH" }

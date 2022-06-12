@@ -54,14 +54,15 @@ void Fyredon::GUI_Components::draw()
 				entity = ((GUI_EntityList*)this->world->gui_org->gui_panels["Hierarchy"])->getSelectedEntity();
 			}
 			if (entity) {
-				entity->tick();
+				entity->render();
 			}
 			if (this->selectedEntity != entity) {
 				this->selectedEntity = entity;
+				if (actionButton)free(actionButton);
 				actionButton = new AddComponentButtonAction(entity);
 			}
 			if (this->actionButton) {
-				this->actionButton->tick();
+				this->actionButton->render();
 			}
 		}
 	}

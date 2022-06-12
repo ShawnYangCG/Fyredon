@@ -129,7 +129,7 @@ namespace Fyredon {
 		float cur_t, prev_t;
 
 		// Game World
-		GameWorld* world;
+		//GameWorld* world;
 		World* ECSworld;
 		EngineRenderSystem* renderSys;
 
