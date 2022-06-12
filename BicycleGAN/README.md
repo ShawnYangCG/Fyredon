@@ -1,3 +1,14 @@
+This code borrows heavily from the [pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix) repository.
+
+In order to use this in the context of the Fyredon Game Engine please add to input image to the to ./datasets\10color2coloredtexture2\val and ./datasets\10color2earth\val folders and then run bash ./scripts\test_textures.sh and bash ./scripts\test_textures.sh . Please then drag the results into the Asset folder wit the name ai.png
+
+Some examples:
+<img src='imgs/f00grass.png' width=850>  
+<img src='imgs/f01grass.png' width=850>  
+<img src='imgs/f03snow.png' width=850>  
+
+
+
 <img src='imgs/day2night.gif' align="right" width=360>
 
 <br><br><br><br>
@@ -181,13 +192,4 @@ If you use modules from CycleGAN or pix2pix paper, please use the following:
 }
 ```
 ### Acknowledgements
-
-This code borrows heavily from the [pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix) repository.
-
-In order to use this in the context of the Fyredon Game Engine please add to input image to the to ./datasets\10color2coloredtexture2\val and ./datasets\10color2earth\val folders and then run bash ./scripts\test_textures.sh and bash ./scripts\test_textures.sh . Please then drag the results into the Asset folder wit the name ai.png
-
-Some examples:
-<img src='imgs/f00grass.png' width=850>  
-<img src='imgs/f03.13.png' width=850>  
-<img src='imgs/f03snow.png' width=850>  
 
