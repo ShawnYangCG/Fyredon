@@ -13,27 +13,25 @@ Component::Component(std::string componentName)
 	this->memmory_size = sizeof(Component);
 }
 
-Component::~Component()
-{
-	if (componentBackup)free(componentBackup);
-}
+Component::~Component() = default;
 
 void Component::init()
 {
-	if (this->isRunning == false) {
-		// if we want rewrite this method we must contain this backup
-		if (this->componentBackup)free(this->componentBackup);
-		this->componentBackup = (Component*)malloc(this->memmory_size);
-		memcpy((void*)this->componentBackup, (void*)this, this->memmory_size);
-		this->isRunning = true;
-	}
+    // A pause/resume belongs to the same simulation session.
+    if (!hasSnapshot) {
+        initialActive = isActive;
+        hasSnapshot = true;
+    }
+    isRunning = true;
 }
 
 void Component::reset()
 {
-	memcpy((void*)this, (void*)this->componentBackup, this->memmory_size);
+    // Never byte-copy polymorphic objects, strings, containers or resource pointers.
+    if (hasSnapshot) isActive = initialActive;
+    hasSnapshot = false;
+    isRunning = false;
 }
-
 void Component::tick()
 {
 	//render();

@@ -32,6 +32,7 @@ public:
 	virtual ~Mesh_OBJ() = default; 
 
 	void load_obj();
+    const std::string& filePath() const { return file_path; }
 
 private:
 	std::string file_path; 

@@ -4,6 +4,9 @@
 	Application.h: Base Engine Editor Application : Niall, Shawn
 =============================================================================*/
 #include "Fyredon/Other/pch.h"
+#include <filesystem>
+#include <fstream>
+#include <cstdlib>
 // Implements 
 #include "Fyredon/Core/Application.h"
 
@@ -70,7 +73,11 @@ Fyredon::EditorApplication::EditorApplication()
 	last_pitchoffs(0.f), last_zoom(0.f), window_title("null")
 {
 	// Camera (to move to world)
-	camera = Camera(glm::vec3(3.f, 1.f, -1.f), 80.f, RENDER_RES_X / RENDER_RES_Y, true);
+	camera = Camera(glm::vec3(3.f, 3.f, 0.f), 60.f, static_cast<float>(RENDER_RES_X) / RENDER_RES_Y, true);
+	// basis_z points backwards; +45 degrees looks down at the origin from +X.
+	camera.yaw = 0.f;
+	camera.pitch = 45.f;
+	camera.calc_basis();
 
 	gui_org = new GUI_PanelOrgnizer();
 }
@@ -210,12 +217,7 @@ void Fyredon::EditorApplication::resize()
 		if (iter->second) iter->second->resize();
 	}
 
-	int newWidth = guiConfig.AppWidth - guiConfig.leftBar_width - guiConfig.rightBar_width - guiConfig.xOffset;
-	int yheight = guiConfig.leftBar_height > guiConfig.rightBar_height ?
-		guiConfig.leftBar_height : guiConfig.rightBar_height;
-	int newHeight = yheight - guiConfig.yOffset;
-	glViewport(0, 0, newWidth, newHeight);
-	Renderer::get_renderer().resize(newWidth, newHeight);
+	// The Scene panel supplies its actual content dimensions to the renderer.
 }
 
 // Info : This should be encapsulated into its own class later for game + engine state
@@ -377,6 +379,7 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, MSAA_SAMPLES);
+	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 #ifdef EDITOR_WINDOW_RESIZE
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 #else
@@ -396,6 +399,14 @@ void Fyredon::EditorApplication::setup_ogl_window_contex()
 		glfwTerminate();
 		std::terminate();
 	}
+
+	// Capture the initial maximized size before callbacks are installed.
+	int framebufferWidth, framebufferHeight;
+	glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+	width = GLFWState.width = framebufferWidth;
+	height = GLFWState.height = framebufferHeight;
+	guiConfig.AppWidth = framebufferWidth;
+	guiConfig.AppHeight = framebufferHeight;
 
 	// ============= Set GLFW Callbacks =============
 	// Window Callack
@@ -463,24 +474,8 @@ void Fyredon::EditorApplication::update_camera()
 	if (GLFWState.width != 0 && GLFWState.height != 0)
 		width = GLFWState.width, height = GLFWState.height;
 
-	// Only set yaw,pitch if delta from last tick (update_camera() call). 
-	float delta_yaw = GLFWState.mouse_offset_x != last_yawoffs ? GLFWState.mouse_offset_x : 0.f;
-	float delta_pitch = GLFWState.mouse_offset_y != last_pitchoffs ? GLFWState.mouse_offset_y : 0.f;
-	float delta_zoom = GLFWState.scroll_y != last_zoom ? GLFWState.scroll_y : 0.f;
-	// Set last offsets
-	last_yawoffs = GLFWState.mouse_offset_x;
-	last_pitchoffs = GLFWState.mouse_offset_y;
-	last_zoom = GLFWState.scroll_y;
-
-	// Update Camera State
-	camera.update_camera(window, 1.f, dt, delta_yaw, delta_pitch);
-
-	// Update Aspect Ratio if changed
-	if (GLFWState.width && GLFWState.height)
-	{
-		float ar = width / height;
-		camera.aspect_ratio = ar;
-	}
+	// Scene viewport owns mouse navigation so other panels do not move the camera.
+	// Projection dimensions are set by the renderer from the Scene viewport.
 }
 
 // ============= ImGui GUI Setup =============
@@ -516,7 +511,23 @@ void Fyredon::EditorApplication::setup_gui()
 	// ImGui Context Setup
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGuiIO& io = ImGui::GetIO();
+	// Load Windows' Chinese font through a Unicode path; ImGui owns the copied bytes.
+	if (const wchar_t* windowsDir = _wgetenv(L"WINDIR")) {
+		std::ifstream font(std::filesystem::path(windowsDir) / L"Fonts" / L"msyh.ttc",
+			std::ios::binary | std::ios::ate);
+		if (font) {
+			const auto bytes = font.tellg();
+			if (bytes > 0 && bytes < 100000000) {
+				void* data = ImGui::MemAlloc(static_cast<std::size_t>(bytes));
+				font.seekg(0);
+				if (font.read(static_cast<char*>(data), bytes))
+					io.Fonts->AddFontFromMemoryTTF(data, static_cast<int>(bytes), 16.f, nullptr,
+						io.Fonts->GetGlyphRangesChineseFull());
+				else ImGui::MemFree(data);
+			}
+		}
+	}
 	ImGui::StyleColorsDark();
 
 	// ImGui Impelementation Setup

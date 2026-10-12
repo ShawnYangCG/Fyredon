@@ -12,6 +12,7 @@
 
 // Std Headers
 #include <fstream>
+#include <filesystem>
 #include <sstream>
 
 #pragma warning( disable : 26812) 
@@ -21,13 +22,17 @@
 Fyredon::Mesh_OBJ::Mesh_OBJ(const char* name, const char* filePath)
 	: Mesh(name), file_path(filePath), has_texcoords(false) {}
 
-// Info : Load Obj, assuming triangle based meshes with indices. 
+// Info : Load indexed OBJ triangles, quads and convex polygon faces. 
 void Fyredon::Mesh_OBJ::load_obj()
 {
-	has_texcoords = false; 
+	has_texcoords = false;
+	obj_data.v_p.clear();
+	obj_data.v_n.clear();
+	obj_data.v_t.clear();
+	vert_data.clear();
 
 	// Check file exists
-	std::ifstream in(file_path);
+	std::ifstream in(std::filesystem::u8path(file_path));
 	if (!in.is_open())
 	{
 		std::cerr << "ERROR::Mesh_OBJ::" << name << ":: Invalid .obj file passed" << std::endl;
@@ -80,61 +85,50 @@ void Fyredon::Mesh_OBJ::load_obj()
 			obj_data.v_t.emplace_back(uu, vv, 0.f);
 			dbg << "vt_" << obj_data.v_t.size() << " = " << uu << "," << vv << "\n";
 		}
-		// Faces / Indices
+		// Read the complete face, then triangulate it without changing its winding.
 		if (str == "f")
 		{
-			if (use_tex) // Get each face vertex (w/ texture coords)
+			std::vector<Vert> face;
+			std::string token;
+			while (ss >> token)
 			{
-				for (int i = 0; i < 3; ++i)
-				{
-					// Vert Postion & Normal Indices. 
-					int32_t i_vp, i_vn, i_vt;
-					char c; // scratch write
-
-					// Face Vertex Data
-					ss >> i_vp; // v_p index
-					ss.get(c); // '/'
-					ss.get(c); 
-					ss >> i_vt; // 'v_t' index
-					ss.get(c); 
-					ss.get(c);
-					ss >> i_vn; // 'v_n' index
-
-					// Create Vertex
-					Vert vertex;
-					// neg 1 offset for obj indices '1' based. 
-					vertex.pos    = obj_data.v_p[i_vp - 1];
-					vertex.normal = obj_data.v_n[i_vn - 1];
-					vertex.uv     = obj_data.v_t[i_vt - 1];
-					vertex.col    = glm::vec3(1.f, 1.f, 1.f);
-
-					// Append to vert array
-					vert_data.push_back(vertex);
-				}
+				if (token[0] == '#') break;
+				std::vector<std::string> indices;
+				std::istringstream fields(token);
+				std::string field;
+				while (std::getline(fields, field, '/')) indices.push_back(field);
+				auto index = [&](const std::string& value, std::size_t count) {
+					const int raw = std::stoi(value);
+					const int resolved = raw > 0 ? raw - 1 : static_cast<int>(count) + raw;
+					if (raw == 0 || resolved < 0 || resolved >= static_cast<int>(count))
+						throw std::runtime_error("Invalid OBJ index in " + file_path);
+					return resolved;
+				};
+				Vert vertex;
+				vertex.pos = obj_data.v_p.at(index(indices.at(0), obj_data.v_p.size()));
+				vertex.normal = glm::vec3(0.f);
+				vertex.uv = glm::vec3(0.f);
+				vertex.col = glm::vec3(1.f);
+				// Support standard v/vt/vn and v//vn, plus this project's v//vt//vn.
+				const bool legacy = indices.size() == 5;
+				const std::size_t uvSlot = legacy ? 2 : 1;
+				const std::size_t normalSlot = legacy ? 4 : 2;
+				if (indices.size() > uvSlot && !indices[uvSlot].empty())
+					vertex.uv = obj_data.v_t.at(index(indices[uvSlot], obj_data.v_t.size()));
+				if (indices.size() > normalSlot && !indices[normalSlot].empty())
+					vertex.normal = obj_data.v_n.at(index(indices[normalSlot], obj_data.v_n.size()));
+				face.push_back(vertex);
 			}
-			else // Get each face vertex (wo/ texture coords)
+			if (face.size() < 3) throw std::runtime_error("Incomplete OBJ face in " + file_path);
+			// Triangle fan supports triangles, quads and convex polygons.
+			for (std::size_t i = 1; i + 1 < face.size(); ++i)
 			{
-				for (int i = 0; i < 3; ++i)
-				{
-					// Vert Postion & Normal Indices. 
-					int32_t i_vp, i_vn;
-					char c; // scratch write
-
-					// Face Vertex Data
-					ss >> i_vp; // v_p index
-					ss.get(); // '/'
-					ss.get(); 
-					ss >> i_vn; // 'v_n' index
-
-					// Create Vertex
-					Vert vertex;
-					// neg 1 offset for obj indices '1' based. 
-					vertex.pos = obj_data.v_p[i_vp - 1];
-					vertex.normal = obj_data.v_n[i_vn - 1];
-					vertex.uv = glm::vec3(0.f, 0.f, 0.f);
-					vertex.col = glm::vec3(1.f, 1.f, 1.f);
-
-					// Append to vert array
+				Vert triangle[] = { face[0], face[i], face[i + 1] };
+				const glm::vec3 crossNormal = glm::cross(triangle[1].pos - triangle[0].pos,
+					triangle[2].pos - triangle[0].pos);
+				for (auto& vertex : triangle) {
+					if (glm::length(vertex.normal) == 0.f && glm::length(crossNormal) > 0.f)
+						vertex.normal = glm::normalize(crossNormal);
 					vert_data.push_back(vertex);
 				}
 			}

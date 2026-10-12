@@ -32,6 +32,7 @@ protected:
 	int height = 0;
 	int posX = 0;
 	int posY = 0;
+	bool camera_dragging = false;
 };
 
 }

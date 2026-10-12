@@ -18,14 +18,16 @@ uniform mat3 model_normal;
 
 out vec3 colour; 
 out vec2 uv; 
-out vec3 poscol; 
+out vec3 poscol;
+out vec3 position_view; 
 out vec3 normal_world; 
 
 
 void main()
 {
 	vec4 pos = proj * view * model * vec4(v_P, 1.0);
-	gl_Position = pos; 
+	gl_Position = pos;
+	position_view = vec3(view * model * vec4(v_P, 1.0)); 
 	
 	normal_world = model_normal * v_N; 
 	poscol = vec3(pos.x, pos.y, pos.z);

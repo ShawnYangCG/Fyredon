@@ -1,17 +1,18 @@
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/ECS/navigation_entity.h"
+#include "Fyredon/ECS/navigation_debug_component.h"
 
 navigation_entity::navigation_entity(){
 	this->setName("Navigation System");
 	this->navigationSys = new NavigationSystem();
-	this->addComponent();
+	this->addComponent(new navigation_debug_component(this->navigationSys));
 }
 
 navigation_entity::navigation_entity(NavigationSystem* navigationSys)
 {
 	this->setName("Navigation System");
 	this->navigationSys = navigationSys;
-	this->addComponent();
+	this->addComponent(new navigation_debug_component(this->navigationSys));
 }
 
 void navigation_entity::play()

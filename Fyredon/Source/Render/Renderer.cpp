@@ -49,6 +49,8 @@ Fyredon::Renderer::Renderer()
 
 Fyredon::Renderer::~Renderer()
 {
+	if (background_shader) delete background_shader;
+	if (background_vao) glDeleteVertexArrays(1, &background_vao);
 	// Dealloc FB Resources
 	if (framebuffers.render_framebuffer_s)  delete (framebuffers.render_framebuffer_s);
 	if (framebuffers.render_framebuffer_ms) delete (framebuffers.render_framebuffer_ms);
@@ -90,6 +92,11 @@ void Fyredon::Renderer::init(GLFWwindow* ogl_context, int8_t sample_count)
 	framebuffers.render_framebuffer_ms->check();
 	#endif 
 
+	if (!background_shader) {
+		background_shader = new Shader("Background", "../Shaders/background.vert", "../Shaders/background.frag");
+		background_shader->load();
+		glGenVertexArrays(1, &background_vao);
+	}
 	// Create Viewer Primitives
 	if (!has_testprims)
 	{
@@ -124,6 +131,7 @@ void Fyredon::Renderer::submit_light(Light* light)
 
 void Fyredon::Renderer::resize(int width, int height)
 {
+	if (width <= 0 || height <= 0 || (width == this->width && height == this->height)) return;
 	this->width  = width;
 	this->height = height;
 	init(ogl_wincontext, msaa_samples);
@@ -155,10 +163,28 @@ void Fyredon::Renderer::render()
 // Info : Basic forward rendering pipeline from some camera, render to framebuffer.
 void Fyredon::Renderer::render_camera(Camera &cam_ref)
 {
+	cam_ref.aspect_ratio = static_cast<float>(width) / height;
+	cam_ref.viewport_scale = static_cast<float>(height) / RENDER_RES_Y;
+	glViewport(0, 0, width, height);
 	// ==================== Render State ====================
 	// Enforce base renderer flags
 	render_prep();
 
+	auto setLighting = [&](Shader& shader) {
+		shader.setVec("camPos_world", cam_ref.position);
+		shader.setVec("lightPos_world", *flags.light_pos);
+		shader.setFloat("lightStr", *flags.light_str);
+		// Other custom shaders may not implement the optional lighting controls.
+		if (glGetUniformLocation(shader.ID, "lightType") < 0) return;
+		shader.setInt("lightType", environment.light_type);
+		shader.setVec("lightColour", environment.light_colour);
+		shader.setVec("lightDirection", environment.light_direction);
+		shader.setVec("ambientColour", environment.ambient_colour);
+		shader.setFloat("ambientStrength", environment.ambient_strength);
+		shader.setFloat("specularStrength", environment.specular_strength);
+		shader.setFloat("roughness", environment.roughness);
+	};
+	if (viewer_prims.test_mesh) setLighting(viewer_prims.test_mesh->shader);
 	if(viewer_prims.test_mesh) // Update Test Mesh
 	{
 		viewer_prims.test_mesh->shader.setVec("camPos_world", cam_ref.position);
@@ -170,6 +196,24 @@ void Fyredon::Renderer::render_camera(Camera &cam_ref)
 	framebuffers.render_framebuffer_ms->bind_clear();
 	GL_ERROR();
 
+	// Draw a camera-oriented sky behind all geometry without writing depth.
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
+	glDisable(GL_BLEND);
+	background_shader->setInt("backgroundMode", environment.background);
+	background_shader->setVec("solidColour", environment.solid);
+	background_shader->setVec("topColour", environment.sky_top);
+	background_shader->setVec("horizonColour", environment.sky_horizon);
+	background_shader->setVec("bottomColour", environment.sky_bottom);
+	background_shader->setMat4("inverseProjection", glm::inverse(cam_ref.get_proj_matrix()));
+	background_shader->setMat4("inverseView", glm::inverse(cam_ref.get_view_matrix()));
+	glBindVertexArray(background_vao);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+	glUseProgram(0);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 	// ==================== Render Viewer Primtivies ====================
 	// Draw Grid 
 
@@ -202,6 +246,7 @@ void Fyredon::Renderer::render_camera(Camera &cam_ref)
 	{
 		for (Mesh *p : meshes)
 		{
+			setLighting(p->shader);
 			// Set Shared Uniforms
 			p->shader.setVec("camPos_world",   cam_ref.position);
 			p->shader.setVec("lightPos_world", *flags.light_pos);
@@ -277,3 +322,11 @@ void Fyredon::Renderer::create_render_prims()
 	viewer_prims.axis->translate(glm::vec3(0.f, 0.01f, 0.f));
 }
 
+
+void Fyredon::Renderer::remove_mesh(Mesh* mesh)
+{
+    meshes.erase(std::remove(meshes.begin(), meshes.end(), mesh), meshes.end());
+    // Commands are keyed by name and may be shared with another submitted mesh.
+    if (std::none_of(meshes.begin(), meshes.end(), [mesh](Mesh* other){ return other->name == mesh->name; }))
+        commands.erase(mesh->name);
+}

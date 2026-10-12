@@ -19,7 +19,7 @@ private:
 	/// <param name="pos">position that need judge</param>
 	/// <returns>Determine if the position is out of bounds</returns>
 	inline bool isLegelPos(const Pos& pos) const {
-		return (pos.y >= 0) && (!width > 0 || pos.y < width) && (pos.x >= 0) && (!height > 0 || pos.x < height);
+		return pos.x >= 0 && pos.y >= 0 && (width <= 0 || pos.x < width) && (height <= 0 || pos.y < height);
 	}
 
 	/// <summary>
@@ -111,7 +111,7 @@ public:
 	/// <param name="pos"></param>
 	/// <param name="passable"></param>
 	void setImPassable(const Pos& pos, const bool passable) {
-		if (!isLegelPos(pos)) throw invalid_argument("the point is out of bounds£¡");
+		if (!isLegelPos(pos)) throw invalid_argument("the point is out of boundsï¿½ï¿½");
 		passableMsg[pos] = passable;
 	}
 
@@ -122,10 +122,11 @@ public:
 	/// <param name="end">end position</param>
 	/// <returns>a list of path</returns>
 	list<Pos>* find(const Pos& start, const Pos& end) const {
-		if (!isLegelPos(start)) throw invalid_argument("The start point is out of bounds£¡");
-		if (!isLegelPos(end)) throw invalid_argument("The end point is out of bounds£¡");
+		if (!isLegelPos(start)) throw invalid_argument("The start point is out of boundsï¿½ï¿½");
+		if (!isLegelPos(end)) throw invalid_argument("The end point is out of boundsï¿½ï¿½");
 
-		list<Node*> GC;		// Used to collect objects for garbage collection
+		if (!isPassable(start) || !isPassable(end)) return nullptr;
+        list<Node*> GC;		// Used to collect objects for garbage collection
 
 		map<Pos, bool> close_map;												// Positions that have already been visited
 		priority_queue<Node, vector<Node>, Node::isSecondPriority> open_set;	// Positions that accessible but have not been visited
@@ -135,6 +136,7 @@ public:
 		while (!open_set.empty()) {
 
 			// get the node with lowest cost
+			if (close_map[open_set.top().v]) { open_set.pop(); continue; }
 			auto* best = new Node(open_set.top());
 			GC.push_back(best);		// Record the garbage object need to be collected
 
@@ -172,7 +174,8 @@ public:
 		}
 
 		// traverse all of the possibile nodes, the end point cannot be reached
-		return {};
+		for (auto node : GC) delete node;
+		return nullptr;
 	}
 };
 

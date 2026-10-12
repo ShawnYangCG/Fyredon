@@ -58,8 +58,10 @@ void EngineRenderSystem::tick()
 			mesh_component* meCom = (mesh_component*)entity->getComponentByName("Mesh");
 			transform_component* transf = (transform_component*)entity->getComponentByName("Transform");
 			if (transf->isChanged) {
-				Fyredon::Mesh* mesh = (Fyredon::Mesh*)malloc(sizeof(Fyredon::Mesh));
-				memcpy((void*)mesh, (void*)meCom->mesh, sizeof(Fyredon::Mesh));
+				// Animation owns and updates the source vertex storage. Copy only its base
+                // transform, never memcpy a polymorphic mesh or its vectors.
+                auto* mesh = meCom->mesh_render;
+                mesh->model = meCom->mesh->model;
 				float TranslationX, TranslationY, TranslationZ;
 				float ScaleX, ScaleY, ScaleZ;
 				float RotationX, RotationY, RotationZ;
@@ -78,8 +80,6 @@ void EngineRenderSystem::tick()
 				ScaleY = transf->matrixScale[1];
 				ScaleZ = transf->matrixScale[2];
 				mesh->scale(glm::vec3(ScaleX, ScaleY, ScaleZ));
-				memcpy((void*)meCom->mesh_render, (void*)mesh, sizeof(Fyredon::Mesh));
-				free(mesh);
 			}
 		}
 	}

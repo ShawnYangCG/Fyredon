@@ -41,13 +41,14 @@ public:
 	// Camera Data
 	float sensitvity;
 	float fov, aspect_ratio, near_plane, far_plane;
+	float viewport_scale = 1.0f; // Preserve pixel scale when the viewport is resized.
 	bool free_look;
 
 public:
 	glm::mat4 get_view_matrix();
 	glm::mat4 get_proj_matrix();
 
-	void update_camera(GLFWwindow *window, float Camera_Speed, float dt, float yaw, float pitch);
+	void update_camera(float deltaX, float deltaY, float wheel, bool pan);
 
 	std::ostringstream debug();
 	void calc_basis();

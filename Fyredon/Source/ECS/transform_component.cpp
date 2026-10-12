@@ -19,16 +19,32 @@ void transform_component::tick()
 	checkChanged();
 }
 
-void transform_component::reset()
+void transform_component::init()
 {
-	Component::reset();
-	std::cout << this->matrixTranslation[0] 
-		<< this->matrixTranslation[1]
-		<< this->matrixTranslation[2] 
-		<< std::endl;
-	this->isChanged = true;
+    if (!hasTransformSnapshot) {
+        for (int i = 0; i < 3; ++i) {
+            initialTranslation[i] = matrixTranslation[i];
+            initialRotation[i] = matrixRotation[i];
+            initialScale[i] = matrixScale[i];
+        }
+        hasTransformSnapshot = true;
+    }
+    Component::init();
 }
 
+void transform_component::reset()
+{
+    if (hasTransformSnapshot) {
+        for (int i = 0; i < 3; ++i) {
+            matrixTranslation[i] = initialTranslation[i];
+            matrixRotation[i] = initialRotation[i];
+            matrixScale[i] = initialScale[i];
+        }
+        hasTransformSnapshot = false;
+    }
+    Component::reset();
+    this->isChanged = true;
+}
 void transform_component::checkChanged()
 {
 	if ((matrixTranslation_check[0] != matrixTranslation[0] ||

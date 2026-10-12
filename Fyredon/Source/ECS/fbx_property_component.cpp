@@ -1,125 +1,78 @@
 #include "Fyredon/Other/pch.h"
 #include "Fyredon/ECS/fbx_property_component.h"
-
-fbx_property_component::fbx_property_component()
-{
-	this->componentName = "Animation";
-	this->memmory_size = sizeof(fbx_property_component);
+#include "Fyredon/ECS/mesh_component.h"
+#include "Fyredon/FBX/fbx_mesh.h"
+#include <algorithm>
+#include <cmath>
+fbx_property_component::fbx_property_component(){componentName="Animation";}
+fbx_property_component::fbx_property_component(float,float,float):fbx_property_component(){}
+fbx_mesh* fbx_property_component::mesh(){
+    auto* c=static_cast<mesh_component*>(parent->getComponentByName("Mesh"));
+    return c?dynamic_cast<fbx_mesh*>(c->mesh):nullptr;
+}
+void fbx_property_component::configure(){
+    if(configured || !mesh())return;
+    startTime=0;endTime=static_cast<float>(std::round(mesh()->duration*mesh()->fps));
+    cursor=0;currentFrameIndex=0;lastTick=glfwGetTime();configured=true;
+}
+void fbx_property_component::GUI_struct(){
+    configure();auto* m=mesh();if(!m)return;
+    if(!m->clips.empty() && ImGui::BeginCombo("Clip",m->clips[m->clip].c_str())){
+        for(int i=0;i<static_cast<int>(m->clips.size());++i)if(ImGui::Selectable(m->clips[i].c_str(),m->clip==i)){
+            m->selectClip(i);configured=false;configure();
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::Text("Duration: %.3f s | FPS: %.2f",m->duration,m->fps);
+    ImGui::SliderFloat("Speed",&speed,0.f,4.f);
+    ImGui::InputFloat("Start frame",&startTime,1.f);
+    ImGui::InputFloat("End frame",&endTime,1.f);
+    checkValid();
+    if(navigationControlled) ImGui::TextUnformatted(isPlay ? "Navigation: walking" : "Navigation: stopped");
+    else if(ImGui::Button(isPlay?"Pause":"Play")){if(isPlay)stop();else play();}
+    ImGui::SameLine();if(ImGui::Button("Reset"))reset();
+    if(ImGui::SliderInt("Current frame",&currentFrameIndex,static_cast<int>(startTime),static_cast<int>(endTime))){
+        cursor=currentFrameIndex;lastTick=glfwGetTime();m->playCurrentFrame(currentFrameIndex);
+    }
+}
+void fbx_property_component::checkValid(){
+    auto* m=mesh();if(!m)return;
+    const float maxFrame=static_cast<float>(std::round(m->duration*m->fps));
+    startTime=std::max(0.f,std::min(startTime,maxFrame));
+    endTime=std::max(startTime,std::min(endTime,maxFrame));
+    speed=std::max(0.f,std::min(speed,4.f));
+    cursor=std::max(static_cast<double>(startTime),std::min(cursor,static_cast<double>(endTime)));
+}
+void fbx_property_component::tick(){playAnimation();}
+void fbx_property_component::play(){if(navigationControlled)return;configure();if(!isPlay)lastTick=glfwGetTime();isPlay=true;}
+void fbx_property_component::stop(){isPlay=false;lastTick=glfwGetTime();}
+void fbx_property_component::reset(){configure();stop();cursor=startTime;currentFrameIndex=static_cast<int>(cursor);if(mesh())mesh()->playCurrentFrame(currentFrameIndex);}
+void fbx_property_component::setPlay(){play();}
+void fbx_property_component::playAnimation(){
+    configure();auto* m=mesh();if(!m)return;checkValid();
+    double now=glfwGetTime();double dt=std::max(0.0,now-lastTick);lastTick=now;
+    if(isPlay && isActive && endTime>startTime){
+        cursor+=dt*m->fps*speed;
+        cursor=startTime+std::fmod(cursor-startTime,endTime-startTime);
+    }
+    currentFrameIndex=static_cast<int>(cursor);
+    m->sample(m->start_seconds+std::min(cursor/m->fps,m->duration));
 }
 
-fbx_property_component::fbx_property_component(float startTime, float endTime, float speed) {
-	this->componentName = "Animation";
-	this->startTime = startTime;
-	this->endTime = endTime;
-	this->speed = speed;
-	this->memmory_size = sizeof(fbx_property_component);
-}
-
-void fbx_property_component::GUI_struct()
+void fbx_property_component::setNavigationControlled(bool enabled)
 {
-	ImGui::InputFloat("speed", &this->speed);
-	ImGui::InputFloat("start time", &this->startTime);
-	ImGui::InputFloat("end time", &this->endTime);
-	if (ImGui::Button("play"))
-	{
-		if (this->isPlay) {//play -> pause
-			this->isPlay = false;
-			pause_time_start = clock();
-
-		}
-		else {// pause -> play
-			this->isPlay = true;
-			if (!this->isReset) {
-				pause_time_end = clock();
-				this->pause_time += this->pause_time_end - this->pause_time_start;
-			}
-		}
-		if (this->isReset) {
-			pause_time_start = pause_time_end;
-			this->timer_start = clock();
-			this->isReset = false;
-			this->pause_time = 0;
-		}
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Reset"))
-	{
-		this->isPlay = false;
-		this->isReset = true;
-		this->currentFrameIndex = this->startTime;
-	}
-	ImGui::InputInt("current frame", &this->currentFrameIndex);
-	checkValid();
+    navigationControlled=enabled;
+    stop();
 }
-
-void fbx_property_component::tick()
+void fbx_property_component::setNavigating(bool moving)
 {
-	playAnimation();
+    if(!navigationControlled)return;
+    configure();
+    if(isPlay!=moving)lastTick=glfwGetTime();
+    isPlay=moving;
 }
-
-void fbx_property_component::play()
+void fbx_property_component::meshChanged()
 {
-	if(!this->isPlay) {// pause -> play
-		this->isPlay = true;
-		if (!this->isReset) {
-			pause_time_end = clock();
-			this->pause_time += this->pause_time_end - this->pause_time_start;
-		}
-	}
-	if (this->isReset) {
-		pause_time_start = pause_time_end;
-		this->timer_start = clock();
-		this->isReset = false;
-		this->pause_time = 0;
-	}
-}
-
-void fbx_property_component::stop()
-{
-	if (this->isPlay) {//play -> pause
-		this->isPlay = false;
-		pause_time_start = clock();
-	}
-}
-
-void fbx_property_component::reset()
-{
-	this->isPlay = false;
-	this->isReset = true;
-	this->currentFrameIndex = this->startTime;
-}
-
-void fbx_property_component::playAnimation()
-{
-	fbx_entity* FBXentity = (fbx_entity*)this->parent;
-	fbx_mesh* mesh = (fbx_mesh*)((mesh_component*)FBXentity->getComponentByName("Mesh"))->mesh;
-	if (this->isPlay) {
-		this->timer_current = clock();
-		time_t T1 = this->timer_current - this->timer_start;
-		this->currentFrameIndex =
-			(int)(this->startTime + (T1 - this->pause_time) / this->secondPerFrame * this->speed)
-			% (int)(this->endTime - this->startTime);
-	}
-	mesh->playCurrentFrame(this->currentFrameIndex);
-}
-
-void fbx_property_component::checkValid()
-{
-	if (this->startTime < 0)
-		this->startTime = 0;
-	if (this->endTime < this->startTime)
-		this->startTime = this->endTime;
-	if (this->currentFrameIndex < this->startTime)
-		this->currentFrameIndex = this->startTime;
-	if (this->currentFrameIndex > this->endTime)
-		this->currentFrameIndex = this->endTime;
-}
-
-void fbx_property_component::setPlay()
-{
-	this->isPlay = true;
-	if (this->isReset) {
-		this->timer_start = clock();
-		this->isReset = false;
-	}
+    stop();configured=false;startTime=endTime=0;cursor=0;currentFrameIndex=0;
+    configure();
 }

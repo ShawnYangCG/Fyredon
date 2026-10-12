@@ -20,6 +20,7 @@ class GUI_RendererSettings : public GUI_Panel
 {
 public:
 	GUI_RendererSettings();
+	bool visible = false;
 
 	virtual void tick() override; 
 	virtual void resize() override;

@@ -11,6 +11,8 @@
 
 // Extern
 #include "glm/common.hpp"
+#include "GLEW/glew.h"
+#include <algorithm>
 
 #include <filesystem>
 
@@ -24,6 +26,14 @@ Fyredon::GroundPlane::GroundPlane()
 	set_shader("..//Shaders//ground.vert", "..//Shaders//ground.frag");
 	load_texture("..//Assets//Images//Misc//grid_RGB.png", 0);
 	tex->set_params(Texture::filter_type::LINEAR);
+	tex->bind();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	if (GLEW_EXT_texture_filter_anisotropic) {
+		GLfloat maxAnisotropy = 1.0f;
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, std::min(16.0f, maxAnisotropy));
+	}
+	tex->unbind();
 	set_colour(glm::vec3(1.f, 0.f, 0.f));
 	mode = Render_Mode::RENDER_MESH;
 }

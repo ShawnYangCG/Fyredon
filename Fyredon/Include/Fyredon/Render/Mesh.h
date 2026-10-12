@@ -83,7 +83,7 @@ public:
 	virtual bool check_state() const;
 
 	// Setters
-	void set_data_mesh(const std::vector<Vert>& data);
+	void set_data_mesh(const std::vector<Vert>& data, bool deduplicate = true);
 
 	void set_colour(const glm::vec3& col);
 
@@ -143,6 +143,8 @@ public:
 	// Texture State
 	bool use_tex;
 	TextureImage* tex;
+	glm::vec2 uv_offset = glm::vec2(0.f);
+	glm::vec2 uv_scale = glm::vec2(1.f);
 
 	std::string name;
 };

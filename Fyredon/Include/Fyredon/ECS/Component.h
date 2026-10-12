@@ -16,7 +16,8 @@ public:
 	// ==============
 private:
 	// you need to put value into this truct when initialize
-	void* componentBackup = nullptr;
+	bool hasSnapshot = false;
+    bool initialActive = true;
 
 protected:
 	int memmory_size = 0;

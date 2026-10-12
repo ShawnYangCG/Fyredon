@@ -122,12 +122,20 @@ void Fyredon::MenuAction::createCamera()
 
 void Fyredon::MenuAction::createNavigationDemo()
 {
+	auto* settings = static_cast<GUI_RendererSettings*>(panelOrgnizer->gui_panels.at("setting"));
+	settings->state.draw_grid = false;
+	settings->state.draw_axis = false;
+
 	navigation_entity* navigationSystem = new navigation_entity();
 	this->world->addEntity(navigationSystem);
 
 	// add doll
-	fbx_entity* fbxObject = new fbx_entity("human_walk", "..//Assets//Mesh//walking_2_1.fbx");
-	fbxObject->init("..//Shaders//human.vert", "..//Shaders//human.frag", 0.0, 48.0, 3.0);
+	fbx_entity* fbxObject = new fbx_entity("human_walk", "..//Assets//Mesh//MC.fbx");
+	fbxObject->init("..//Shaders//human.vert", "..//Shaders//human.frag", 0.0, 48.0, 3.0, glm::vec3(0.f), "../Assets/Images/human/MC.png");
+    // MC exports at ~8.6 cm tall; present it at ~1.72 m in this demo.
+    auto* characterTransform = static_cast<transform_component*>(fbxObject->getComponentByName("Transform"));
+    for (auto& scale : characterTransform->matrixScale) scale = 20.f;
+
 	Component* navigation = new test_move_component();
 	fbxObject->addComponent(navigation);
 	this->world->addEntity(fbxObject);
@@ -137,16 +145,27 @@ void Fyredon::MenuAction::createNavigationDemo()
 	//this->navSys->addEntity(fbxObject1);
 
 	// add target
-	Mesh_OBJ* mesh = new Mesh_OBJ("target", "..//Assets//Mesh//target.obj");
+	Mesh_OBJ* mesh = new Mesh_OBJ("target", "../Assets/Mesh/treasure_box.obj");
 	mesh->load_obj();
 	mesh->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
-	mesh->translate(glm::vec3(0.0f, 0.8f, -0.1f));
-	mesh->set_colour(glm::vec3(1.f, 0.f, 0.f));
+	    // Keep the chest centered on the target cell with its base on the ground.
+    if (!mesh->vert_data.empty()) {
+        glm::vec3 lo=mesh->vert_data.front().pos, hi=lo;
+        for (const auto& vertex:mesh->vert_data) {
+            lo=glm::min(lo,vertex.pos);hi=glm::max(hi,vertex.pos);
+        }
+        mesh->translate(glm::vec3(-(lo.x+hi.x)*0.5f,-lo.y,-(lo.z+hi.z)*0.5f));
+    }
+    mesh->set_colour(glm::vec3(1.f));
+    mesh->load_texture("../Assets/Images/Terrain/treasure_box.png", 0);
 	mesh->scale(glm::vec3(1.f));
 	mesh->mode = Render_Mode::RENDER_MESH;
 
 	Entity* target = new Entity("target");
 	target->addTransformComponent();
+    auto* targetTransform=static_cast<transform_component*>(target->getComponentByName("Transform"));
+    targetTransform->matrixTranslation[1]=-0.6f;
+    for(auto& scale:targetTransform->matrixScale)scale=0.4f;
 	mesh_component* meshCom1 = new mesh_component(mesh);
 	target->addComponent(meshCom1);
 	this->world->addEntity(target);
@@ -157,6 +176,7 @@ void Fyredon::MenuAction::createNavigationDemo()
 	plane5x5->load_obj();
 	plane5x5->set_shader("..//Shaders//mesh.vert", "..//Shaders//mesh.frag");
 	plane5x5->set_colour(glm::vec3(0.2f, 0.2f, 0.2f));
+    plane5x5->load_texture("../Assets/Images/Terrain/RPG_grass_pixel.png", 0);
 	plane5x5->scale(glm::vec3(1.f));
 	plane5x5->mode = Render_Mode::RENDER_MESH;
 
@@ -168,12 +188,22 @@ void Fyredon::MenuAction::createNavigationDemo()
 	plane->addComponent(navCop);
 	this->world->addEntity(plane);
 	navigationSystem->setMap(plane);
+    navCop->character=fbxObject;
+    navCop->destination=target;
+    navCop->grid_width=1.f;
+    navCop->beforeMapReload=[this,navigationSystem]() {
+        menuPanel->menu_state.play=false;
+        menuPanel->menu_state.pause=false;
+        menuPanel->menu_state.reset=false;
+        world->reset();
+        navigationSystem->navigationSys->lastTime=clock();
+    };
+    navCop->loadMap();
 }
 
 void Fyredon::MenuAction::render_settings()
 {
-	if (panelOrgnizer->gui_panels.find("render_settings") == panelOrgnizer->gui_panels.end()) {
-		panelOrgnizer->gui_panels["render_settings"] = new GUI_RendererSettings;
-	}
-	else delete panelOrgnizer->gui_panels["render_settings"];
+	// Keep the existing settings alive: the renderer holds pointers to their state.
+	auto* settings = static_cast<GUI_RendererSettings*>(panelOrgnizer->gui_panels.at("setting"));
+	settings->visible = !settings->visible;
 }

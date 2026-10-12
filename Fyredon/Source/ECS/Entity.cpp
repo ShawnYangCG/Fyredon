@@ -2,6 +2,7 @@
 #include "Fyredon/ECS/Entity.h"
 #include "Fyredon/ECS/transform_component.h"
 #include <iostream>
+#include "Fyredon/ECS/texture_component.h"
 Entity::Entity()
 {
     this->name = "new entity";
@@ -65,6 +66,9 @@ void Entity::addComponent(Component* component)
         this->componentList[newName] = this->components.size();
         component->parent = this;
         this->components.push_back(component);
+        if (auto* mesh = dynamic_cast<mesh_component*>(component)) {
+            if (!getComponentByName("Texture")) addComponent(new texture_component(mesh));
+        }
     }
     else {
         std::cout << "Error: Entity [" << this->name << "] already contain component [" << newName << "]" << std::endl;
@@ -113,9 +117,9 @@ void Entity::render()
 
 void Entity::tick()
 {
-    for (Component* component : components) {
-        component->tick();
-    }
+    // Loading an FBX may append an Animation component during a Mesh tick.
+    const auto count=components.size();
+    for(size_t i=0;i<count;++i)components[i]->tick();
 }
 
 void Entity::play()

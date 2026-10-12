@@ -16,8 +16,8 @@ Fyredon::GUI_RendererSettings::GUI_RendererSettings()
 {
 	state.draw_axis     = true; 
 	state.draw_grid     = true; 
-	state.draw_testmesh = true; 
-	state.light_strength = 2.0f;
+	state.draw_testmesh = false; 
+	state.light_strength = 1.3f;
 	state.light_pos = glm::vec3(0.f, 5.f, 3.f);
 	state.test_mesh_pos = glm::vec3(0.f, 1.f, 0.f);
 
@@ -36,7 +36,7 @@ void Fyredon::GUI_RendererSettings::tick()
 	// Pre-Processing of state...
 
 	// Draw GUI
-	draw(); 
+	if (visible) draw(); 
 }
 
 void Fyredon::GUI_RendererSettings::resize()
@@ -53,7 +53,7 @@ void Fyredon::GUI_RendererSettings::draw()
 
 	const char* t_title = title.c_str(); 
 	if (t_title[0] == 0) t_title = "Renderer Settings";
-	ImGui::Begin(t_title);
+	ImGui::Begin(t_title, &visible);
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
 	ImGui::Text("Viewer Settings");
@@ -75,14 +75,30 @@ void Fyredon::GUI_RendererSettings::draw()
 	}
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(250, 200, 150, 255));
-	ImGui::Text("(temp) Light Settings");
+	ImGui::Text("Lighting");
 	ImGui::PopStyleColor();
-	ImGui::SliderFloat("Light Strength", &state.light_strength, 0.f, 10.f);
-	if (ImGui::SliderFloat3("Light Position", light_pos, -100.f, 100.f))
-	{
-		state.light_pos.x = light_pos[0];
-		state.light_pos.y = light_pos[1];
-		state.light_pos.z = light_pos[2];
+	auto& env = Renderer::get_renderer().environment;
+	const char* lightTypes[] = { "Directional", "Point" };
+	ImGui::Combo("Light Type", &env.light_type, lightTypes, 2);
+	ImGui::ColorEdit3("Light Colour", &env.light_colour.x);
+	ImGui::SliderFloat("Light Strength", &state.light_strength, 0.f, 4.f);
+	if (env.light_type == 0)
+		ImGui::SliderFloat3("Light Direction", &env.light_direction.x, -1.f, 1.f);
+	else
+		ImGui::DragFloat3("Light Position", &state.light_pos.x, 0.1f, -100.f, 100.f);
+	ImGui::ColorEdit3("Ambient Colour", &env.ambient_colour.x);
+	ImGui::SliderFloat("Ambient Strength", &env.ambient_strength, 0.f, 1.f);
+	ImGui::SliderFloat("Specular Strength", &env.specular_strength, 0.f, 1.f);
+	ImGui::SliderFloat("Roughness", &env.roughness, 0.05f, 1.f);
+	ImGui::Separator();
+	ImGui::Text("Background");
+	const char* backgrounds[] = { "Solid Colour", "Gradient Sky" };
+	ImGui::Combo("Background Mode", &env.background, backgrounds, 2);
+	if (env.background == 0) ImGui::ColorEdit3("Background Colour", &env.solid.x);
+	else {
+		ImGui::ColorEdit3("Sky Top", &env.sky_top.x);
+		ImGui::ColorEdit3("Horizon", &env.sky_horizon.x);
+		ImGui::ColorEdit3("Sky Bottom", &env.sky_bottom.x);
 	}
 	ImGui::End();
 }

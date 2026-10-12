@@ -11,3 +11,4 @@ bin-obj/
 
 # Other
 Out/**.dat
+/Debug/

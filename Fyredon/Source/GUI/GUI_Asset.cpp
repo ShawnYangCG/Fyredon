@@ -20,7 +20,7 @@ Fyredon::GUI_Asset::GUI_Asset(const char* Title, GUIConfig* guiConfig, World* wo
 	: GUI_Panel(Title), guiConfig(guiConfig), world(world), path_changed(false)
 {
 	// Default Path
-	cur_path = std::filesystem::current_path().string();
+	cur_path = (std::filesystem::current_path().parent_path() / "Assets").lexically_normal().u8string();
 	
 	// Icon Setup
 	icon_dir = new TextureImage("..//Assets//Images//Icons//open-folder.png", "dir_icon", 0, false);
@@ -54,7 +54,7 @@ void Fyredon::GUI_Asset::draw()
 	ImGui::SetNextWindowSize(ImVec2(this->width, this->height));
 
 	static char loc_path [512];
-	strcpy_s(loc_path, 256, cur_path.c_str());
+	strncpy_s(loc_path, sizeof(loc_path), cur_path.c_str(), _TRUNCATE);
 
 	std::size_t total = files.size() + dirs.size();
 	std:size_t rows   = total / 6; 
@@ -77,7 +77,7 @@ void Fyredon::GUI_Asset::draw()
 			if (ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE)))
 			{
 				path_changed = true;
-				cur_path = std::filesystem::path(cur_path).parent_path().string();
+				cur_path = std::filesystem::u8path(cur_path).parent_path().u8string();
 			}
 			ImGui::Text("..");
 			ImGui::NextColumn();
@@ -89,11 +89,11 @@ void Fyredon::GUI_Asset::draw()
 				if (ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE)))
 				{
 					path_changed = true;
-					cur_path = dir.path().string();
+					cur_path = dir.path().u8string();
 				}
 				// Dir Label
 				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
-				ImGui::Text(dir.path().filename().string().c_str());
+				ImGui::Text("%s", dir.path().filename().u8string().c_str());
 				ImGui::PopStyleColor();
 				ImGui::NextColumn();
 			}
@@ -109,7 +109,7 @@ void Fyredon::GUI_Asset::draw()
 				}
 				// File Label
 				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
-				ImGui::TextWrapped(file.path().filename().string().c_str());
+				ImGui::TextWrapped("%s", file.path().filename().u8string().c_str());
 				ImGui::PopStyleColor();
 				ImGui::NextColumn();
 			} 
@@ -131,9 +131,10 @@ void Fyredon::GUI_Asset::draw()
 void Fyredon::GUI_Asset::files_setup()
 {
 	files.clear(), dirs.clear();
-	path = std::filesystem::path(cur_path);
+	path = std::filesystem::u8path(cur_path);
 
-	if (!std::filesystem::exists(path)) return;
+	std::error_code error;
+	if (!std::filesystem::is_directory(path, error)) return;
 	
 	for (const auto& file : std::filesystem::directory_iterator(path)) 
 	{

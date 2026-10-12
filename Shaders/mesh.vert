@@ -12,6 +12,7 @@ layout (location = 2) in vec3 v_C;
 layout (location = 3) in vec2 v_UV;
 
 // Output
+out vec3 texture_uv;
 out vec3 colour; 
 out vec3 normal;
 out vec3 pos_world;
@@ -26,7 +27,8 @@ uniform mat3 model_normal;
 void main()
 {
 	// Forward As Is
-	colour = v_C; 
+	colour = v_C;
+	texture_uv = vec3(v_UV, 0.0); 
 	normal = v_N;
 
 	// World Space transforms

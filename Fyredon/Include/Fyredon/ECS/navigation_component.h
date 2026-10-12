@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include "Fyredon/ECS/Component.h"
 #include "Fyredon/ECS/mesh_component.h"
 #include "Fyredon/ECS/transform_component.h"
@@ -19,14 +20,16 @@ public:
 	// add your own variable here
 	// == variable ==
 	Fyredon::Mesh* mesh;
-	AStarMap* map;
+	AStarMap* map = nullptr;
 	std::vector<Pos> walls;
 	float min_width = 0.5;
-	list<Pos>* posList;
+	list<Pos>* posList = nullptr;
 	list<glm::vec2> path;
+    std::vector<glm::vec2> debugPath;
+    unsigned long long pathRevision = 0;
 	Fyredon::Mesh_OBJ* wall;
 	
-	float grid_width;
+	float grid_width = 0.5f;
 	float min_X_tran, max_X_tran, min_Z_tran, max_Z_tran;
 	float mid_X_tran, mid_Z_tran;
 	float width_tran, length_tran;
@@ -43,6 +46,7 @@ public:
 	// 4.
 	// rewrite this function to create your own component GUI
 	virtual void GUI_struct() override;
+    void reset() override;
 	//virtual void tick() override;
 	void createGrid();
 	void getMeshDetail();
@@ -52,10 +56,27 @@ public:
 	list<glm::vec2> Pos2Position(list<Pos>* pos);
 	glm::vec2 Pos2Position(Pos pos);
 	void addWall(int x, int y);
-	void addWalls();
+	bool loadMap(const std::string& file = "../Assets/script/map.txt");
+    Entity* character = nullptr;
+    Entity* destination = nullptr;
+    std::function<void()> beforeMapReload;
+    std::string mapError;
+    char wallDirectory[1024] = "Assets/Mesh/rocks";
+    char wallModelId[256] = "-1";
+    bool randomWallRotation = true;
+    glm::vec3 wallOffset = glm::vec3(0.f);
+    glm::vec3 wallScale = glm::vec3(1.f);
+    std::vector<std::string> wallModelNames;
+    std::vector<size_t> selectedWallModels;
+    std::vector<int> selectedWallTurns;
 	void walls2renderer();
 	// virtual void render() override;
 private:
+    Fyredon::Mesh* wallDisplay = nullptr;
+    bool wallsSubmitted = false;
+    float loadedGridWidth = 0.5f;
+    std::vector<Fyredon::Vert> preparedWallVertices;
+    void prepareWalls(const std::vector<Pos>& cells, int size);
 	
 };
 // 5.

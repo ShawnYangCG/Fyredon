@@ -22,8 +22,12 @@ public:
 	// rewrite this function to create your own component GUI
 	virtual void GUI_struct() override;
 	virtual void tick() override;
-	virtual void reset() override;
+	virtual void init() override;
+    virtual void reset() override;
 	void checkChanged();
+private:
+    bool hasTransformSnapshot = false;
+    float initialTranslation[3] = {}, initialRotation[3] = {}, initialScale[3] = {};
 	// virtual void tick() override;
 	// virtual void render() override;
 };

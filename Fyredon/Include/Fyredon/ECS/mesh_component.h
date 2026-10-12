@@ -25,6 +25,11 @@ public:
 	virtual void tick() override;
 	virtual void render() override;
 	void changeMesh(Fyredon::Mesh* mesh, bool IsReplace);
+    bool loadModel(const std::string& file);
+    std::string modelError;
+private:
+    char modelPath[2048] = {};
+    bool pendingReload = false;
 };
 // 5.
 // don't forget to add this header in ECS.h

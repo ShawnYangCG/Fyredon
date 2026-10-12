@@ -25,7 +25,7 @@
 // ================================== Mesh Class Implementation ==================================
 
 Fyredon::Mesh::Mesh(const char *Name)
-	: name(Name), vert_count(-1), index_count(-1), tex(nullptr), use_tex(false), wireframe(false)
+	: name(Name), vert_count(0), index_count(0), VBO(0), VAO(0), EBO(0), tex(nullptr), use_tex(false), wireframe(false)
 {
 	flags.buffers_set   = 0;
 	flags.vert_data_set = 0; 
@@ -79,8 +79,15 @@ void Fyredon::Mesh::render()
 	// Bind Mesh State
 	shader.use();
 
+	// Texture selection is per draw, including objects sharing a shader program.
+	if (glGetUniformLocation(shader.ID, "useTexture") >= 0) {
+		shader.setInt("useTexture", use_tex && tex ? 1 : 0);
+		shader.setVec("uvOffset", glm::vec3(uv_offset, 0.f));
+		shader.setVec("uvScale", glm::vec3(uv_scale, 1.f));
+		shader.setInt("tex", tex ? tex->unit : 0);
+	}
 	// Activate and Bind Texture
-	if (use_tex)
+	if (use_tex && tex)
 	{
 		tex->activate();
 		tex->bind();
@@ -148,7 +155,7 @@ void Fyredon::Mesh::render()
 // Info : Takes in mesh as array of vertices (tri-soup) like, and computes indices for unqiue vertices across all attributes. 
 // This should ONLY be called on the creation of the mesh, or if the mesh topology changes as it will re-calc indices.
 // For passing updated vertex arrays, use update_data_mesh(). 
-void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data)
+void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data, bool deduplicate)
 {
 	if (data.size() > 1e05) std::cout << "Info:: Auto-Indexing taking place on large mesh: " << name << ".\n";
 
@@ -162,7 +169,7 @@ void Fyredon::Mesh::set_data_mesh(const std::vector<Vert> &data)
 		const Vert& vert_i = data[v];
 
 		// Does vertex exist in map ? 
-		auto found = vert_map.find(vert_i);
+		auto found = deduplicate ? vert_map.find(vert_i) : vert_map.end();
 
 		if (found == vert_map.end()) // Not in map, add uniq_vert
 		{

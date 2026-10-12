@@ -24,12 +24,11 @@ Fyredon::Camera::Camera(glm::vec3 Pos, float Fov, float Aspect, bool Freelook)
 	basis_x = glm::normalize(glm::cross(ref_up, basis_z));
 	basis_y = glm::normalize(glm::cross(basis_z, basis_x));
 
-	// Override with input based bases
-	if (free_look) calc_basis();
 
 	yaw = 0.0f, pitch = 0.0f, sensitvity = 0.5f;
 	yaw_min = -120.0f,  yaw_max = 120.0f;
 	pitch_min = -89.0f, pitch_max = 89.0f;
+	if (free_look) calc_basis();
 
 	near_plane = 0.01f;
 	far_plane  = 100.0f;
@@ -43,47 +42,27 @@ glm::mat4 Fyredon::Camera::get_view_matrix()
 
 glm::mat4 Fyredon::Camera::get_proj_matrix()
 {
-	return glm::perspective(glm::radians(fov), aspect_ratio, near_plane, far_plane);
+	auto projection = glm::perspective(glm::radians(fov), aspect_ratio, near_plane, far_plane);
+	projection[0][0] /= viewport_scale;
+	projection[1][1] /= viewport_scale;
+	return projection;
 }
 
-void Fyredon::Camera::update_camera(GLFWwindow *Window, float Camera_Speed, float Dt, float Yaw, float Pitch)
+void Fyredon::Camera::update_camera(float deltaX, float deltaY, float wheel, bool pan)
 {
-	// ========== Camera Direction Update ==========
-	if (free_look && (glfwGetMouseButton(Window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS))
-	{
-		yaw   += Yaw   * sensitvity;
-		pitch += Pitch * sensitvity;
+	if (!free_look) return;
+	if (pan) {
+		// Drag the scene along the screen's right/up axes without rotating.
+		const float panSpeed = 0.01f;
+		position += (-basis_x * deltaX + basis_y * deltaY) * panSpeed;
+	} else if (deltaX != 0.f || deltaY != 0.f) {
+		yaw += deltaX * sensitvity;
+		pitch += deltaY * sensitvity;
 		calc_basis();
-	} 
-
-	glfwPollEvents();
-	// ========== Camera Position Update ==========
-	if (glfwGetKey(Window, GLFW_KEY_W) == GLFW_PRESS) // Forwards along cam Z
-	{
-		position -= basis_z * (Camera_Speed * Dt);
 	}
-	if (glfwGetKey(Window, GLFW_KEY_S) == GLFW_PRESS) // Backwards along cam Z
-	{
-		position += basis_z * (Camera_Speed * Dt);
-	}
-	if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS) // Left along cam X
-	{
-		position -= basis_x * (Camera_Speed * Dt);
-	}
-	if (glfwGetKey(Window, GLFW_KEY_D) == GLFW_PRESS) // Right along cam X
-	{
-		position += basis_x * (Camera_Speed * Dt);
-	}
-	if (glfwGetKey(Window, GLFW_KEY_Q) == GLFW_PRESS) // Up along Y
-	{
-		position += basis_y * (Camera_Speed * Dt);
-	}
-	if (glfwGetKey(Window, GLFW_KEY_E) == GLFW_PRESS) // Down along Y
-	{
-		position -= basis_y * (Camera_Speed * Dt);
-	}
+	// Positive wheel motion moves forward along the current viewing direction.
+	position -= basis_z * (wheel * 0.5f);
 }
-
 void Fyredon::Camera::calc_basis()
 {
 	// Clamp Pitch

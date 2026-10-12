@@ -415,7 +415,7 @@ bool FBXLoader::LoadFile()
 		lGeomConverter.SplitMeshesPerMaterial(Scene, /*replace*/true);
 
 		// Bake the scene for one frame
-		LoadCacheRecursive(Scene, CurrentAnimLayer, mFileName, SupportVBO);
+		// Mesh data and skinning are uploaded through the engine renderer.
 
 
 		// Initialize the frame period.
@@ -1090,10 +1090,10 @@ void FBXLoader::ComputeSkinDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* pMe
 		int lVertexCount = pMesh->GetControlPointsCount();
 
 		FbxVector4* lVertexArrayLinear = new FbxVector4[lVertexCount];
-		memcpy(lVertexArrayLinear, pMesh->GetControlPoints(), lVertexCount * sizeof(FbxVector4));
+		memcpy(lVertexArrayLinear, pVertexArray, lVertexCount * sizeof(FbxVector4));
 
 		FbxVector4* lVertexArrayDQ = new FbxVector4[lVertexCount];
-		memcpy(lVertexArrayDQ, pMesh->GetControlPoints(), lVertexCount * sizeof(FbxVector4));
+		memcpy(lVertexArrayDQ, pVertexArray, lVertexCount * sizeof(FbxVector4));
 
 		ComputeLinearDeformation(pGlobalPosition, pMesh, pTime, lVertexArrayLinear, pPose);
 		ComputeDualQuaternionDeformation(pGlobalPosition, pMesh, pTime, lVertexArrayDQ, pPose);
@@ -1102,13 +1102,18 @@ void FBXLoader::ComputeSkinDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* pMe
 		// Final vertex = DQSVertex * blend weight + LinearVertex * (1- blend weight)
 		// DQSVertex: vertex that is deformed by dual quaternion skinning method;
 		// LinearVertex: vertex that is deformed by classic linear skinning method;
-		int lBlendWeightsCount = lSkinDeformer->GetControlPointIndicesCount();
+		memcpy(pVertexArray, lVertexArrayLinear, lVertexCount * sizeof(FbxVector4));
+        int lBlendWeightsCount = lSkinDeformer->GetControlPointIndicesCount();
 		for (int lBWIndex = 0; lBWIndex < lBlendWeightsCount; ++lBWIndex)
 		{
 			double lBlendWeight = lSkinDeformer->GetControlPointBlendWeights()[lBWIndex];
-			pVertexArray[lBWIndex] = lVertexArrayDQ[lBWIndex] * lBlendWeight + lVertexArrayLinear[lBWIndex] * (1 - lBlendWeight);
+			int cp = lSkinDeformer->GetControlPointIndices()[lBWIndex];
+            if (cp >= 0 && cp < lVertexCount)
+                pVertexArray[cp] = lVertexArrayDQ[cp] * lBlendWeight + lVertexArrayLinear[cp] * (1 - lBlendWeight);
 		}
-	}
+        delete[] lVertexArrayLinear;
+        delete[] lVertexArrayDQ;
+    }
 
 }
 

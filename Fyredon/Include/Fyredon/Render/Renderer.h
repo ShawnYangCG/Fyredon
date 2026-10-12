@@ -68,7 +68,8 @@ public:
 	// Exposed to Engine
 	void submit_mesh(Mesh* mesh, const std::function<void()> &command);
 	void submit_mesh(Mesh* mesh);
-	void submit_light(Light* light);
+	void remove_mesh(Mesh* mesh);
+    void submit_light(Light* light);
 	void resize(int width, int height);
 
 	// Public Renderer flags (to hook from GUI) (Rename to params)
@@ -83,13 +84,29 @@ public:
 	int32_t width  = RENDER_RES_X;
 	int32_t height = RENDER_RES_Y;
 	int8_t msaa_samples;
+	struct Environment {
+		int light_type = 0; // Directional, point.
+		glm::vec3 light_colour = glm::vec3(1.0f, 0.97f, 0.92f);
+		glm::vec3 light_direction = glm::vec3(-0.4f, -1.0f, -0.3f);
+		glm::vec3 ambient_colour = glm::vec3(0.8f, 0.87f, 1.0f);
+		float ambient_strength = 0.25f;
+		float specular_strength = 0.08f;
+		float roughness = 0.7f;
+		int background = 1; // Solid, gradient sky.
+		glm::vec3 solid = glm::vec3(0.15f);
+		glm::vec3 sky_top = glm::vec3(0.16f, 0.32f, 0.55f);
+		glm::vec3 sky_horizon = glm::vec3(0.64f, 0.73f, 0.83f);
+		glm::vec3 sky_bottom = glm::vec3(0.19f, 0.22f, 0.28f);
+	} environment;
 
 	// Camera references 
 	Camera* game_cam;
 	// Camera* scene_cam; 
 
 private:
-	static Renderer renderer; 
+	static Renderer renderer;
+	Shader* background_shader = nullptr;
+	GLuint background_vao = 0; 
 
 	// ===== Draw Lists to render per frame =====
 	std::vector<Mesh*>  meshes;

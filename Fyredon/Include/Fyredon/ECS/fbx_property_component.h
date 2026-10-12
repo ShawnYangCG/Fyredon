@@ -1,48 +1,29 @@
 #pragma once
 #include "Fyredon/ECS/Component.h"
-#include "Fyredon/ECS/fbx_entity.h"
-#include "Fyredon/FBX/fbx_mesh.h"
-#include <time.h>
-// 1.
-// create your own component by inherit Component class
-class fbx_property_component:public Component
-{
+class fbx_mesh;
+class fbx_property_component : public Component {
 public:
-	// 2. 
-	// rewrite Constructor (give a name to this component)
-	fbx_property_component();
-	fbx_property_component(float startTime, float endTime, float speed);
-
-	// 3.
-	// when you create your own component you need to inherit this class and 
-	// add your own variable here
-	// == variable ==
-	float speed = 0;
-	float startTime = 0;
-	float endTime = 0;
-	int currentFrameIndex = 0;
-	// ==============
-	
-	// 4.
-	// rewrite this function to create your own component GUI
-	virtual void GUI_struct() override;
-	virtual void tick() override;
-	virtual void play() override;
-	virtual void stop() override;
-	virtual void reset() override;
-	void playAnimation();
-	void checkValid();
-	void setPlay();
+    fbx_property_component();
+    fbx_property_component(float startTime,float endTime,float speed);
+    float speed=1.f, startTime=0.f, endTime=0.f;
+    int currentFrameIndex=0;
+    void GUI_struct() override;
+    void tick() override;
+    void play() override;
+    void stop() override;
+    void reset() override;
+    void init() override {}
+    void playAnimation();
+    void checkValid();
+    void setPlay();
+    void meshChanged();
+    void setNavigationControlled(bool enabled);
+    void setNavigating(bool moving);
+    bool isPlaying() const { return isPlay; }
 private:
-	time_t timer_start;
-	time_t timer_current;
-	time_t pause_time_start;
-	time_t pause_time_end;
-	time_t pause_time = 0;
-	int secondPerFrame = 50;
-	bool isPlay = false;
-	bool isReset = true;
+    fbx_mesh* mesh();
+    bool isPlay=false, configured=false;
+    bool navigationControlled=false;
+    double cursor=0, lastTick=0;
+    void configure();
 };
-// 5.
-// don't forget to add this header in ECS.h
-
