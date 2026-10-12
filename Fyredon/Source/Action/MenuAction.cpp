@@ -100,11 +100,18 @@ void Fyredon::MenuAction::createTree1()
 
 void Fyredon::MenuAction::createDoll()
 {
-	fbx_entity* fbxObject = new fbx_entity("human_walk", "..//Assets//Mesh//walking_2_1.fbx");
+	int countX = 2, countY = 2;
+	int startPos_x = -2, startPos_y = -2;
+	for (int j = 0 + startPos_y; j < countY + startPos_y; j++) {
+		for (int i = 0 + startPos_x; i < countX + startPos_x; i++) {
+			fbx_entity* fbxObject = new fbx_entity("human_walk", "..//Assets//Mesh//box2.fbx");
 
-	fbxObject->init("..//Shaders//human.vert", "..//Shaders//human.frag", 0.0, 48.0, 3.0);
+			fbxObject->init("..//Shaders//human.vert", "..//Shaders//human.frag", 0.0, 48.0, 3.0, glm::vec3(i, 0, j));
+
+			this->world->addEntity(fbxObject);
+		}
+	}
 	
-	this->world->addEntity(fbxObject);
 }
 
 void Fyredon::MenuAction::createCamera()

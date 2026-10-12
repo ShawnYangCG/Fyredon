@@ -118,7 +118,7 @@ private:
 
 public:
 	// ------- Vertex Data -------
-	std::vector<Vert>   vert_data; 
+	std::vector<Vert> vert_data; 
 	std::vector<GLuint> inds_data;
 	std::size_t vert_count, index_count;
 

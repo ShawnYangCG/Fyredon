@@ -17,7 +17,7 @@ public:
 	// 4.
 	// rewrite the constructor
 	fbx_entity(std::string name, std::string filePath);
-	void init(const char* shader_vert, const char* shader_frag, float startTime = 0.f, float endTime = 0.f, float timeStep = 0.f);
+	void init(const char* shader_vert, const char* shader_frag, float startTime = 0.f, float endTime = 0.f, float timeStep = 0.f, glm::vec3 transform = glm::vec3(0.f, 0.f, 0.f));
 };
 // 5.
 // don't forget to add this header in ECS.h

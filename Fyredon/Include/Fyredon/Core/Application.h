@@ -125,6 +125,8 @@ namespace Fyredon {
 		float last_yawoffs, last_pitchoffs, last_zoom;
 
 		// Editor State
+		float avedt = 0;
+		std::size_t tick_c;
 		float dt;
 		float cur_t, prev_t;
 

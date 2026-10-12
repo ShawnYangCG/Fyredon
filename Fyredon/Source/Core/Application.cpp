@@ -190,12 +190,13 @@ void Fyredon::EditorApplication::exec()
 
 	// Edtior Loop (Game loop nested in here)
 	while (!glfwWindowShouldClose(window))
-	{
+	{	
 		tick_engine();
 		tick_editor();
 		
 		// If Play ...
 		tick_play();
+		tick_c++;
 	}
 
 	// Post Exec Shutdown
@@ -221,6 +222,17 @@ void Fyredon::EditorApplication::resize()
 void Fyredon::EditorApplication::tick_engine()
 {
 	get_dt();
+
+	avedt += 1.f / dt;
+	// Update Window Title 
+	
+	if (tick_c % 50 == 0) {
+		std::string title_u;
+		title_u = "FPS : " + std::to_string(avedt/50);
+		glfwSetWindowTitle(window, title_u.c_str());
+		//std::cout << title_u << std::endl;
+		avedt = 0;
+	}
 
 	// ToDo : Put into engine class
 	// Tick World when game run
