@@ -8,7 +8,7 @@ This repository continues the **Team Fyredon** group project originally hosted o
 
 - `main`, `dev`, and the other original branch names preserve the imported GitLab development lines.
 - `archive/local-main` and `archive/local-dev` preserve the local DEV-branch2 branch tips.
-- `codex/continued-development` is the active continuation branch. It starts from the local `dev` revision and preserves its previously uncommitted changes as a separate commit. Newer GitLab changes have not been merged into this branch.
+- `personal-dev` is the active continuation branch. It starts from the local `dev` revision and preserves its previously uncommitted changes as a separate commit. Newer GitLab changes have not been merged into this branch.
 
 Large historical files are stored with Git LFS. Author and committer metadata are preserved, but affected commit IDs changed during conversion. See [migration details](docs/MIGRATION.md) and the [original-to-GitHub commit map](docs/gitlab-commit-map.csv).
 
@@ -53,8 +53,8 @@ docs/         Migration provenance and commit mapping
 Use the GitHub continuation branch for new work:
 
 ```sh
-git switch codex/continued-development
-git push origin codex/continued-development
+git switch personal-dev
+git push origin personal-dev
 ```
 
 The original GitLab repository remains the source project. Its project membership, issues, and merge-request discussions are not copied by this Git history migration. Existing source notices and third-party license files remain in place.

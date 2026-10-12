@@ -7,7 +7,7 @@ Destination: https://github.com/ShawnYangCG/Fyredon
 
 ## Preserved History
 
-All nine GitLab branch tips were imported. Two local branch tips were also preserved under `archive/`. The 11 tracked, uncommitted changes in the local DEV-branch2 checkout were saved as one new commit on `codex/continued-development`, based on the original local dev commit `35d728971e969cc8b3d3a9da79f9fca68cc1dd4e`.
+All nine GitLab branch tips were imported. Two local branch tips were also preserved under `archive/`. The 11 tracked, uncommitted changes in the local DEV-branch2 checkout were saved as one new commit on `personal-dev`, based on the original local dev commit `35d728971e969cc8b3d3a9da79f9fca68cc1dd4e`.
 
 The original GitLab dev tip was `58240b436c0c925507aa67eb14884607ee0494dd`; the original main tip was `61d054aaf57a0a02f4fa5c05a9913228a0743c60`. These newer upstream lines remain separate from the local continuation branch.
 
