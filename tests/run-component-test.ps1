@@ -1,4 +1,4 @@
-param([ValidateSet('map_regression','reset_regression')][string]$Test='map_regression')
+param([ValidateSet('map_regression','reset_regression','dance_scene_regression','preview_regression')][string]$Test='map_regression')
 $ErrorActionPreference='Stop'
 Set-Location (Split-Path $PSScriptRoot)
 $vswhere=Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Microsoft Visual Studio/Installer/vswhere.exe'

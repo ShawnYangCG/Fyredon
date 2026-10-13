@@ -56,8 +56,6 @@ void Fyredon::GUI_Asset::draw()
 	static char loc_path [512];
 	strncpy_s(loc_path, sizeof(loc_path), cur_path.c_str(), _TRUNCATE);
 
-	std::size_t total = files.size() + dirs.size();
-	std:size_t rows   = total / 6; 
 
 	ImGui::Begin(title.c_str());
 	{
@@ -68,30 +66,36 @@ void Fyredon::GUI_Asset::draw()
 			path_changed = true;
 		}
 
-		if (total > 0)
+		// Keep the parent folder available even in an empty directory.
 		{
 			ImGui::Columns(12, 0, false); // Begin Column Layout
 
 			// Parent Dir
-			//ImGui::PushID(1);
-			if (ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE)))
+			ImGui::PushID("parent_directory");
+			ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE));
+                if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 			{
 				path_changed = true;
 				cur_path = std::filesystem::u8path(cur_path).parent_path().u8string();
 			}
-			ImGui::Text("..");
+			ImGui::PopID();
+            ImGui::Text("..");
 			ImGui::NextColumn();
 
 			// Dirs
 			for (std::filesystem::directory_entry& dir : dirs)
 			{
-				// Dir Button
-				if (ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE)))
+				const auto entryPath = dir.path().u8string();
+                ImGui::PushID(entryPath.c_str());
+                // Dir Button
+				ImGui::ImageButton(icon_dir->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE));
+                if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 				{
 					path_changed = true;
 					cur_path = dir.path().u8string();
 				}
-				// Dir Label
+				ImGui::PopID();
+                // Dir Label
 				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
 				ImGui::Text("%s", dir.path().filename().u8string().c_str());
 				ImGui::PopStyleColor();
@@ -101,13 +105,16 @@ void Fyredon::GUI_Asset::draw()
 			// Files
 			for (std::filesystem::directory_entry& file : files)
 			{
-				// File Button
+				const auto entryPath = file.path().u8string();
+                ImGui::PushID(entryPath.c_str());
+                // File Button
 				if (ImGui::ImageButton(icon_unk_file->get_imgui_texture(), ImVec2(ICON_SIZE, ICON_SIZE)))
 				{
 					// File Selected
 					selected = &file; 
 				}
-				// File Label
+				ImGui::PopID();
+                // File Label
 				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
 				ImGui::TextWrapped("%s", file.path().filename().u8string().c_str());
 				ImGui::PopStyleColor();
@@ -117,20 +124,17 @@ void Fyredon::GUI_Asset::draw()
 			ImGui::Columns(1); // End Column layout
 		}
 
-		// Dir Changed, re-draw in dir
-		if (path_changed) 
-		{
-			path_changed = false; 
-			files_setup();
-			draw();
-		}
+
 	}
 	ImGui::End();
+    // The next tick refreshes the list and path without nesting ImGui windows.
+    path_changed = false;
 }
 
 void Fyredon::GUI_Asset::files_setup()
 {
-	files.clear(), dirs.clear();
+	selected = nullptr;
+    files.clear(), dirs.clear();
 	path = std::filesystem::u8path(cur_path);
 
 	std::error_code error;

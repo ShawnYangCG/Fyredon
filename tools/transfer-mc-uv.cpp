@@ -1,5 +1,5 @@
 // Run from the project root. Requires the bundled Autodesk FBX SDK.
-// Writes a candidate only; the original MC.fbx is never overwritten by this tool.
+// Usage: transfer-mc-uv.exe [source.fbx candidate.fbx]. Reads Assets/Mesh/MC.obj; never overwrites the source.
 #include <fbxsdk.h>
 #include <fstream>
 #include <sstream>
@@ -78,9 +78,12 @@ void verifyScene(FbxScene* a,FbxScene* b){
  }
  std::cout<<"Preserved: "<<na.size()<<" nodes, "<<clusters<<" skin clusters, "<<stacks<<" clips, "<<keysA<<" animation keys; 31 pose samples identical.\n";
 }
-int main(){try{
+int main(int argc,char** argv){try{
+ const char* source=argc>1?argv[1]:"Assets/Mesh/MC.fbx";
+ const char* output=argc>2?argv[2]:"Debug/uv-transfer/MC.updated.fbx";
+ require(std::string(source)!=output,"Source and candidate paths must differ");
  auto obj=readObj();auto* mgr=FbxManager::Create();mgr->SetIOSettings(FbxIOSettings::Create(mgr,IOSROOT));
- auto* scene=load(mgr,"Assets/Mesh/MC.fbx");std::vector<FbxNode*> all;nodes(scene->GetRootNode(),all);FbxMesh* mesh=nullptr;
+ auto* scene=load(mgr,source);std::vector<FbxNode*> all;nodes(scene->GetRootNode(),all);FbxMesh* mesh=nullptr;
  for(auto* node:all)if(node->GetMesh()){require(!mesh,"Expected one mesh");mesh=node->GetMesh();}
  require(mesh&&mesh->GetControlPointsCount()==obj.vertices.size()&&mesh->GetPolygonCount()==obj.faces.size(),"Mesh topology does not match OBJ");
  for(int i=0;i<mesh->GetControlPointsCount();++i)for(int j=0;j<3;++j)require(std::abs(mesh->GetControlPointAt(i)[j]-obj.vertices[i][j])<1e-5,"OBJ and FBX vertex ordering differ");
@@ -89,9 +92,9 @@ int main(){try{
  uv->SetMappingMode(FbxGeometryElement::eByPolygonVertex);uv->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
  uv->GetDirectArray().Clear();uv->GetIndexArray().Clear();for(auto v:obj.uv)uv->GetDirectArray().Add(v);
  int corners=0;for(auto face:obj.indices)for(auto i:face){uv->GetIndexArray().Add(i);++corners;}
- const char* output="Debug/uv-transfer/MC.updated.fbx";
+
  auto* exporter=FbxExporter::Create(mgr,"");require(exporter->Initialize(output,-1,mgr->GetIOSettings()),"Cannot initialize exporter");require(exporter->Export(scene),"FBX export failed");exporter->Destroy();
- auto* original=load(mgr,"Assets/Mesh/MC.fbx");auto* saved=load(mgr,output);verifyScene(original,saved);
+ auto* original=load(mgr,source);auto* saved=load(mgr,output);verifyScene(original,saved);
  std::vector<FbxNode*> savedNodes;nodes(saved->GetRootNode(),savedNodes);FbxMesh* savedMesh=nullptr;for(auto* n:savedNodes)if(n->GetMesh())savedMesh=n->GetMesh();
  auto* savedUV=savedMesh->GetElementUV(0);
  for(int p=0;p<savedMesh->GetPolygonCount();++p)for(int c=0;c<savedMesh->GetPolygonSize(p);++c){

@@ -23,6 +23,7 @@ namespace Fyredon
 		void createDoll();
 		void createCamera();
 		void createNavigationDemo();
+        void createDanceDemo();
 		void render_settings();
 	};
 }

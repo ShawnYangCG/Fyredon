@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 #include <cstdlib>
+#include <algorithm>
 // Implements 
 #include "Fyredon/Core/Application.h"
 
@@ -198,17 +199,148 @@ void Fyredon::EditorApplication::exec()
 	// Edtior Loop (Game loop nested in here)
 	while (!glfwWindowShouldClose(window))
 	{	
-		tick_engine();
-		tick_editor();
-		
-		// If Play ...
-		tick_play();
-		tick_c++;
+
+        if (preview_window) {
+            tick_preview();
+        } else {
+            tick_engine();
+            tick_editor();
+            tick_play();
+            auto& state = static_cast<GUI_Menu*>(gui_org->gui_panels["Menu"])->menu_state;
+            if (state.preview) {
+                state.preview = false;
+                begin_preview();
+            }
+        }
+        tick_c++;
 	}
 
 	// Post Exec Shutdown
+    end_preview();
 	shutdown_gui();
 }
+
+bool Fyredon::EditorApplication::begin_preview()
+{
+    if (preview_window) return true;
+    // Borderless fullscreen on the monitor containing most of the editor.
+    int x, y, w, h, count;
+    glfwGetWindowPos(window, &x, &y);
+    glfwGetWindowSize(window, &w, &h);
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    GLFWmonitor** monitors = glfwGetMonitors(&count);
+    int bestArea = 0;
+    for (int i = 0; i < count; ++i) {
+        int mx, my;
+        glfwGetMonitorPos(monitors[i], &mx, &my);
+        const auto* mode = glfwGetVideoMode(monitors[i]);
+        if (!mode) continue;
+        const int area = std::max(0, std::min(x + w, mx + mode->width) - std::max(x, mx)) *
+            std::max(0, std::min(y + h, my + mode->height) - std::max(y, my));
+        if (area > bestArea) { bestArea = area; monitor = monitors[i]; }
+    }
+    const auto* mode = monitor ? glfwGetVideoMode(monitor) : nullptr;
+    if (!mode) return false;
+    int mx, my;
+    glfwGetMonitorPos(monitor, &mx, &my);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+    glfwWindowHint(GLFW_SAMPLES, 0); // The renderer already resolves MSAA.
+    preview_window = glfwCreateWindow(mode->width, mode->height,
+        "Fyredon Preview - Esc to return", nullptr, window);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+    glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+    glfwWindowHint(GLFW_SAMPLES, MSAA_SAMPLES);
+    if (!preview_window) {
+        std::cerr << "Unable to create Preview window; editor remains active.\n";
+        return false;
+    }
+    glfwSetWindowPos(preview_window, mx, my);
+    glfwMakeContextCurrent(preview_window);
+    glfwSwapInterval(1);
+    // FBOs/VAOs are context-local. Share only the resolved colour texture.
+    glGenFramebuffers(1, &preview_read_fbo);
+    glfwMakeContextCurrent(window);
+    auto& renderer = Renderer::get_renderer();
+    editor_render_width = renderer.width;
+    editor_render_height = renderer.height;
+    auto& state = static_cast<GUI_Menu*>(gui_org->gui_panels["Menu"])->menu_state;
+    editor_was_playing = state.play != 0;
+    editor_was_paused = state.pause != 0;
+    state.play = true;
+    state.pause = false;
+    state.reset = false;
+    ECSworld->init();
+    ECSworld->play();
+    glfwHideWindow(window);
+    glfwShowWindow(preview_window);
+    glfwFocusWindow(preview_window);
+    return true;
+}
+
+void Fyredon::EditorApplication::tick_preview()
+{
+    glfwPollEvents();
+    if (glfwWindowShouldClose(preview_window) ||
+        glfwGetKey(preview_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        end_preview();
+        return;
+    }
+    int w, h;
+    glfwGetFramebufferSize(preview_window, &w, &h);
+    glfwMakeContextCurrent(window);
+    // Keep simulation alive without building or accepting input for editor UI.
+    tick_play();
+    ECSworld->tick();
+    if (w <= 0 || h <= 0) {
+        glfwWaitEventsTimeout(0.02);
+        return;
+    }
+    auto& renderer = Renderer::get_renderer();
+    renderer.resize(w, h);
+    tick_engine();
+    // Finish writes before the shared texture is read in the preview context.
+    glFinish();
+    glfwMakeContextCurrent(preview_window);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, preview_read_fbo);
+    glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+        GL_TEXTURE_2D, renderer.get_colour_attachment()->ID, 0);
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glDrawBuffer(GL_BACK);
+    glDisable(GL_SCISSOR_TEST);
+    glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    // Release references before the editor can resize/delete the texture.
+    glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glfwSwapBuffers(preview_window);
+    glFinish();
+    glfwMakeContextCurrent(window);
+}
+
+void Fyredon::EditorApplication::end_preview()
+{
+    if (!preview_window) return;
+    glfwMakeContextCurrent(preview_window);
+    glDeleteFramebuffers(1, &preview_read_fbo);
+    preview_read_fbo = 0;
+    glfwMakeContextCurrent(window);
+    glfwDestroyWindow(preview_window);
+    preview_window = nullptr;
+    auto& state = static_cast<GUI_Menu*>(gui_org->gui_panels["Menu"])->menu_state;
+    state.play = editor_was_playing;
+    state.pause = editor_was_paused;
+    state.reset = false;
+    if (!editor_was_playing) ECSworld->stop();
+    Renderer::get_renderer().resize(editor_render_width, editor_render_height);
+    glfwShowWindow(window);
+    glfwFocusWindow(window);
+    isSizeChange = true;
+    cur_t = prev_t = static_cast<float>(glfwGetTime());
+}
+
 
 void Fyredon::EditorApplication::resize()
 {

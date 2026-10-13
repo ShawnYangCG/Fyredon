@@ -51,6 +51,8 @@ public:
 		int8_t savestate, loadstate : 1;			// Save/Load state
 		int8_t createTerrain, pigHead, createDoll, createCamera, tree1 : 1;	  // GameObject menu
 		int8_t createNavigationDemo : 1;
+        bool createDanceDemo = false;
+        bool preview = false;
 		int8_t view_renderer : 1; 
 	} menu_state;
 	void new_project();

@@ -1,4 +1,4 @@
-﻿// Copyright Fyredon. All Rights Reserved.
+// Copyright Fyredon. All Rights Reserved.
 
 /*=============================================================================
 	GUI_Menu.cpp: Top Window GUI Menu : Niall, Shawn
@@ -100,13 +100,13 @@ void Fyredon::GUI_Menu::main_menu()
 					if (ImGui::MenuItem("Doll")) { menu_state.createDoll = true; }
 					if (ImGui::MenuItem("Camera")) { menu_state.createCamera = true; }
 					if (ImGui::MenuItem("Navigation Demo")) { menu_state.createNavigationDemo = true; }
-					if (ImGui::MenuItem("PlaceHolder 2")) {}
+					if (ImGui::MenuItem("Dance Demo")) { menu_state.createDanceDemo = true; }
 					ImGui::EndMenu(); // End Edit Menu
 				}
 				if (ImGui::BeginMenu("View"))
 				{
 					if (ImGui::MenuItem("Renderer Settings")) { menu_state.view_renderer = true; }
-					if (ImGui::MenuItem("PlaceHolder 2")) {}
+					if (ImGui::MenuItem("Preview")) { menu_state.preview = true; }
 					ImGui::EndMenu(); // End View Menu
 				}
 				if (ImGui::BeginMenu("Help"))

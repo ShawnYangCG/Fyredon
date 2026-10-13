@@ -99,7 +99,15 @@ namespace Fyredon {
 		void get_dt();
 
 	private:
-		static EditorApplication app; // singleton
+		friend struct PreviewRegression;
+        bool begin_preview();
+        void tick_preview();
+        void end_preview();
+        GLFWwindow* preview_window = nullptr;
+        GLuint preview_read_fbo = 0;
+        int editor_render_width = 0, editor_render_height = 0;
+        bool editor_was_playing = false, editor_was_paused = false;
+        static EditorApplication app; // singleton
 
 		const char* window_title;
 		const char* project_filepath;

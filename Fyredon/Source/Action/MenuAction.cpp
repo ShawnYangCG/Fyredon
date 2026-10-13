@@ -51,7 +51,11 @@ void Fyredon::MenuAction::tick()
 		createNavigationDemo();
 		menuPanel->menu_state.createNavigationDemo = false;
 	}
-	if (menuPanel->menu_state.view_renderer)
+	if (menuPanel->menu_state.createDanceDemo) {
+        menuPanel->menu_state.createDanceDemo = false;
+        createDanceDemo();
+    }
+    if (menuPanel->menu_state.view_renderer)
 	{
 		render_settings();
 		menuPanel->menu_state.view_renderer = false; 
@@ -206,4 +210,51 @@ void Fyredon::MenuAction::render_settings()
 	// Keep the existing settings alive: the renderer holds pointers to their state.
 	auto* settings = static_cast<GUI_RendererSettings*>(panelOrgnizer->gui_panels.at("setting"));
 	settings->visible = !settings->visible;
+}
+void Fyredon::MenuAction::createDanceDemo()
+{
+    auto* settings=static_cast<GUI_RendererSettings*>(panelOrgnizer->gui_panels.at("setting"));
+    settings->state.draw_grid=false;
+    settings->state.draw_axis=false;
+
+    auto* groundMesh=new Mesh_OBJ("Dance ground","../Assets/Mesh/plane5x5.obj");
+    groundMesh->load_obj();
+    groundMesh->set_shader("../Shaders/mesh.vert","../Shaders/mesh.frag");
+    groundMesh->load_texture("../Assets/Images/Terrain/RPG_grass_pixel.png",0);
+    auto* ground=new Entity("Dance ground");
+    ground->addTransformComponent();
+    ground->addComponent(new mesh_component(groundMesh));
+    world->addEntity(ground);
+
+    // Separate entities keep each rock independently editable in the Inspector.
+    const glm::vec2 positions[]={{-2.f,-2.f},{2.f,-2.f},{-2.f,2.f},{2.f,2.f}};
+    for(int i=0;i<4;++i){
+        const auto name="rock"+std::to_string(i+1);
+        const auto file="../Assets/Mesh/rocks/"+name+".obj";
+        auto* rockMesh=new Mesh_OBJ(name.c_str(),file.c_str());
+        rockMesh->load_obj();
+        rockMesh->set_shader("../Shaders/mesh.vert","../Shaders/mesh.frag");
+        rockMesh->set_colour(glm::vec3(0.55f,0.58f,0.6f));
+        auto lo=rockMesh->vert_data.at(0).pos,hi=lo;
+        for(const auto& vertex:rockMesh->vert_data){lo=glm::min(lo,vertex.pos);hi=glm::max(hi,vertex.pos);}
+        const float scale=1.3f/std::max(0.001f,std::max(hi.x-lo.x,hi.z-lo.z));
+        rockMesh->translate(-glm::vec3((lo.x+hi.x)*0.5f,lo.y,(lo.z+hi.z)*0.5f)*scale);
+        auto* rock=new Entity(name);
+        rock->addTransformComponent();
+        auto* tr=static_cast<transform_component*>(rock->getComponentByName("Transform"));
+        tr->matrixTranslation[0]=positions[i].x;tr->matrixTranslation[2]=positions[i].y;
+        for(auto& value:tr->matrixScale)value=scale;
+        rock->addComponent(new mesh_component(rockMesh));
+        world->addEntity(rock);
+    }
+
+    auto* dancer=new fbx_entity("MC_dance","../Assets/Mesh/MC_dance.fbx");
+    dancer->init("../Shaders/human.vert","../Shaders/human.frag",0,0,0,glm::vec3(0),"../Assets/Images/human/MC.png");
+    auto lo=dancer->FBXmesh->vert_data.at(0).pos,hi=lo;
+    for(const auto& vertex:dancer->FBXmesh->vert_data){lo=glm::min(lo,vertex.pos);hi=glm::max(hi,vertex.pos);}
+    const float scale=1.7f/std::max(hi.y-lo.y,0.001f);
+    dancer->FBXmesh->translate(-glm::vec3((lo.x+hi.x)*0.5f,lo.y,(lo.z+hi.z)*0.5f)*scale);
+    auto* tr=static_cast<transform_component*>(dancer->getComponentByName("Transform"));
+    for(auto& value:tr->matrixScale)value=scale;
+    world->addEntity(dancer);
 }
